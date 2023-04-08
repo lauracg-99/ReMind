@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1021542104137",
+    "project_id": "remind-a6f4b",
+    "storage_bucket": "remind-a6f4b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1021542104137:android:bcc6cbd85341ce651d1398",
+        "android_client_info": {
+          "package_name": "es.udc.remind"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1021542104137-ebjg1sbirj9j99s89bu4np8gg52b58a5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD7iVewRzLtws_-qCIQxzKlEvSp8blIcTM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1021542104137-ebjg1sbirj9j99s89bu4np8gg52b58a5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
