@@ -48,14 +48,13 @@ class ShowSupervisorTasks extends HookConsumerWidget {
                   List<Widget> list = [];
                   if((taskToDo[0][index].cancelNoti != StorageKeys.verdadero)) {
                     numeroListaCon += 1;
-                    log('**** ${taskToDo[0][index].taskName}');
                       list.add(CardItemBossComponent(
                         taskModel: taskToDo[0][index],
                       ));
                   } else {
                     numeroListaSin += 1;
                   }
-                  log('**** con ${numeroListaCon} sin ${numeroListaSin} lenght ${taskToDo[0].length}');
+
                   return  (numeroListaSin == taskToDo[0].length)
                       ? CustomText.h4(
                           context,

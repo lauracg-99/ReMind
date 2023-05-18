@@ -74,7 +74,6 @@ class CardItemBossComponent extends ConsumerWidget {
                   title: tr(context).delete,
                   isColored: false,
                   onPressed: () {
-
                     showAlertDialogDelete(context,ref);
                     },
                 )
@@ -113,8 +112,7 @@ class CardItemBossComponent extends ConsumerWidget {
           color: AppColors.blue
       ),
       onPressed:  () {
-        ref.read(taskProvider.notifier).checkDeleteNoti(taskModel: taskModel);
-
+        ref.read(taskProvider.notifier).deleteSingleTaskDone(taskModel: taskModel);
         NavigationService.goBack(context,rootNavigator: true);
       },
     );
