@@ -83,12 +83,12 @@ class Notifications {
         notificationLayout: NotificationLayout.Default,
         wakeUpScreen: true,
       ),
-      actionButtons: [
+      /*actionButtons: [
         NotificationActionButton(
           key: 'MARK_DONE',
           label: 'Hecho',
         ),
-      ],
+      ],*/
       schedule: NotificationCalendar(
         weekday: day,
         hour: hour,
