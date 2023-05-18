@@ -1,3 +1,4 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -22,6 +23,28 @@ void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   await ServicesInitializer.instance.init(widgetsBinding, container);
   await GetStorage.init();
+  await AwesomeNotifications().initialize(
+    null,
+    [
+      NotificationChannel(
+        channelKey: 'basic_channel',
+        channelName: 'Basic Notifications',
+        defaultColor: AppColors.blue,
+        importance: NotificationImportance.High,
+        channelShowBadge: true,
+        channelDescription: 'Basic Notifications',
+      ),
+      NotificationChannel(
+        channelKey: 'scheduled_channel',
+        channelName: 'Scheduled Notifications',
+        defaultColor: AppColors.blue,
+        locked: true,
+        importance: NotificationImportance.High,
+        soundSource: 'resource://raw/res_custom_notification',
+        channelDescription: 'Scheduled Notifications',
+      ),
+    ],
+  );
   runApp(
     //All Flutter applications using Riverpod
     UncontrolledProviderScope(

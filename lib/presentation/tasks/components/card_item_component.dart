@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../common/storage_keys.dart';
 import '../../../data/tasks/models/task_model.dart';
 import '../../../domain/services/localization_service.dart';
 import '../../routes/navigation_service.dart';
@@ -55,7 +56,7 @@ class CardItemComponent extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 //modificar supervisado
-                (taskModel.editable == "true")
+                (taskModel.editable == StorageKeys.verdadero)
                 ? CardButtonComponent(
                   title: tr(context).mod,
                   isColored: false,
@@ -73,12 +74,12 @@ class CardItemComponent extends ConsumerWidget {
                 )
                 : const SizedBox(),
 
-                (taskModel.editable == "true")
+                (taskModel.editable == StorageKeys.verdadero)
                     ?SizedBox(width: Sizes.hMarginSmall(context),)
                     : SizedBox(),
 
                 //hecho
-                (taskModel.done != 'true' && taskModel.editable == 'true')
+                (taskModel.done != StorageKeys.verdadero && taskModel.editable == StorageKeys.verdadero)
                   ? CardButtonComponent(
                   title: tr(context).done,
                   isColored: true,
@@ -88,7 +89,7 @@ class CardItemComponent extends ConsumerWidget {
                 )
                   : SizedBox(),
                 //hecho supervisor
-                (taskModel.done != 'true' && taskModel.editable == 'false')
+                (taskModel.done != StorageKeys.verdadero && taskModel.editable == StorageKeys.falso)
                     ? CardButtonComponent(
                   title: tr(context).done,
                   isColored: true,
@@ -101,7 +102,7 @@ class CardItemComponent extends ConsumerWidget {
                     : SizedBox(),
 
                 //borrar supervisado DONE
-                  (taskModel.editable == 'true' && taskModel.done == 'true')
+                  (taskModel.editable == StorageKeys.verdadero && taskModel.done == StorageKeys.verdadero)
                       ? CardRedButtonComponent(
                     title: tr(context).delete,
                     isColored: false,
@@ -121,7 +122,7 @@ class CardItemComponent extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [(
                 //borrar supervisado
-                    (taskModel.editable == 'true' && taskModel.done == 'false')
+                    (taskModel.editable == StorageKeys.verdadero && taskModel.done == StorageKeys.falso)
                       ? CardRedButtonComponent(
                         title: tr(context).delete,
                         isColored: false,
@@ -134,7 +135,7 @@ class CardItemComponent extends ConsumerWidget {
                       )
                       : const SizedBox()),
 
-                      (taskModel.editable == 'true' && taskModel.done == 'true')
+                      (taskModel.editable == StorageKeys.verdadero && taskModel.done == StorageKeys.verdadero)
                         ? CardButtonComponent(
                       title: 'Deshacer', //todo: tr
                       isColored: false,
@@ -161,7 +162,7 @@ class CardItemComponent extends ConsumerWidget {
           color: AppColors.blue
       ),
       onPressed:  () {
-        if (taskModel.editable == 'true'){
+        if (taskModel.editable == StorageKeys.verdadero){
           ref.watch(taskProvider.notifier).checkTask(context, taskModel: taskModel);
         }else{
           ref.watch(taskProvider.notifier).checkTaskBoss(taskModel: taskModel);

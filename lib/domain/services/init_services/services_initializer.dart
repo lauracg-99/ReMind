@@ -24,6 +24,7 @@ class ServicesInitializer {
     this.container = container;
     //Init FirebaseApp instance before runApp
     await _initFirebase();
+    //await _iniNoti();
     //_iniNoti();
     //This Prevent closing splash screen until we finish initializing our services.
     //App layout will be built but not displayed.

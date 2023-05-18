@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:remind/presentation/tasks/providers/tarea_state.dart';
+import '../../../common/storage_keys.dart';
 import '../../../data/auth/providers/auth_provider.dart';
 import '../../../data/auth/repo/auth_repo.dart';
 import '../../../data/error/failures.dart';
@@ -83,8 +84,8 @@ class TaskNotifier extends StateNotifier<TareaState> {
         path: FirestorePaths.taskById(GetStorage().read('uidUsuario')!,
             taskId: taskModel.taskId),
         data: {
-          'done': 'true',
-          'isSetNotification': 'false',
+          'done': StorageKeys.verdadero,
+          'isSetNotification': StorageKeys.falso,
           'idNotification': [],
         },
         builder: (data) {
@@ -104,8 +105,8 @@ class TaskNotifier extends StateNotifier<TareaState> {
       path: FirestorePaths.taskBossById(GetStorage().read('uidUsuario')!,
           taskId: taskModel.taskId),
       data: {
-        'done': 'true',
-        'isSetNotification': 'false',
+        'done': StorageKeys.verdadero,
+        'isSetNotification': StorageKeys.falso,
         'idNotification': [],
       },
       builder: (data) {
@@ -124,8 +125,8 @@ class TaskNotifier extends StateNotifier<TareaState> {
         path: FirestorePaths.taskBossById(GetStorage().read('uidSup')!,
             taskId: taskModel.taskId),
         data: {
-          'done': 'false',
-          'isSetNotification': 'false',
+          'done': StorageKeys.falso,
+          'isSetNotification': StorageKeys.falso,
           'idNotification': [],
         },
         builder: (data) {
@@ -139,13 +140,13 @@ class TaskNotifier extends StateNotifier<TareaState> {
   }
 
   Future<Either<Failure, bool>> undoCheckTask({required TaskModel taskModel}) async {
-    if(taskModel.editable == 'false') {
+    if(taskModel.editable == StorageKeys.falso) {
       return await _firebaseCaller.updateData(
         path: FirestorePaths.taskBossById(GetStorage().read('uidUsuario')!,
             taskId: taskModel.taskId),
         data: {
-          'done': 'false',
-          'isSetNotification': 'false',
+          'done': StorageKeys.falso,
+          'isSetNotification': StorageKeys.falso,
           'idNotification': [],
         },
         builder: (data) {
@@ -161,8 +162,8 @@ class TaskNotifier extends StateNotifier<TareaState> {
         path: FirestorePaths.taskById(GetStorage().read('uidUsuario')!,
             taskId: taskModel.taskId),
         data: {
-          'done': 'false',
-          'isSetNotification': 'false',
+          'done': StorageKeys.falso,
+          'isSetNotification': StorageKeys.falso,
           'idNotification': [],
         },
         builder: (data) {
@@ -389,12 +390,12 @@ class TaskNotifier extends StateNotifier<TareaState> {
   ///-------------------------NOTIFICATION--------------------------------------
   /// esto nos sirve para cancelar las notificaciones en el supervisado
   void checkDeleteNoti({required TaskModel taskModel}) async {
-    if(taskModel.editable == 'true') {
+    if(taskModel.editable == StorageKeys.verdadero) {
       await _firebaseCaller.updateData(
         path: FirestorePaths.taskById(GetStorage().read('uidUsuario')!,
             taskId: taskModel.taskId),
         data: {
-          'cancelNoti': 'true',
+          'cancelNoti': StorageKeys.verdadero,
         },
         builder: (data) {
           if (data is! ServerFailure && data == true) {
@@ -409,7 +410,7 @@ class TaskNotifier extends StateNotifier<TareaState> {
         path: FirestorePaths.taskBossById(GetStorage().read('uidSup')!,
             taskId: taskModel.taskId),
         data: {
-          'cancelNoti': 'true',
+          'cancelNoti': StorageKeys.verdadero,
         },
         builder: (data) {
           if (data is! ServerFailure && data == true) {
@@ -422,6 +423,7 @@ class TaskNotifier extends StateNotifier<TareaState> {
     }
   }
 
+/*
    Future<List<int>> setNotification(TaskModel taskModel) async {
      log('**** SET NOTIFICATION');
      List<int> allIds = [];
@@ -444,12 +446,13 @@ class TaskNotifier extends StateNotifier<TareaState> {
          int idNotification = DateTime.now().millisecondsSinceEpoch.remainder(100000);
          allIds.add(idNotification);
          var duration = Duration(minutes: i);
-          await makeNotiAwesome(idNotification,taskModel.taskName,
+          await makeNotiAwesome(idNotification,taskModel.taskName,taskModel.taskId,
               chooseDay, duration.inHours,(duration.inMinutes-60*duration.inHours));
        }
      }
 
-     if(taskModel.editable == 'true') {
+     */
+/*if(taskModel.editable == 'true') {
       await _firebaseCaller.updateData(
         path: FirestorePaths.taskById(GetStorage().read('uidUsuario')!,
             taskId: taskModel.taskId),
@@ -479,13 +482,14 @@ class TaskNotifier extends StateNotifier<TareaState> {
            }
          },
        );
-     }
+     }*//*
+
 
     return allIds;
 
   }
 
-  makeNotiAwesome(int idNotification, String taskName, int day, int hour, int minute ) async {
+  makeNotiAwesome(int idNotification, String taskName, String taskId, int day, int hour, int minute ) async {
     //int idNotification, String taskName, int day, int hour, int minute
 
     log('**** MAKENOTI ${idNotification} ${taskName} ${day} ${hour} ${minute}');
@@ -493,6 +497,7 @@ class TaskNotifier extends StateNotifier<TareaState> {
       content: NotificationContent(
         id: idNotification,
         channelKey: 'scheduled_channel',
+        groupKey: taskId,
         title: 'Do ${taskName} ',
         body: 'venga va que toca',//'Rango horario ${taskModel.begin} ${taskModel.end}',
         notificationLayout: NotificationLayout.Default,
@@ -515,6 +520,7 @@ class TaskNotifier extends StateNotifier<TareaState> {
       ),
     );
   }
+*/
 
   int getNumDay(String day){
     int num = 0;
@@ -538,7 +544,7 @@ class TaskNotifier extends StateNotifier<TareaState> {
       path: FirestorePaths.taskById(GetStorage().read('uidUsuario')!,taskId: task.taskId),
       data: {
         'idNotification': task.idNotification,
-        'isNotificationSet': 'true',
+        'isNotificationSet': StorageKeys.verdadero,
       },
       builder: (data) {
         if (data is! ServerFailure && data == true) {
@@ -556,7 +562,7 @@ class TaskNotifier extends StateNotifier<TareaState> {
       path: FirestorePaths.taskBossById(GetStorage().read('uidUsuario')!,taskId: task.taskId),
       data: {
         'idNotification': task.idNotification,
-        'isNotificationSet': 'true',
+        'isNotificationSet': StorageKeys.verdadero,
       },
       builder: (data) {
         if (data is! ServerFailure && data == true) {
@@ -573,8 +579,8 @@ class TaskNotifier extends StateNotifier<TareaState> {
     return await _firebaseCaller.updateData(
       path: FirestorePaths.taskById(GetStorage().read('uidUsuario')!,taskId: task.taskId),
       data: {
-        'isNotificationSet': 'false',
-        'done': 'false',
+        'isNotificationSet': StorageKeys.falso,
+        'done': StorageKeys.falso,
         'idNotification': [],
       },
       builder: (data) {
@@ -592,8 +598,8 @@ class TaskNotifier extends StateNotifier<TareaState> {
     return await _firebaseCaller.updateData(
       path: FirestorePaths.taskBossById(GetStorage().read('uidUsuario')!,taskId: task.taskId),
       data: {
-        'isNotificationSet': 'false',
-        'done': 'false',
+        'isNotificationSet': StorageKeys.falso,
+        'done': StorageKeys.falso,
         'idNotification': [],
       },
       builder: (data) {

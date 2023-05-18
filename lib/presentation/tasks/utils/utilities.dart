@@ -71,7 +71,7 @@ List<String> saveDays(String days){
 Future<int> stablishNoti(int day, String hora, String taskName){
   var h = hora.split(':');
   log('**** stablishNoti');
-  return createReminderNotification(day,int.parse(h[0]),int.parse(h[1]), taskName);
+  return Notifications().createReminderNotification(day,int.parse(h[0]),int.parse(h[1]), taskName);
 
 }
 

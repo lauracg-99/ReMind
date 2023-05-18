@@ -7,6 +7,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../../../common/storage_keys.dart';
 import '../../../../data/tasks/models/task_model.dart';
 import '../../../../domain/services/localization_service.dart';
 import '../../../screens/popup_page_nested.dart';
@@ -203,14 +204,14 @@ class AddTaskScreenBoss extends HookConsumerWidget {
                                       range.getfinHour(), repetitions.getBt()),
                                   begin: range.getIniHour(),
                                   end: range.getfinHour(),
-                                  editable: 'false',
-                                  done: 'false',
+                                  editable: StorageKeys.falso,
+                                  done: StorageKeys.falso,
                                   numRepetition: repetitions.getBoth(),
                                   lastUpdate:
                                       Timestamp.fromDate(DateTime.now()),
                                   taskId: '',
-                                  isNotificationSet: 'false',
-                                  cancelNoti: 'false'
+                                  isNotificationSet: StorageKeys.falso,
+                                  cancelNoti: StorageKeys.falso
                                 );
 
                               ref.read(taskProvider.notifier).addDocToFirebaseBoss(context, task);

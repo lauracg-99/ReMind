@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../common/storage_keys.dart';
 import '../../../data/tasks/models/task_model.dart';
 import '../../../domain/services/localization_service.dart';
 import '../../routes/navigation_service.dart';
@@ -79,12 +80,12 @@ class CardItemBossComponent extends ConsumerWidget {
                 )
               ],
             ),
-          (taskModel.done == 'true')
+          (taskModel.done == StorageKeys.verdadero)
                 ? SizedBox(
             height: Sizes.vMarginSmallest(context),
           )
           : SizedBox(),
-          (taskModel.done == 'true')
+          (taskModel.done == StorageKeys.verdadero)
           //desmarcar el hecho
               ? Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,

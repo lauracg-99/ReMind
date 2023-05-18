@@ -11,6 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:remind/presentation/tasks/components/repe_noti_component.dart';
 import 'package:remind/presentation/tasks/components/switch_setting_section_component.dart';
 import 'package:remind/presentation/tasks/components/time_picker_component.dart';
+import '../../../common/storage_keys.dart';
 import '../../../data/tasks/models/task_model.dart';
 import '../../../domain/services/localization_service.dart';
 import '../../routes/navigation_service.dart';
@@ -110,7 +111,7 @@ class ToggleChoiceComponent extends ConsumerWidget {
                                         'idNotification': [],
                                         'days': saveDays(days.tags.toString()),
                                         'lastUpdate': Timestamp.fromDate(DateTime.now()),
-                                        'isNotificationSet': 'false',},
+                                        'isNotificationSet': StorageKeys.falso,},
                                           taskId: taskModel.taskId
                                       );
                                     }else{
@@ -119,7 +120,7 @@ class ToggleChoiceComponent extends ConsumerWidget {
                                       taskRepo.updateTask(context,{
                                         'days': saveDays(days.tags.toString()),
                                         'lastUpdate': Timestamp.fromDate(DateTime.now()),
-                                        'isNotificationSet': 'false',
+                                        'isNotificationSet': StorageKeys.falso,
                                       },
                                           taskId: taskModel.taskId
                                       );
@@ -193,7 +194,7 @@ class ToggleChoiceComponent extends ConsumerWidget {
                                       'end': range.getfinHour(),
                                       'idNotification': [],
                                       'lastUpdate': Timestamp.fromDate(DateTime.now()),
-                                      'isNotificationSet': 'false',
+                                      'isNotificationSet': StorageKeys.falso,
                                     },
                                         taskId: taskModel.taskId
                                     );
@@ -205,7 +206,7 @@ class ToggleChoiceComponent extends ConsumerWidget {
                                       'begin': range.getIniHour(),
                                       'end': range.getfinHour(),
                                       'lastUpdate': Timestamp.fromDate(DateTime.now()),
-                                      'isNotificationSet': 'false',
+                                      'isNotificationSet': StorageKeys.falso,
                                     },
                                         taskId: taskModel.taskId
                                     );
@@ -279,7 +280,7 @@ class ToggleChoiceComponent extends ConsumerWidget {
                                           taskRepo.updateTaskBoss(context,{
                                             'idNotification': [],
                                             'lastUpdate': Timestamp.fromDate(DateTime.now()),
-                                            'isNotificationSet': 'false',
+                                            'isNotificationSet': StorageKeys.falso,
                                             'numRepetition' : repetitions.getBoth()
                                           }, taskId: taskModel.taskId
                                           );
@@ -292,7 +293,7 @@ class ToggleChoiceComponent extends ConsumerWidget {
                                           taskRepo.updateTask(context,{
                                             'idNotification': [],
                                             'lastUpdate': Timestamp.fromDate(DateTime.now()),
-                                            'isNotificationSet': 'false',
+                                            'isNotificationSet': StorageKeys.falso,
                                             'numRepetition' : repetitions.getBoth()
                                           }, taskId: taskModel.taskId
                                           );

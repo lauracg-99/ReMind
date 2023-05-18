@@ -18,7 +18,7 @@ class SettingsViewModel {
   late MainCoreProvider _mainCoreProvider;
 
   signOut() async {
-    cancelScheduledNotifications();
+    Notifications().cancelScheduledNotifications();
 
     NavigationService.pushReplacementAll(
       NavigationService.context,
@@ -36,7 +36,7 @@ class SettingsViewModel {
   }
 
   deleteAccount() async {
-    cancelScheduledNotifications();
+    Notifications().cancelScheduledNotifications();
 
     NavigationService.pushReplacementAll(
       NavigationService.context,

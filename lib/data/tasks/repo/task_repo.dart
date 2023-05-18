@@ -10,6 +10,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
+import '../../../common/storage_keys.dart';
 import '../../../domain/auth/repo/user_repo.dart';
 import '../../../presentation/notifications/utils/notifications.dart';
 import '../../../presentation/tasks/utils/utilities.dart';
@@ -51,7 +52,7 @@ class TasksRepo {
       //uid de usuario
       path: FirestorePaths.taskPath(GetStorage().read('uidUsuario')),
       queryBuilder: (query) => query
-          .where("done", isEqualTo: "false"),
+          .where("done", isEqualTo: StorageKeys.falso),
       builder: (snapshotData, snapshotId) {
         return TaskModel.fromMap(snapshotData!, snapshotId);
       },
@@ -63,7 +64,7 @@ class TasksRepo {
       //uid de usuario
       path: FirestorePaths.taskPathBoss(GetStorage().read('uidUsuario')),
       queryBuilder: (query) => query
-          .where("done", isEqualTo: "false"),
+          .where("done", isEqualTo: StorageKeys.falso),
       builder: (snapshotData, snapshotId) {
         return TaskModel.fromMap(snapshotData!, snapshotId);
       },
@@ -77,7 +78,7 @@ class TasksRepo {
     return  _firebaseCaller.collectionStream<TaskModel>(
       path: FirestorePaths.taskPathBoss(GetStorage().read('uidSup')),
       queryBuilder: (query) => query
-          .where("done", isEqualTo: "false"),
+          .where("done", isEqualTo: StorageKeys.falso),
       builder: (snapshotData, snapshotId) {
         return TaskModel.fromMap(snapshotData!, snapshotId);
       },
@@ -90,7 +91,7 @@ class TasksRepo {
       //uid de usuario
       path: FirestorePaths.taskPathBoss(GetStorage().read('uidSup')),
       queryBuilder: (query) => query
-          .where("done", isEqualTo: "true"),
+          .where("done", isEqualTo: StorageKeys.verdadero),
       builder: (snapshotData, snapshotId) {
         return TaskModel.fromMap(snapshotData!, snapshotId);
       },
@@ -102,7 +103,7 @@ class TasksRepo {
       //uid de usuario
       path: FirestorePaths.taskPath(GetStorage().read('uidUsuario')),
       queryBuilder: (query) => query
-          .where("done", isEqualTo: "true"),
+          .where("done", isEqualTo: StorageKeys.verdadero),
       builder: (snapshotData, snapshotId) {
         return TaskModel.fromMap(snapshotData!, snapshotId);
       },
@@ -118,7 +119,7 @@ class TasksRepo {
       //uid de usuario
       path: FirestorePaths.taskPathBoss(GetStorage().read('uidUsuario')),
       queryBuilder: (query) => query
-          .where("done", isEqualTo: "true"),
+          .where("done", isEqualTo: StorageKeys.verdadero),
       builder: (snapshotData, snapshotId) {
         return TaskModel.fromMap(snapshotData!, snapshotId);
       },
@@ -360,7 +361,7 @@ class TasksRepo {
 
 
   Stream<List<TaskModel>> getNotiTaskStream() {
-    cancelScheduledNotifications();
+    Notifications().cancelScheduledNotifications();
     var actualHour = DateTime.now();
     var actualDay = getTranslateDay();
 
@@ -371,7 +372,7 @@ class TasksRepo {
       path: FirestorePaths.taskPath(GetStorage().read('uidUsuario')!),
       queryBuilder: (query) => query
           .where("days", arrayContains: actualDay)
-          .where("done", isEqualTo: "false"),
+          .where("done", isEqualTo: StorageKeys.falso),
       builder: (snapshotData, snapshotId) {
         log('getNoti task repo 1');
         return TaskModel.fromMap(snapshotData!, snapshotId);
@@ -383,7 +384,7 @@ class TasksRepo {
     return _firebaseCaller.collectionStream<TaskModel>(
       path: FirestorePaths.taskPath(GetStorage().read('uidUsuario')!),
       queryBuilder: (query) => query
-          .where('editable', isEqualTo: 'false'),
+          .where('editable', isEqualTo: StorageKeys.falso),
       builder: (snapshotData, snapshotId) {
         return TaskModel.fromMap(snapshotData!, snapshotId);
       },
@@ -395,7 +396,7 @@ class TasksRepo {
     return _firebaseCaller.collectionStream<TaskModel>(
       path: FirestorePaths.taskPath(GetStorage().read('uidUsuario')!),
       queryBuilder: (query) => query
-          .where('done', isEqualTo: 'true'),
+          .where('done', isEqualTo: StorageKeys.verdadero),
       builder: (snapshotData, snapshotId) {
         return TaskModel.fromMap(snapshotData!, snapshotId);
       },
@@ -455,7 +456,7 @@ class TasksRepo {
      // a false y cambiamos a no hechas todas
      log("**** INSIDE SET CRON ${GetStorage().read('CronSet')}");
     //diferenciamos si es tarea de supervisor o no
-    if (taskModel.editable == 'true')
+    if (taskModel.editable == StorageKeys.verdadero)
     {
       log("**** CRON RESETEAMOS CON ${GetStorage().read('uidUsuario')}");
       await resetTask(task: taskModel);
@@ -463,16 +464,15 @@ class TasksRepo {
       log("**** BOSS CRON RESETEAMOS CON ${GetStorage().read('uidUsuario')}");
       await await resetTaskBoss(task: taskModel);
     }
-     //ya se ha hecho el reset
-    //GetStorage().write('CronSet','false');
+
   }
 
   Future<Either<Failure, bool>> resetTask({required TaskModel task}) async {
     return await _firebaseCaller.updateData(
       path: FirestorePaths.taskById(GetStorage().read('uidUsuario')!,taskId: task.taskId),
       data: {
-        'isNotificationSet': 'false',
-        'done': 'false',
+        'isNotificationSet': StorageKeys.falso,
+        'done': StorageKeys.falso,
         'idNotification': [],
       },
       builder: (data) {
@@ -489,8 +489,8 @@ class TasksRepo {
     return await _firebaseCaller.updateData(
       path: FirestorePaths.taskBossById(GetStorage().read('uidUsuario')!,taskId: task.taskId),
       data: {
-        'isNotificationSet': 'false',
-        'done': 'false',
+        'isNotificationSet': StorageKeys.falso,
+        'done': StorageKeys.falso,
         'idNotification': [],
       },
       builder: (data) {
@@ -507,7 +507,7 @@ class TasksRepo {
     return await _firebaseCaller.updateData(
       path: FirestorePaths.taskById(GetStorage().read('uidUsuario')!,taskId: task.taskId),
       data: {
-        'done': 'true',
+        'done': StorageKeys.verdadero,
       },
       builder: (data) {
         if (data is! ServerFailure && data == true) {
@@ -523,7 +523,7 @@ class TasksRepo {
     return await _firebaseCaller.updateData(
       path: FirestorePaths.taskBossById(GetStorage().read('uidUsuario')!,taskId: task.taskId),
       data: {
-        'done': 'true',
+        'done': StorageKeys.verdadero,
       },
       builder: (data) {
         if (data is! ServerFailure && data == true) {
@@ -539,7 +539,7 @@ class TasksRepo {
     return await _firebaseCaller.updateData(
       path: FirestorePaths.taskById(GetStorage().read('uidUsuario'),taskId: task.taskId),
       data: {
-        'isNotificationSet': 'true',
+        'isNotificationSet': StorageKeys.verdadero,
       },
       builder: (data) {
         if (data is! ServerFailure && data == true) {
@@ -555,7 +555,7 @@ class TasksRepo {
     return await _firebaseCaller.updateData(
       path: FirestorePaths.taskBossById(GetStorage().read('uidUsuario'),taskId: task.taskId),
       data: {
-        'isNotificationSet': 'true',
+        'isNotificationSet': StorageKeys.verdadero,
       },
       builder: (data) {
         if (data is! ServerFailure && data == true) {
@@ -573,7 +573,7 @@ class TasksRepo {
       path: FirestorePaths.taskById(GetStorage().read('uidUsuario'),taskId: task.taskId),
       data: {
         'idNotification': list,
-        'isNotificationSet': 'true',
+        'isNotificationSet': StorageKeys.verdadero,
       },
       builder: (data) {
         if (data is! ServerFailure && data == true) {
@@ -590,7 +590,7 @@ class TasksRepo {
       path: FirestorePaths.taskBossById(GetStorage().read('uidUsuario'),taskId: task.taskId),
       data: {
         'idNotification': ids,
-        'isNotificationSet': 'true',
+        'isNotificationSet': StorageKeys.verdadero,
       },
       builder: (data) {
         if (data is! ServerFailure && data == true) {
@@ -613,7 +613,7 @@ class TasksRepo {
 
     //cancelamos esas notificaciones
     idCancel?.forEach((element) {
-      cancelScheduledNotification(element);
+      Notifications().cancelScheduledNotification(element);
     });
 
 
@@ -715,7 +715,7 @@ class TasksRepo {
    List<int> reIds = [];
     for (var element in days) {
       for (var element2 in hour) {
-        await reCreateReminderNotification(
+        await Notifications().reCreateReminderNotification(
             getNumDay(element),element2)
             .then((value) => reIds.add(value)
         );

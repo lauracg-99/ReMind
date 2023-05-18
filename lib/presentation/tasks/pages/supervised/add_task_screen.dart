@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import '../../../../common/storage_keys.dart';
 import '../../../../data/tasks/models/task_model.dart';
 import '../../../../domain/services/localization_service.dart';
 import '../../../screens/popup_page_nested.dart';
@@ -180,7 +181,7 @@ class AddTaskScreen extends HookConsumerWidget {
                         : AppColors.darkThemePrimary,
                     onPressed: () async {
 
-                      String isNotificationSet = 'false';
+                      String isNotificationSet = StorageKeys.falso;
                         if (days.tags.toString() == '[]') {
                           days.tags.add(getStrDay(DateTime
                               .now()
@@ -198,14 +199,14 @@ class AddTaskScreen extends HookConsumerWidget {
                                       range.getfinHour(), repetitions.getBt()),
                                   begin: range.getIniHour(),
                                   end: range.getfinHour(),
-                                  editable: 'true',
-                                  done: 'false',
+                                  editable: StorageKeys.verdadero,
+                                  done: StorageKeys.falso,
                                   numRepetition: repetitions.getBoth(),
                                   lastUpdate:
                                       Timestamp.fromDate(DateTime.now()),
                                   taskId: '',
-                                  isNotificationSet: 'true',
-                                  cancelNoti: 'false');
+                                  isNotificationSet: StorageKeys.verdadero,
+                                  cancelNoti: StorageKeys.falso);
 
                               ref.read(taskProvider.notifier).addDocToFirebase(context, task);
 

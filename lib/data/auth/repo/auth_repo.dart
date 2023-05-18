@@ -29,19 +29,11 @@ class AuthRepo {
       final userCredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
       log(userCredential.toString());
-      //MOD
-/*      log('**** signInWithEmailAndPassword ${userCredential.user?.uid} ${email} ${password}');
-      GetStorage().write('uidUsuario', userCredential.user?.uid);
-      GetStorage().write('email', email);
-      GetStorage().write('passw', password);
-      GetStorage().write('CronSet', 'false');
-      GetStorage().write('reset','false');*/
-
       dependencies.write(StorageKeys.uidUsuario, userCredential.user?.uid);
       dependencies.write(StorageKeys.email, email);
       dependencies.write(StorageKeys.passw, password);
-      dependencies.write(StorageKeys.cron, 'false');
-      dependencies.write(StorageKeys.reset, 'false');
+      dependencies.write(StorageKeys.cron, StorageKeys.falso);
+      dependencies.write(StorageKeys.reset, StorageKeys.falso);
 
 
       return Right(UserModel.fromUserCredential(userCredential.user!,'','','',''));

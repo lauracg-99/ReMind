@@ -19,4 +19,8 @@ class StorageKeys {
 
   static const String screen = "screen";
 
+  static const String falso = "false";
+  static const String verdadero = "true";
+
+
 }

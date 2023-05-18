@@ -3,6 +3,7 @@ import 'package:cron/cron.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_storage/get_storage.dart';
 
+import '../../common/storage_keys.dart';
 import '../../domain/services/init_services/services_initializer.dart';
 import '../routes/navigation_service.dart';
 import '../routes/route_paths.dart';
@@ -27,8 +28,8 @@ class SplashProvider {
         initializeData().then(
               (_) {
                 log('**** CRON FALSE');
-                GetStorage().write('CronSet','false');
-                GetStorage().write('reset','false');
+                GetStorage().write('CronSet',StorageKeys.falso);
+                GetStorage().write('reset',StorageKeys.falso);
             NavigationService.pushReplacementAll(
               NavigationService.context,
               isNamed: true,
@@ -83,7 +84,7 @@ class SplashProvider {
       }else{
         log('**** RESET CRON');
         Cron().close();
-        GetStorage().write('false','CronSet');
+        GetStorage().write('CronSet', StorageKeys.falso);
 
         //no es supervisor
         secondPage = RoutePaths.homeBase;

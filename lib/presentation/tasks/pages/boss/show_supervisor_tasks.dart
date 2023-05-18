@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import '../../../../common/storage_keys.dart';
 import '../../../../domain/services/localization_service.dart';
 import '../../../styles/app_colors.dart';
 import '../../../styles/sizes.dart';
@@ -45,7 +46,7 @@ class ShowSupervisorTasks extends HookConsumerWidget {
                 itemCount: taskToDo[0].length,
                 itemBuilder: (context, index) {
                   List<Widget> list = [];
-                  if((taskToDo[0][index].cancelNoti != 'true')) {
+                  if((taskToDo[0][index].cancelNoti != StorageKeys.verdadero)) {
                     numeroListaCon += 1;
                     log('**** ${taskToDo[0][index].taskName}');
                       list.add(CardItemBossComponent(

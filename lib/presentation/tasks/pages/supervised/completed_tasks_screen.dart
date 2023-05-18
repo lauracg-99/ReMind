@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import '../../../../common/storage_keys.dart';
 import '../../../../domain/services/localization_service.dart';
 import '../../../styles/app_colors.dart';
 import '../../../styles/sizes.dart';
@@ -45,14 +46,14 @@ class CompletedTasks extends HookConsumerWidget {
                     var boss = taskToDo[1].length;
 
                     if (index < supervised) {
-                      if(taskToDo[0][index].cancelNoti != 'false'){
+                      if(taskToDo[0][index].cancelNoti != StorageKeys.falso){
                         ref.read(taskProvider.notifier).deleteSingleTask(taskModel: taskToDo[0][index]);
                       }
                       list.add( CardItemComponent(taskModel: taskToDo[0][index],));
                     } else {
                       if (index - supervised < boss) {
                         var indexBoss = index - supervised;
-                        if(taskToDo[1][indexBoss].cancelNoti != 'false'){
+                        if(taskToDo[1][indexBoss].cancelNoti != StorageKeys.falso){
                           ref.read(taskProvider.notifier).deleteTaskbyBoss(taskModel: taskToDo[1][indexBoss]);
                         }
                         list.add(CardItemComponent(taskModel: taskToDo[1][indexBoss],));

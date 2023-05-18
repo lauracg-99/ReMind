@@ -14,6 +14,10 @@ final firebaseCaller = Provider<IFirebaseCaller>(
       (ref) => FirebaseCaller(),
 );
 
+final firebaseProvider = Provider<FirebaseFirestore>((ref) {
+  return FirebaseFirestore.instance;
+});
+
 class FirebaseCaller implements IFirebaseCaller {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
