@@ -51,54 +51,62 @@ class Notifications {
     int finH = int.parse(splitFin![0]) * 60 + int.parse(splitFin[1]);
 
     int? cantDias = taskModel.days?.length;
+    int notificationDelay = taskModel.numRepetition!;
+    int currentDelay = 0; // Retraso inicial
     //notificacion por cada día
     for (int j = 0; j < cantDias!; j++) {
       int chooseDay = getNumDay(taskModel.days?.elementAt(j));
 
       // 13:00 hasta 14:00 cada 4 min
-      for (int i = iniH; i <= finH; i += taskModel.numRepetition!) {
+      for (int i = iniH; i <= finH; i += notificationDelay) {
         int idNotification = DateTime
             .now()
             .millisecondsSinceEpoch
             .remainder(100000);
-        var duration = Duration(minutes: i);
+        var duration = Duration(minutes: i, seconds: currentDelay);
         await makeNotiAwesome(
             idNotification, taskModel.taskName, taskModel.taskId,
             chooseDay, duration.inHours,
             (duration.inMinutes - 60 * duration.inHours));
+        currentDelay += 1;
       }
     }
   }
-
+  var ant = '';
   Future<void> makeNotiAwesome(int idNotification, String taskName,
       String taskId, int day, int hour, int minute) async {
     log('day ${day} hour ${hour} min ${minute}');
-    await AwesomeNotifications().createNotification(
-      content: NotificationContent(
-        id: idNotification,
-        channelKey: 'scheduled_channel',
-        groupKey: taskId,
-        title: 'Do ${taskName} ',
-        body: 'venga va que toca',
-        notificationLayout: NotificationLayout.Default,
-        wakeUpScreen: true,
-      ),
-      /*actionButtons: [
+    log('ant: ${ant}');
+    if('day ${day} hour ${hour} min ${minute}' != ant) {
+      await AwesomeNotifications().createNotification(
+        content: NotificationContent(
+          id: idNotification,
+          channelKey: 'scheduled_channel',
+          groupKey: taskId,
+          title: 'Do ${taskName} ',
+          body: 'venga va que toca',
+          notificationLayout: NotificationLayout.Default,
+          wakeUpScreen: true,
+        ),
+        /*actionButtons: [
         NotificationActionButton(
           key: 'MARK_DONE',
           label: 'Hecho',
         ),
       ],*/
-      schedule: NotificationCalendar(
-        weekday: day,
-        hour: hour,
-        minute: minute,
-        second: 0,
-        millisecond: 0,
-        repeats: true,
-        preciseAlarm: true,
-      ),
-    );
+        schedule: NotificationCalendar(
+          weekday: day,
+          hour: hour,
+          minute: minute,
+          second: 0,
+          millisecond: 0,
+          repeats: true,
+          preciseAlarm: true,
+        ),
+      );
+    }
+
+    ant = 'day ${day} hour ${hour} min ${minute}';
   }
 
 

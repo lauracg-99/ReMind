@@ -337,11 +337,11 @@ class TasksRepo {
 
   //------------------------- DELETE DATOS ---------------------------------
 
-  Future<void> deleteSingleTask({required TaskModel taskModel}) async {
+/*  Future<void> deleteSingleTask({required TaskModel taskModel}) async {
     cancelNotification(taskModel.idNotification!);
     return await _firebaseCaller.deleteData(
         path: FirestorePaths.taskById(GetStorage().read('uidUsuario')!,taskId: taskModel.taskId));
-  }
+  }*/
 
   Future<void> deleteSingleTaskDone({required TaskModel taskModel}) async {
     return await _firebaseCaller.deleteData(
@@ -501,6 +501,59 @@ class TasksRepo {
         }
       },
     );
+  }
+  Future<void> deleteSingleTask({required TaskModel taskModel}) async {
+    log('**** deleteSingleTask ${taskModel.idNotification?.length}');
+    await AwesomeNotifications().cancelNotificationsByGroupKey(taskModel.taskId);
+    return await _firebaseCaller.deleteData(
+        path: FirestorePaths.taskById(GetStorage().read('uidUsuario')!,taskId: taskModel.taskId)
+    );
+  }
+
+  Future<void> deleteTaskbyBoss({required TaskModel taskModel}) async {
+    log('**** deleteTaskbyBoss ${taskModel.idNotification?.length}');
+    await AwesomeNotifications().cancelNotificationsByGroupKey(taskModel.taskId);
+    return await _firebaseCaller.deleteData(
+        path: FirestorePaths.taskBossById(GetStorage().read('uidUsuario')!,taskId: taskModel.taskId)
+    );
+  }
+
+  Future<Either<Failure, bool>> undoCheckTask({required TaskModel taskModel}) async {
+    if(taskModel.editable == StorageKeys.falso) {
+      return await _firebaseCaller.updateData(
+        path: FirestorePaths.taskBossById(GetStorage().read('uidUsuario')!,
+            taskId: taskModel.taskId),
+        data: {
+          'done': StorageKeys.falso,
+          'isSetNotification': StorageKeys.falso,
+          'idNotification': [],
+        },
+        builder: (data) {
+          if (data is! ServerFailure && data == true) {
+            return Right(data);
+          } else {
+            return Left(data);
+          }
+        },
+      );
+    } else {
+      return await _firebaseCaller.updateData(
+        path: FirestorePaths.taskById(GetStorage().read('uidUsuario')!,
+            taskId: taskModel.taskId),
+        data: {
+          'done': StorageKeys.falso,
+          'isSetNotification': StorageKeys.falso,
+          'idNotification': [],
+        },
+        builder: (data) {
+          if (data is! ServerFailure && data == true) {
+            return Right(data);
+          } else {
+            return Left(data);
+          }
+        },
+      );
+    }
   }
 
   Future<Either<Failure, bool>> checkTask({required TaskModel task}) async {

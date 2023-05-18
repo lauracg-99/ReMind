@@ -355,7 +355,7 @@ class TaskNotifier extends StateNotifier<TareaState> {
 
   Future<void> deleteSingleTask({required TaskModel taskModel}) async {
     log('**** deleteSingleTask ${taskModel.idNotification?.length}');
-    await cancelNotification(taskModel.idNotification!);
+    await AwesomeNotifications().cancelNotificationsByGroupKey(taskModel.taskId);
     return await _firebaseCaller.deleteData(
         path: FirestorePaths.taskById(GetStorage().read('uidUsuario')!,taskId: taskModel.taskId)
     );
@@ -363,7 +363,7 @@ class TaskNotifier extends StateNotifier<TareaState> {
 
   Future<void> deleteTaskbyBoss({required TaskModel taskModel}) async {
     log('**** deleteTaskbyBoss ${taskModel.idNotification?.length}');
-    await cancelNotification(taskModel.idNotification!);
+    await AwesomeNotifications().cancelNotificationsByGroupKey(taskModel.taskId);
     return await _firebaseCaller.deleteData(
         path: FirestorePaths.taskBossById(GetStorage().read('uidUsuario')!,taskId: taskModel.taskId)
     );

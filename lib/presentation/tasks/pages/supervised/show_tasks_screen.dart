@@ -147,7 +147,7 @@ class ShowTasks extends HookConsumerWidget {
                     if (index < supervised) {
                       //supervisado
                       if(taskToDo[0][index].cancelNoti == StorageKeys.verdadero && taskToDo[0][index].isNotificationSet == StorageKeys.verdadero){
-                        ref.read(taskProvider.notifier).deleteSingleTask(taskModel: taskToDo[0][index]);
+                        //ref.read(taskProvider.notifier).deleteSingleTask(taskModel: taskToDo[0][index]);
                       }
                       list.add(CardItemComponent(
                         taskModel: taskToDo[0][index],
@@ -158,7 +158,7 @@ class ShowTasks extends HookConsumerWidget {
                         var indexBoss = index - supervised;
                         // tengo que esperar a que este activada si no no borra nada y no se desactiva
                         if(taskToDo[1][indexBoss].cancelNoti == StorageKeys.verdadero && taskToDo[1][indexBoss].isNotificationSet == StorageKeys.verdadero){
-                          ref.read(taskProvider.notifier).deleteTaskbyBoss(taskModel: taskToDo[1][indexBoss]);
+                         // ref.read(taskProvider.notifier).deleteTaskbyBoss(taskModel: taskToDo[1][indexBoss]);
                         }
                         list.add(CardItemComponent(
                           taskModel: taskToDo[1][indexBoss],
