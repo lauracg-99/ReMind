@@ -8,6 +8,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:remind/data/tasks/providers/task_provider.dart';
 import 'package:remind/presentation/tasks/components/repe_noti_component.dart';
 import 'package:remind/presentation/tasks/components/switch_setting_section_component.dart';
 import 'package:remind/presentation/tasks/components/time_picker_component.dart';
@@ -25,7 +26,6 @@ import '../../widgets/custom_text.dart';
 import '../../widgets/loading_indicators.dart';
 import '../providers/multi_choice_provider.dart';
 import '../providers/repe_noti_provider.dart';
-import '../providers/task_provider.dart';
 import '../providers/time_range_picker_provider.dart';
 import '../providers/toggle_theme_provider.dart';
 import '../utils/utilities.dart';
@@ -42,7 +42,7 @@ class ToggleChoiceComponent extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
     final toggleValue = ref.watch(toggleButtonProviderAdd);
-    var taskRepo = ref.watch(taskProvider.notifier);
+    var taskRepo = ref.watch(tasksRepoProvider);
     var days = ref.read(selectDaysMultiChoice.notifier);
     var range = ref.read(timeRangeButtonProvider.notifier);
     var repetitions = ref.read(timeRepetitionProvider.notifier);
@@ -102,28 +102,26 @@ class ToggleChoiceComponent extends ConsumerWidget {
                                       ? AppColors.accentColorLight
                                       : AppColors.darkThemeIconColor,),
                                   onPressed: () async {
-                                    //para luego poder cancelar las notificaciones
-                                    //si no es supervisor activamos las notis
-                                    if(GetStorage().read('uidSup') != ''){
-                                      //disp boss no hay notis
-                                      //taskRepo.cancelNotification(taskModel.idNotification!);
-                                      taskRepo.updateTaskBoss(context,{
-                                        'idNotification': [],
-                                        'days': saveDays(days.tags.toString()),
-                                        'lastUpdate': Timestamp.fromDate(DateTime.now()),
-                                        'isNotificationSet': StorageKeys.falso,},
-                                          taskId: taskModel.taskId
-                                      );
+
+                                    TaskModel updateTask = TaskModel(
+                                      taskId: taskModel.taskId,
+                                      taskName: taskModel.taskName,
+                                      begin: taskModel.begin,
+                                      end: taskModel.end,
+                                      lastUpdate: Timestamp.fromDate(DateTime.now()),
+                                      editable: taskModel.editable,
+                                      done: taskModel.done,
+                                      numRepetition: taskModel.numRepetition,
+                                      authorUID: taskModel.authorUID,
+                                      days: saveDays(days.tags.toString()),
+                                      notiHours: taskModel.notiHours,
+                                    );
+
+                                    if(GetStorage().read('rol') == 'supervisor'){
+                                      ref.watch(taskProvider.notifier).updateTaskBoss(context, updateTask);
+
                                     }else{
-                                      //se cambian días, borramos notificacion y cambiamos días, si es oneTime y su ultima mod
-                                      taskRepo.cancelNotification(taskModel.idNotification!);
-                                      taskRepo.updateTask(context,{
-                                        'days': saveDays(days.tags.toString()),
-                                        'lastUpdate': Timestamp.fromDate(DateTime.now()),
-                                        'isNotificationSet': StorageKeys.falso,
-                                      },
-                                          taskId: taskModel.taskId
-                                      );
+                                      ref.watch(taskProvider.notifier).updateTask(context, updateTask);
                                     }
                                   });
                                   })
@@ -186,31 +184,27 @@ class ToggleChoiceComponent extends ConsumerWidget {
                                     ? AppColors.accentColorLight
                                     : AppColors.darkThemeIconColor),
                                 onPressed: (){
-                                  if(GetStorage().read('uidSup') != ''){
-                                    //disp boss no hay notis
-                                    //taskRepo.cancelNotification(taskModel.idNotification!);
-                                    taskRepo.updateTaskBoss(context,{
-                                      'begin': range.getIniHour(),
-                                      'end': range.getfinHour(),
-                                      'idNotification': [],
-                                      'lastUpdate': Timestamp.fromDate(DateTime.now()),
-                                      'isNotificationSet': StorageKeys.falso,
-                                    },
-                                        taskId: taskModel.taskId
-                                    );
+
+                                  TaskModel updateTask = TaskModel(
+                                    taskId: taskModel.taskId,
+                                    taskName: taskModel.taskName,
+                                    begin: range.getIniHour(),
+                                    end: range.getfinHour(),
+                                    lastUpdate: Timestamp.fromDate(DateTime.now()),
+                                    editable: taskModel.editable,
+                                    done: taskModel.done,
+                                    numRepetition: taskModel.numRepetition,
+                                    authorUID: taskModel.authorUID,
+                                    days: taskModel.days,
+                                    notiHours: notiHours(range.getIniHour(),
+                                        range.getfinHour(), taskModel.numRepetition.toString()),
+                                  );
+
+                                  if(GetStorage().read('rol') == 'supervisor'){
+                                    ref.watch(taskProvider.notifier).updateTaskBoss(context, updateTask);
 
                                   }else{
-                                    //se cambian días, borramos notificacion y cambiamos días, si es oneTime y su ultima mod
-                                    taskRepo.cancelNotification(taskModel.idNotification!);
-                                    taskRepo.updateTask(context,{
-                                      'begin': range.getIniHour(),
-                                      'end': range.getfinHour(),
-                                      'lastUpdate': Timestamp.fromDate(DateTime.now()),
-                                      'isNotificationSet': StorageKeys.falso,
-                                    },
-                                        taskId: taskModel.taskId
-                                    );
-
+                                    ref.watch(taskProvider.notifier).updateTask(context, updateTask);
                                   }
                                 });})
                           ]
@@ -277,26 +271,44 @@ class ToggleChoiceComponent extends ConsumerWidget {
                                         if(range.getIniHour() != taskModel.begin || range.getfinHour() != taskModel.end){
                                           log('**** error');
                                         } else {
-                                          taskRepo.updateTaskBoss(context,{
-                                            'idNotification': [],
-                                            'lastUpdate': Timestamp.fromDate(DateTime.now()),
-                                            'isNotificationSet': StorageKeys.falso,
-                                            'numRepetition' : repetitions.getBoth()
-                                          }, taskId: taskModel.taskId
+                                          TaskModel updateTask = TaskModel(
+                                            taskId: taskModel.taskId,
+                                            taskName: taskModel.taskName,
+                                            begin: taskModel.begin,
+                                            end: taskModel.end,
+                                            lastUpdate: Timestamp.fromDate(DateTime.now()),
+                                            editable: taskModel.editable,
+                                            done: taskModel.done,
+                                            numRepetition: repetitions.getBoth(),
+                                            authorUID: taskModel.authorUID,
+                                            days: taskModel.days,
+                                            notiHours: notiHours(taskModel.begin!,
+                                              taskModel.end!, repetitions.getBoth().toString()),
                                           );
+
+                                          ref.watch(taskProvider.notifier).updateTaskBoss(context, updateTask);
                                         }
 
                                 } else {
                                         if(range.getIniHour() != taskModel.begin || range.getfinHour() != taskModel.end){
                                           log('**** error2');
                                         } else{
-                                          taskRepo.updateTask(context,{
-                                            'idNotification': [],
-                                            'lastUpdate': Timestamp.fromDate(DateTime.now()),
-                                            'isNotificationSet': StorageKeys.falso,
-                                            'numRepetition' : repetitions.getBoth()
-                                          }, taskId: taskModel.taskId
+                                          TaskModel updateTask = TaskModel(
+                                            taskId: taskModel.taskId,
+                                            taskName: taskModel.taskName,
+                                            begin: taskModel.begin,
+                                            end: taskModel.end,
+                                            lastUpdate: Timestamp.fromDate(DateTime.now()),
+                                            editable: taskModel.editable,
+                                            done: taskModel.done,
+                                            numRepetition: repetitions.getBoth(),
+                                            authorUID: taskModel.authorUID,
+                                            days: taskModel.days,
+                                            notiHours: notiHours(taskModel.begin!,
+                                                taskModel.end!, repetitions.getBoth().toString()),
                                           );
+
+                                          ref.watch(taskProvider.notifier).updateTask(context, updateTask);
                                         }
 
                                       }

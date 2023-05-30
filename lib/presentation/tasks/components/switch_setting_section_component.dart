@@ -8,17 +8,8 @@ import '../../routes/navigation_service.dart';
 import '../../routes/route_paths.dart';
 import '../../styles/app_colors.dart';
 import '../../styles/sizes.dart';
-import '../../widgets/buttons/custom_text_button.dart';
-import '../../widgets/card_button_component.dart';
-import '../../widgets/card_user_details_component.dart';
-import '../../widgets/custom_text.dart';
-import 'card_red_button_component.dart';
-
 import '../providers/multi_choice_provider.dart';
-import '../providers/repe_noti_provider.dart';
-import '../providers/task_provider.dart';
-import '../providers/time_range_picker_provider.dart';
-import '../providers/toggle_theme_provider.dart';
+
 
 class ChooseDaySectionComponent extends ConsumerWidget {
   ChooseDaySectionComponent(this.selectChoices, {Key? key})

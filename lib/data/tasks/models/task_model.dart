@@ -11,13 +11,10 @@ class TaskModel {
   final String? editable;
   final List? days;
   final List? notiHours;
-  List? idNotification;
   final String? done;
   final int? numRepetition;
+  final String authorUID;
   final Timestamp? lastUpdate;
-  final String? isNotificationSet;
-  final String? cancelNoti;
-
 
   TaskModel({
     required this.taskId,
@@ -25,14 +22,12 @@ class TaskModel {
     required this.begin,
     required this.end,
     required this.editable,
-    this.days,
-    this.notiHours,
-    this.idNotification,
+    required this.days,
+    required this.notiHours,
     required this.done,
     required this.numRepetition,
+    required this.authorUID,
     this.lastUpdate,
-    this.isNotificationSet,
-    this.cancelNoti,
   });
 
   Map<String, dynamic> toMap() {
@@ -44,12 +39,10 @@ class TaskModel {
     'editable':editable,
     'days':days ?? '',
     'notiHours': notiHours ?? '',
-    'idNotification': idNotification ?? '',
     'done':done,
     'numRepetition': numRepetition,
+    'authorUID': authorUID,
     'lastUpdate' :lastUpdate,
-    'isNotificationSet': isNotificationSet,
-    'cancelNoti': cancelNoti,
     }..removeWhere((key, value) => value == null);
   }
 
@@ -62,12 +55,10 @@ class TaskModel {
       editable: map['editable'] ?? '',
       days: map['days'] ?? '',
       notiHours: map['notiHours'] ?? '',
-      idNotification: map['idNotification'] ?? '',
       done: map['done'] ?? '',
       numRepetition: map['numRepetition'] ?? '',
+      authorUID: map['authorUID'] ?? '',
       lastUpdate: map['lastUpdate'],
-      isNotificationSet: map['isNotificationSet'],
-      cancelNoti:map['cancelNoti'] ?? ''
     );
   }
 
@@ -81,12 +72,10 @@ class TaskModel {
       editable: task.editable ?? '',
       days: task.days,
       notiHours: task.notiHours,
-      idNotification: task.idNotification,
       done: task.done ?? '',
       numRepetition: task.numRepetition ?? 0,
+      authorUID: task.authorUID ?? '',
       lastUpdate: task.lastUpdate,
-      isNotificationSet: task.isNotificationSet,
-      cancelNoti: task.cancelNoti ?? ''
     );
   }
 
@@ -98,12 +87,10 @@ class TaskModel {
      String? editable,
      List? days,
      List? notiHours,
-     List? idNotification,
      String? done,
      int? numRepetition,
+      String? authorUID,
      Timestamp? lastUpdate,
-     String? isNotificationSet,
-    String? cancelNoti,
   }) {
     return TaskModel(
       taskId: taskId ?? this.taskId,
@@ -113,12 +100,10 @@ class TaskModel {
       editable: editable ?? this.editable,
       days: this.days,
       notiHours: this.notiHours,
-      idNotification: this.idNotification,
       done: done ?? this.done,
       numRepetition: numRepetition ?? this.numRepetition,
+      authorUID: authorUID ?? this.authorUID,
       lastUpdate: lastUpdate ?? this.lastUpdate,
-      isNotificationSet: isNotificationSet ?? this.isNotificationSet,
-      cancelNoti: cancelNoti ?? this.cancelNoti
     );
   }
 }

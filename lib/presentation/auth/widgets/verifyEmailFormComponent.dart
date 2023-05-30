@@ -120,8 +120,7 @@ class VerifyEmailFormComponent extends HookConsumerWidget {
                CustomButton(
                  text: tr(context).send,
                  onPressed: () {
-                   ref.watch(authProvider.notifier)
-                       .enviarEmailVerification(context);
+                   //ref.watch(authProvider.notifier).enviarEmailVerification(context);
                  },
                ),
                SizedBox(

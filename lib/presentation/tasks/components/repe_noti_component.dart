@@ -18,7 +18,6 @@ import 'card_red_button_component.dart';
 
 import '../providers/multi_choice_provider.dart';
 import '../providers/repe_noti_provider.dart';
-import '../providers/task_provider.dart';
 import '../providers/time_range_picker_provider.dart';
 import '../providers/toggle_theme_provider.dart';
 

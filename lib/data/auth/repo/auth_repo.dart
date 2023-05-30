@@ -1,14 +1,25 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:developer';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:remind/common/dependencies.dart';
 import 'package:remind/common/storage_keys.dart';
+import 'package:remind/data/auth/manage_supervised/solicitud.dart';
+import 'package:remind/data/auth/models/supervised.dart';
 import 'package:remind/data/auth/models/user_model.dart';
+import 'package:remind/domain/auth/repo/user_repo.dart';
 import '../../error/exceptions.dart';
 import '../../error/failures.dart';
+import '../../firebase/repo/firebase_caller.dart';
+import '../../firebase/repo/firestore_paths.dart';
+import '../../firebase/repo/i_firebase_caller.dart';
 import '../providers/auth_state.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 abstract class AuthRepository {
   Future<User> signInWithEmailAndPassword(String email, String password);
@@ -16,18 +27,21 @@ abstract class AuthRepository {
 }
 
 class AuthRepo {
-  AuthRepo();
+  AuthRepo(this.ref){
+    _firebaseCaller = ref.watch(firebaseCaller);
+    _userRepo = ref.watch(userRepoProvider);
+  }
+
+  final Ref ref;
+  late IFirebaseCaller _firebaseCaller;
+  late UserRepo _userRepo;
+
   var dependencies = Dependencies();
-  //registro y login
-  //createUserWithEmailAndPassword
-  Future<Either<Failure, UserModel>> signInWithEmailAndPassword(
-      BuildContext context, {
-        required String email,
-        required String password,
-      }) async {
+
+  Future<Either<Failure, UserModel>> signInWithEmailAndPassword( {required String email, required String password,}) async {
     try {
-      final userCredential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password);
+      final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+      log('*** auth_repo userCredential.user?.uid');
       log(userCredential.toString());
       dependencies.write(StorageKeys.uidUsuario, userCredential.user?.uid);
       dependencies.write(StorageKeys.email, email);
@@ -35,75 +49,15 @@ class AuthRepo {
       dependencies.write(StorageKeys.cron, StorageKeys.falso);
       dependencies.write(StorageKeys.reset, StorageKeys.falso);
 
-
-      return Right(UserModel.fromUserCredential(userCredential.user!,'','','',''));
-
-    } on FirebaseAuthException catch (e) {
-      final errorMessage = Exceptions.firebaseAuthErrorMessage(context, e);
-      return Left(ServerFailure(message: errorMessage));
-
-    } catch (e) {
-      log(e.toString());
-      final errorMessage = Exceptions.errorMessage(e);
-      return Left(ServerFailure(message: errorMessage));
-    }
-  }
-
-  Future<Either<Failure, UserModel>> signSupervisedIn(
-      BuildContext context, {
-        required String emailSupervised,
-        required String passwordSupervised,
-      }) async {
-    try {
-      //iniciamos sesion con el user del supervisado para conseguir su uid
-
-/*      GetStorage().write('emailSup', emailSupervised);
-      GetStorage().write('passwSup', passwordSupervised);*/
-
-      dependencies.write(StorageKeys.emailSup, 'emailSup');
-      dependencies.write(StorageKeys.passwSup, 'passwSup');
-
-      final userCredentialSupervised = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: emailSupervised,
-          password: passwordSupervised);
-
-      //GetStorage().write('uidSup', userCredentialSupervised.user!.uid);
-      dependencies.write(StorageKeys.uidSup, userCredentialSupervised.user!.uid);
-      //var uidSupervised = userCredentialSupervised.user!.uid;
-      log('supervised: ${dependencies.read(StorageKeys.uidSup)}');
-      try{
-        //cerramos sesión e iniciamos sesión con nuestra cuenta
-        await FirebaseAuth.instance.signOut();
-
-        /*final userCredential = await FirebaseAuth.instance
-            .signInWithEmailAndPassword(email: GetStorage().read('email'), password: GetStorage().read('passw'));*/
-
-        final userCredential = await FirebaseAuth.instance
-            .signInWithEmailAndPassword(email: dependencies.read(StorageKeys.email), password:  dependencies.read(StorageKeys.passw));
-
-        //User user, String? rol, String? name, String? uidSupervised
-        /*return Right(
-            UserModel.fromUserCredential(userCredential.user!,'supervised','' ,GetStorage().read('uidSup')
-                ,GetStorage().read('emailSup')
-            )*/
-            return Right(
-        UserModel.fromUserCredential(userCredential.user!,'supervised','' ,dependencies.read(StorageKeys.uidSup)
-            ,dependencies.read(StorageKeys.emailSup)
-        )
-        );
-
-      }on FirebaseAuthException catch (e) {
-        final errorMessage = Exceptions.firebaseAuthErrorMessage(context, e);
-        return Left(ServerFailure(message: errorMessage));
-
-      } catch (e) {
-        log(e.toString());
-        final errorMessage = Exceptions.errorMessage(e);
-        return Left(ServerFailure(message: errorMessage));
+      UserModel usuario = await _userRepo.getDatosUsuario(dependencies.read(StorageKeys.uidUsuario));
+      if(usuario.rol == StorageKeys.SUPERVISOR) {
+        dependencies.write(StorageKeys.lastUIDSup, usuario.lastUIDSup);
+        dependencies.write(StorageKeys.lastEmailSup, usuario.lastEmailSup);
       }
 
-    } on FirebaseAuthException catch (e) {
-      final errorMessage = Exceptions.firebaseAuthErrorMessage(context, e);
+      return Right(usuario);
+
+    } on FirebaseAuthException catch (errorMessage) {
       return Left(ServerFailure(message: errorMessage));
 
     } catch (e) {
@@ -113,8 +67,66 @@ class AuthRepo {
     }
   }
 
-  Future<Either<Failure, UserModel>> createUserWithEmailAndPassword(
-      BuildContext context, {
+
+  Stream<List<UserModel>> getUsersStream() {
+    return FirebaseFirestore.instance.collection('users').get().asStream().map((querySnapshot) {
+      return querySnapshot.docs.map((doc)
+      => UserModel.fromMap(doc.data(), '')).toList();
+    });
+  }
+
+  Stream<List<Solicitud>> getPetitionsStream() {
+    return  _firebaseCaller.collectionStream<Solicitud>(
+      //uid de usuario
+      path: FirestorePaths.userPetitionCollection(GetStorage().read(StorageKeys.uidUsuario)),
+      queryBuilder: (query) => query
+          .where("estado", isEqualTo: 'pendiente'),
+      builder: (snapshotData, snapshotId) {
+        var solicitud =  Solicitud.fromMap(snapshotData!);
+        solicitud.id = snapshotId;
+        return solicitud;
+
+      },
+    );
+  }
+
+/*  Stream<List<Supervised>> getSupervisedStream() {
+    log('${FirestorePaths.userDocumentSupervisados(GetStorage().read(StorageKeys.uidUsuario))}');
+    return  _firebaseCaller.collectionStream<Supervised>(
+      //uid de usuario
+      path: FirestorePaths.userDocumentSupervisados(GetStorage().read(StorageKeys.uidUsuario)),
+      builder: (snapshotData, snapshotId) {
+        var supervised =  Supervised.fromMap(snapshotData!);
+        return supervised;
+
+      },
+    );
+  }*/
+
+  Stream<UserModel> getSupervisedStream() {
+    return  _firebaseCaller.documentStream<UserModel>(
+      //uid de usuario
+      path: FirestorePaths.userDocument(GetStorage().read(StorageKeys.uidUsuario)),
+      builder: (snapshotData, snapshotId) {
+        return UserModel.fromMap(snapshotData!, snapshotId);
+      },
+    );
+  }
+
+  Stream<List<Solicitud>> getPetitionsStreamAll() {
+    return  _firebaseCaller.collectionStream<Solicitud>(
+      //uid de usuario
+      path: FirestorePaths.userPetitionCollection(GetStorage().read(StorageKeys.uidUsuario)),
+      builder: (snapshotData, snapshotId) {
+        var solicitud =  Solicitud.fromMap(snapshotData!);
+        solicitud.id = snapshotId;
+        return solicitud;
+
+      },
+    );
+  }
+
+  Future<Either<Failure, UserModel>> createUserWithEmailAndPassword({
         required String email,
         required String password,
         required String name,
@@ -124,15 +136,22 @@ class AuthRepo {
       final userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
       log(userCredential.toString());
-      GetStorage().write('uidUsuario', userCredential.user?.uid);
-      GetStorage().write('email', email);
-      GetStorage().write('passw', password);
-      GetStorage().write('rol', rol);
+      dependencies.write(StorageKeys.uidUsuario, userCredential.user?.uid);
+      dependencies.write(StorageKeys.email, email);
+      dependencies.write(StorageKeys.passw, password);
+      dependencies.write(StorageKeys.rol, rol);
 
-      return Right(UserModel.fromUserCredential(userCredential.user!,rol, name,'',''));
-    } on FirebaseAuthException catch (e) {
-      final errorMessage = Exceptions.firebaseAuthErrorMessage(context, e);
-      return Left(ServerFailure(message: errorMessage));
+      if(rol == StorageKeys.SUPERVISOR){
+        dependencies.write(StorageKeys.lastEmailSup, '');
+        dependencies.write(StorageKeys.lastUIDSup, '');
+        //dependencies.writeListUsers(StorageKeys.supervisados, []);
+      }
+      return Right(
+          UserModel.fromUserCredential(userCredential.user!,rol, name, [], '', '')
+      );
+
+    } on FirebaseAuthException catch (errorMessage) {
+      return Left(ServerFailure(message: errorMessage.toString()));
 
     } catch (e) {
       log(e.toString());
@@ -143,15 +162,11 @@ class AuthRepo {
 
   //auth.sendPasswordResetEmail(email: logic.emailController.text.trim());
 
-  Future<Either<Failure, bool>> sendPasswordResetEmail(
-      BuildContext context, {
-        required String email,
-      }) async {
+  Future<Either<Failure, bool>> sendPasswordResetEmail({required String email,}) async {
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
       return const Right(true);
-    } on FirebaseAuthException catch (e) {
-      final errorMessage = Exceptions.firebaseAuthErrorMessage(context, e);
+    } on FirebaseAuthException catch (errorMessage) {
       return Left(ServerFailure(message: errorMessage));
     } catch (e) {
       log(e.toString());
@@ -185,8 +200,22 @@ class AuthRepo {
     }
   }
 
-  Future<Either<Failure, bool>> sendEmailVerification(
-      BuildContext context,) async {
+  Future<Either<Failure, bool>> sendEmailVerification(BuildContext context,) async {
+    try {
+      AuthState.loading();
+      await FirebaseAuth.instance.currentUser?.sendEmailVerification();
+      return const Right(true);
+    } on FirebaseAuthException catch (e) {
+      final errorMessage = Exceptions.firebaseAuthErrorMessage(context, e);
+      return Left(ServerFailure(message: errorMessage));
+    } catch (e) {
+      log(e.toString());
+      final errorMessage = Exceptions.errorMessage(e);
+      return Left(ServerFailure(message: errorMessage));
+    }
+  }
+
+  Future<Either<Failure, bool>> enviarEmailSupervisor(BuildContext context,) async {
     try {
       AuthState.loading();
       await FirebaseAuth.instance.currentUser?.sendEmailVerification();

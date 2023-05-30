@@ -1,7 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:remind/presentation/routes/route_paths.dart';
-
 import '../../data/tasks/models/task_model.dart';
 import '../auth/pages/add_supervised_screen.dart';
 import '../auth/pages/delete_sup_screen.dart';
@@ -10,6 +11,7 @@ import '../auth/pages/register_screen.dart';
 import '../auth/pages/reset_screen.dart';
 import '../auth/pages/verify_email_screen.dart';
 import '../profile/pages/profile_screen.dart';
+import '../profile/pages/select_supervised.dart';
 import '../screens/home_base_screen.dart';
 import '../screens/home_screen.dart';
 import '../screens/no_internet_connection_screen.dart';
@@ -17,6 +19,7 @@ import '../screens/splash_screen.dart';
 import '../settings/screens/edit_name_screen.dart';
 import '../settings/screens/language_screen.dart';
 import '../settings/screens/settings_screen.dart';
+import '../solicitudes/pages/pending_petitions_screen.dart';
 import '../tasks/pages/mod_task_screen.dart';
 import '../utils/home_base_nav_utils.dart';
 import 'navigation_service.dart';
@@ -26,7 +29,6 @@ import 'navigation_transitions.dart';
 class AppRouter {
   ///Root Navigator
   static Route<dynamic> generateRoute(RouteSettings settings) {
-
     switch (settings.name) {
     //Core
     //pantalla de carga con el splash screen
@@ -76,6 +78,12 @@ class AppRouter {
           const AddSupervisedScreen(),
           settings: settings,
           transitionDuration: const Duration(microseconds: 700),
+        );
+
+      case RoutePaths.petitions:
+        return NavigationFadeTransition(
+          const PendingPetitions(),
+          settings: settings,
         );
 
       case RoutePaths.deleteSup:
@@ -173,7 +181,6 @@ class AppRouter {
           builder: (_) => const SettingsScreen(),
           settings: settings,
         );
-
       case RoutePaths.settingsLanguage:
         return platformPageRoute(
           context: HomeBaseNavUtils.navScreensKeys[2].currentContext!,
@@ -184,6 +191,20 @@ class AppRouter {
         return platformPageRoute(
           context: HomeBaseNavUtils.navScreensKeys[2].currentContext!,
           builder: (_) => const EditNameScreen(),
+          settings: settings,
+        );
+
+      case RoutePaths.petitions:
+        return platformPageRoute(
+          context: HomeBaseNavUtils.navScreensKeys[3].currentContext!,
+          builder: (_) => const PendingPetitions(),
+          settings: settings,
+        );
+
+      case RoutePaths.supervisores:
+        return platformPageRoute(
+          context: HomeBaseNavUtils.navScreensKeys[3].currentContext!,
+          builder: (_) => const SelectSupervised(),
           settings: settings,
         );
 

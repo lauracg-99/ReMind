@@ -10,12 +10,11 @@ class HomeBaseNavProviders {
     StateProvider.autoDispose<String>((ref) => RoutePaths.profile),
     StateProvider.autoDispose<String>((ref) => RoutePaths.home),
     StateProvider.autoDispose<String>((ref) => RoutePaths.settings),
+    StateProvider.autoDispose<String>((ref) => RoutePaths.supervisores),
 
     ///nav bar
     StateProvider.autoDispose<String>((ref) => RoutePaths.navBar),
-
     StateProvider.autoDispose<String>((ref) => RoutePaths.modScreen),
-
   ];
 
   static final routeObservers = [
@@ -44,10 +43,11 @@ class HomeBaseNavProviders {
     Provider.autoDispose<NavigatorRouteObserver>(
           (ref) => NavigatorRouteObserver(
         routesStackCallBack: (List<Route> _routes) {
-          ref.watch(routes[4].notifier).state = _routes.last.settings.name!;
+          ref.watch(routes[3].notifier).state = _routes.last.settings.name!;
         },
       ),
     ),
+
 
   ];
 }

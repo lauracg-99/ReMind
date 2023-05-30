@@ -1,6 +1,8 @@
 import 'dart:developer';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:remind/data/auth/manage_supervised/solicitud.dart';
 import 'package:remind/presentation/notifications/utils/utilities.dart';
 
 import '../../../data/tasks/models/task_model.dart';
@@ -39,6 +41,59 @@ class Notifications {
       ),
     );
     return idNotification;
+  }
+
+  Future<void> acceptPetitionNoti(Solicitud solicitud) async {
+    int idNotification = createUniqueId();
+    GetStorage().write('notificarPeticion', true);
+    await AwesomeNotifications().createNotification(
+        content: NotificationContent(
+            id: idNotification,
+            channelKey: 'petitions',
+            autoDismissible: false,
+            title: 'Atención!',
+            body:
+            "El usuario con el correo ${solicitud.emailBoss} quiere ser tu supervisor",
+            //bigPicture: 'https://storage.googleapis.com/cms-storage-bucket/d406c736e7c4c57f5f61.png',
+            //largeIcon: 'https://storage.googleapis.com/cms-storage-bucket/0dbfcc7a59cd1cf16282.png',
+            //'asset://assets/images/balloons-in-sky.jpg',
+            notificationLayout: NotificationLayout.BigPicture,
+            //payload: {'notificationId': '1234567890'}
+        ),
+        /*actionButtons: [
+          NotificationActionButton(key: 'REDIRECT', label: 'Redirect'),
+          *//*NotificationActionButton(
+              key: 'REPLY',
+              label: 'Reply Message',
+              requireInputText: true,
+              actionType: ActionType.SilentAction
+          ),*//*
+          NotificationActionButton(
+              key: 'DISMISS',
+              label: 'Dismiss',
+              actionType: ActionType.DismissAction,
+              isDangerousOption: true)
+        ]*/
+    );
+  }
+
+  Future<void> statusPetitionNoti(Solicitud solicitud, String status) async {
+    int idNotification = createUniqueId();
+    GetStorage().write('notificarPeticion', true);
+    await AwesomeNotifications().createNotification(
+        content: NotificationContent(
+          id: idNotification,
+          channelKey: 'petitions',
+          autoDismissible: false,
+          title: 'Atención!',
+          body:
+          "El usuario con el correo ${solicitud.emailSup} ha ${status} tu petición",
+          //bigPicture: 'https://storage.googleapis.com/cms-storage-bucket/d406c736e7c4c57f5f61.png',
+          //largeIcon: 'https://storage.googleapis.com/cms-storage-bucket/0dbfcc7a59cd1cf16282.png',
+          //'asset://assets/images/balloons-in-sky.jpg',
+          notificationLayout: NotificationLayout.BigPicture,
+          //payload: {'notificationId': '1234567890'}
+        ));
   }
 
   Future<void> setNotification(TaskModel taskModel) async {

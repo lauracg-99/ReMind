@@ -4,7 +4,10 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:remind/presentation/auth/widgets/reset_text_field.dart';
 import '../../../domain/services/localization_service.dart';
+import '../../routes/navigation_service.dart';
+import '../../routes/route_paths.dart';
 import '../../styles/sizes.dart';
+import '../../utils/dialogs.dart';
 import '../../widgets/buttons/custom_button.dart';
 import '../../widgets/loading_indicators.dart';
 import '../providers/auth_provider.dart';
@@ -26,14 +29,13 @@ class ResetFormComponent extends HookConsumerWidget {
         children: [
           ResetTextFieldsSection(
             emailController: emailController,
-            onFieldSubmitted: (value) {
+            /*onFieldSubmitted: (value) {
               if (resetFormKey.currentState!.validate()) {
                 ref.read(authProvider.notifier).sendPasswordResetEmail(
-                    context,
                     email: emailController.text,
                 );
               }
-            },
+            },*/
           ),
           SizedBox(
             height: Sizes.vMarginSmall(context),
@@ -57,8 +59,22 @@ class ResetFormComponent extends HookConsumerWidget {
                   if (resetFormKey.currentState!.validate()) {
                     ref.watch(authProvider.notifier)
                         .sendPasswordResetEmail(
-                      context,
                       email: emailController.text,
+                    ).then(
+                            (value) =>
+                            value.fold(
+                                    (failure) {
+                                  AppDialogs.showErrorDialog(context, message: failure.message);
+                                },
+                                    (success) {
+                                  AppDialogs.showErrorDialog(context, message: tr(context).reset);
+                                  NavigationService.pushReplacement(
+                                    context,
+                                    isNamed: true,
+                                    page: RoutePaths.authLogin,
+                                  );
+                                }
+                            )
                     );
                   }
                 },

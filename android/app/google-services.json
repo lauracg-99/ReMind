@@ -29,6 +29,13 @@
             {
               "client_id": "1021542104137-ebjg1sbirj9j99s89bu4np8gg52b58a5.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "1021542104137-f993mdb8h983gmf81mdlc4u2c1cr8til.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "es.udc.remind"
+              }
             }
           ]
         }

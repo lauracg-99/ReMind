@@ -35,11 +35,11 @@ class RegisterSupervisedFormComponent extends HookConsumerWidget {
             passwordControllerSupervised: passwordControllerSupervised,
             onFieldSubmitted: (value) {
               if (loginFormKey.currentState!.validate()) {
-                ref.read(authProvider.notifier).signSupervisedIn(
+                /*ref.read(authProvider.notifier).signSupervisedIn(
                   context,
                   emailSupervised: emailControllerSupervised.text,
                   passwordSupervised: passwordControllerSupervised.text,
-                );
+                );*/
               }
             },
           ),
@@ -61,12 +61,12 @@ class RegisterSupervisedFormComponent extends HookConsumerWidget {
                 text: tr(context).addSupervised,
                 onPressed: () {
                   if (loginFormKey.currentState!.validate()) {
-                    ref.watch(authProvider.notifier)
+                    /*ref.watch(authProvider.notifier)
                         .signSupervisedIn(
                       context,
                       emailSupervised: emailControllerSupervised.text,
                       passwordSupervised: passwordControllerSupervised.text,
-                    );
+                    );*/
                   }
                 },
               );

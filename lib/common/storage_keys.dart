@@ -7,12 +7,10 @@ class StorageKeys {
 
   static const String rol = "rol";
   static const String uidUsuario = "uidUsuario";
-  static const String uidSup = "uidSup";
+  static const String name = "name";
 
   static const String email = "email";
   static const String passw = "passw";
-  static const String emailSup = "emailSup";
-  static const String passwSup = "passwSup";
 
   static const String cron = "CronSet";
   static const String reset = "reset";
@@ -21,6 +19,14 @@ class StorageKeys {
 
   static const String falso = "false";
   static const String verdadero = "true";
+
+  static const String lastUIDSup = 'lastUIDSup';
+  static const String lastEmailSup = 'lastEmailSup';
+  static const String supervisados = 'supervisados';
+
+  static const String SUPERVISOR = 'supervisor';
+
+
 
 
 }

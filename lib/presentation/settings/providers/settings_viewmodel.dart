@@ -1,5 +1,7 @@
 import 'dart:developer';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get_storage/get_storage.dart';
 
 import '../../notifications/utils/notifications.dart';
 import '../../providers/main_core_provider.dart';
@@ -18,8 +20,9 @@ class SettingsViewModel {
   late MainCoreProvider _mainCoreProvider;
 
   signOut() async {
-    Notifications().cancelScheduledNotifications();
+    AwesomeNotifications().cancelAll();
 
+    GetStorage().write('firstTimeLogIn', true);
     NavigationService.pushReplacementAll(
       NavigationService.context,
       isNamed: true,

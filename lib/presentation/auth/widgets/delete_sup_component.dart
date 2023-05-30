@@ -39,8 +39,7 @@ class DeleteSupComponent extends HookConsumerWidget {
                     text: 'Volver',
                     onPressed: () {
 
-                      ref.watch(userRepoProvider)
-                          .deleteSupUid(GetStorage().read('uidSup'));
+                      //ref.watch(userRepoProvider).deleteSupUid(GetStorage().read('uidSup'));
 
                       GetStorage().write('emailSup', '');
                       GetStorage().write('passwSup', '');

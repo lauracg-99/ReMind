@@ -93,14 +93,15 @@ class UserDetailsComponent extends ConsumerWidget {
         SizedBox(
           height: Sizes.vMarginSmall(context),
         ),
-        CustomText.h4(
+        /*CustomText.h4(
           context,
-          '${userModel.emailSup}',
+          '${userModel.emailSup}', //todo: poner aqui la lista de supervisados a su cargo
           alignment: Alignment.center,
           color: Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
               ? AppColors.lightGray
               : AppColors.whiteGray,
-        ),])
+        ),*/
+        ])
       ],
     );
   }

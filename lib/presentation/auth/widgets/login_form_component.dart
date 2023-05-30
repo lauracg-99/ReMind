@@ -2,10 +2,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:remind/presentation/auth/widgets/see_password.dart';
+import '../../../data/error/exceptions.dart';
 import '../../../domain/services/localization_service.dart';
+import '../../routes/navigation_service.dart';
+import '../../routes/route_paths.dart';
 import '../../styles/sizes.dart';
+import '../../utils/dialogs.dart';
 import '../../widgets/buttons/custom_button.dart';
 import '../../widgets/loading_indicators.dart';
 import '../providers/auth_provider.dart';
@@ -21,7 +26,7 @@ class LoginFormComponent extends HookConsumerWidget {
     final emailController = useTextEditingController(text: '');
     final passwordController = useTextEditingController(text: '');
     final seeValue = ref.watch(seePasswordLoginProvider);
-
+    GetStorage().write('firstTimeLogIn', true);
     return Form(
       key: loginFormKey,
       child: Column(
@@ -43,9 +48,21 @@ class LoginFormComponent extends HookConsumerWidget {
             onFieldSubmitted: (value) {
               if (loginFormKey.currentState!.validate()) {
                 ref.read(authProvider.notifier).signInWithEmailAndPassword(
-                  context,
-                  email: emailController.text,
-                  password: passwordController.text,
+                  email: emailController.text,password: passwordController.text,
+                ).then(
+                        (value) =>
+                            value.fold(
+                                    (failure) {
+                                      AppDialogs.showErrorDialog(context, message: failure.message);
+                                    },
+                                    (success) {
+                                      NavigationService.pushReplacement(
+                                      context,
+                                      isNamed: true,
+                                      page: RoutePaths.home,
+                                      );
+                            }
+                        )
                 );
               }
             },
@@ -72,9 +89,22 @@ class LoginFormComponent extends HookConsumerWidget {
                   if (loginFormKey.currentState!.validate()) {
                     ref.watch(authProvider.notifier)
                         .signInWithEmailAndPassword(
-                      context,
                       email: emailController.text,
                       password: passwordController.text,
+                    ).then(
+                            (value) =>
+                            value.fold(
+                                    (failure) {
+                                  AppDialogs.showErrorDialog(context, message: failure.message);
+                                },
+                                    (success) {
+                                  NavigationService.pushReplacement(
+                                    context,
+                                    isNamed: true,
+                                    page: RoutePaths.home,
+                                  );
+                                }
+                            )
                     );
                   }
                 },

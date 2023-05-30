@@ -52,9 +52,13 @@ class AppImages {
   static const String warning = '${dialogWidgetIconsPath}warning.png';
   static const String correct = '${dialogWidgetIconsPath}correct.png';
 
+  //petitions
+  static const String petition = '${appScreensIconsPath}solicitud.png';
+
   /// App
   //Screens Icons
   static const String profileScreenIcon = '${appScreensIconsPath}profile.png';
+  static const String name = 'assets/images/app_icons/screens_icons/gestionSup.png';
   static const String settingsScreenIcon = '${appScreensIconsPath}settings.png';
   static const String languageScreenIcon = '${appScreensIconsPath}language.png';
   //Languages Icons

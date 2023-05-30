@@ -1,6 +1,8 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:remind/domain/services/init_services/storage_service.dart';
 import '../../../firebase_options.dart';
@@ -67,6 +69,15 @@ class ServicesInitializer {
       ],
     );
   }
+  _initializeStorage(){
+    var storage = GetStorage();
+    storage.write('notificarPeticion', false);
+    storage.write('valorText', '');
+    storage.write('uidSelected', '');
+    storage.write('uidSelectedFoto', '');
+    storage.write('pendingSolicitudes', 0);
+    storage.write('userSelected', false);
+  }
 
   _initializeServicesRef() {
     ThemeService(container.read);
@@ -81,6 +92,7 @@ class ServicesInitializer {
     await _initTheme();
     await _initFirebase();
     await _initConnectivity();
+    await _initializeStorage();
     //await _initNotificationSettings();
     //await _initFirebaseMessaging();
   }

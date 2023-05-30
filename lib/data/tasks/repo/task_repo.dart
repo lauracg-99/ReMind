@@ -25,34 +25,62 @@ import '../models/task_model.dart';
 
 class TasksRepo {
   TasksRepo(this.ref) {
-    _userRepo = ref.watch(userRepoProvider);
     _firebaseCaller = ref.watch(firebaseCaller);
   }
 
   final Ref ref;
-  late UserRepo _userRepo;
   late IFirebaseCaller _firebaseCaller;
   TaskModel? taskModel;
 
   var user = FirebaseAuth.instance.currentUser?.uid;
 
-  // OBTECIÓN DE DATOS ---------------------------------------------------------
-
-
-//------------------------- OBTENER DATOS ---------------------------------
-
-//SUPERVISADO
-//SELF PUESTAS
-//tareas sin hacer supervisado hechas por el mismo
-//static String taskPath(String uid) => 'users/$uid/tasks';
 
   Stream<List<TaskModel>> getTasksStream() {
 
     return  _firebaseCaller.collectionStream<TaskModel>(
       //uid de usuario
-      path: FirestorePaths.taskPath(GetStorage().read('uidUsuario')),
+      path: FirestorePaths.taskPath(GetStorage().read(StorageKeys.uidUsuario)),
       queryBuilder: (query) => query
           .where("done", isEqualTo: StorageKeys.falso),
+      builder: (snapshotData, snapshotId) {
+        return TaskModel.fromMap(snapshotData!, snapshotId);
+      },
+    );
+  }
+
+  Stream<List<TaskModel>> getTasksDoneStream() {
+
+    return  _firebaseCaller.collectionStream<TaskModel>(
+      //uid de usuario
+      path: FirestorePaths.taskPath(GetStorage().read(StorageKeys.uidUsuario)),
+      queryBuilder: (query) => query
+          .where("done", isEqualTo: StorageKeys.verdadero),
+      builder: (snapshotData, snapshotId) {
+        return TaskModel.fromMap(snapshotData!, snapshotId);
+      },
+    );
+  }
+//supervisor solo puede ver las tareas puestas por el mismo
+  Stream<List<TaskModel>> getTasksStreamSup() {
+    return  _firebaseCaller.collectionStream<TaskModel>(
+      //uid de usuario
+      path: FirestorePaths.taskPath(GetStorage().read(StorageKeys.lastUIDSup)),
+      queryBuilder: (query) => query
+          .where("done", isEqualTo: StorageKeys.falso)
+          .where("authorUID", isEqualTo: GetStorage().read(StorageKeys.uidUsuario)),
+      builder: (snapshotData, snapshotId) {
+        return TaskModel.fromMap(snapshotData!, snapshotId);
+      },
+    );
+  }
+
+  Stream<List<TaskModel>> getTasksDoneStreamSup() {
+    return  _firebaseCaller.collectionStream<TaskModel>(
+      //uid de usuario
+      path: FirestorePaths.taskPath(GetStorage().read(StorageKeys.lastUIDSup)),
+      queryBuilder: (query) => query
+          .where("done", isEqualTo: StorageKeys.verdadero)
+          .where("authorUID", isEqualTo: GetStorage().read(StorageKeys.uidUsuario)),
       builder: (snapshotData, snapshotId) {
         return TaskModel.fromMap(snapshotData!, snapshotId);
       },
@@ -62,7 +90,7 @@ class TasksRepo {
   Stream<List<TaskModel>> getTasksBossS() {
     return  _firebaseCaller.collectionStream<TaskModel>(
       //uid de usuario
-      path: FirestorePaths.taskPathBoss(GetStorage().read('uidUsuario')),
+      path: FirestorePaths.taskPathBoss(GetStorage().read(StorageKeys.lastUIDSup)),
       queryBuilder: (query) => query
           .where("done", isEqualTo: StorageKeys.falso),
       builder: (snapshotData, snapshotId) {
@@ -76,7 +104,7 @@ class TasksRepo {
 //tareas hechas por el supervisados hechas por el mismo
   Stream<List<TaskModel>> getTasksBossStream() {
     return  _firebaseCaller.collectionStream<TaskModel>(
-      path: FirestorePaths.taskPathBoss(GetStorage().read('uidSup')),
+      path: FirestorePaths.taskPathBoss(GetStorage().read(StorageKeys.lastUIDSup)),
       queryBuilder: (query) => query
           .where("done", isEqualTo: StorageKeys.falso),
       builder: (snapshotData, snapshotId) {
@@ -89,7 +117,7 @@ class TasksRepo {
     // final _userRepo = ref.watch(userRepoProvider).uidSuper;
     return  _firebaseCaller.collectionStream<TaskModel>(
       //uid de usuario
-      path: FirestorePaths.taskPathBoss(GetStorage().read('uidSup')),
+      path: FirestorePaths.taskPathBoss(GetStorage().read(StorageKeys.lastUIDSup)),
       queryBuilder: (query) => query
           .where("done", isEqualTo: StorageKeys.verdadero),
       builder: (snapshotData, snapshotId) {
@@ -97,27 +125,12 @@ class TasksRepo {
       },
     );
   }
-
-  Stream<List<TaskModel>> getTasksDoneStream() {
-    return  _firebaseCaller.collectionStream<TaskModel>(
-      //uid de usuario
-      path: FirestorePaths.taskPath(GetStorage().read('uidUsuario')),
-      queryBuilder: (query) => query
-          .where("done", isEqualTo: StorageKeys.verdadero),
-      builder: (snapshotData, snapshotId) {
-        return TaskModel.fromMap(snapshotData!, snapshotId);
-      },
-    );
-  }
- Future<String?> getUIDSup()async{
-   return await _userRepo.getUidSup();
- }
 
 
   Stream<List<TaskModel>> getTasksDoneStreamBossS() {
     return  _firebaseCaller.collectionStream<TaskModel>(
       //uid de usuario
-      path: FirestorePaths.taskPathBoss(GetStorage().read('uidUsuario')),
+      path: FirestorePaths.taskPathBoss(GetStorage().read(StorageKeys.lastUIDSup)),
       queryBuilder: (query) => query
           .where("done", isEqualTo: StorageKeys.verdadero),
       builder: (snapshotData, snapshotId) {
@@ -129,7 +142,7 @@ class TasksRepo {
 
   Future<Either<Failure?, TaskModel>> getTaskByName({required String taskId,}) async {
     return await _firebaseCaller.getData(
-      path: FirestorePaths.taskById(GetStorage().read('uidUsuario'),taskId: taskId),
+      path: FirestorePaths.taskById(GetStorage().read(StorageKeys.uidUsuario),taskId: taskId),
       builder: (data, id) {
         if (data is! ServerFailure && data != null) {
           return Right(TaskModel.fromMap(data, id!));
@@ -142,7 +155,7 @@ class TasksRepo {
 
   Future<Either<Failure?, TaskModel>> getTaskBossByName({required String taskId,}) async {
     return await _firebaseCaller.getData(
-      path: FirestorePaths.taskBossById(GetStorage().read('uidUsuario'),taskId: taskId),
+      path: FirestorePaths.taskBossById(GetStorage().read(StorageKeys.lastUIDSup),taskId: taskId),
       builder: (data, id) {
         if (data is! ServerFailure && data != null) {
           return Right(TaskModel.fromMap(data, id!));
@@ -155,7 +168,7 @@ class TasksRepo {
 
   Future<Either<Failure?, TaskModel>> getTaskDoneByName({required String taskId,}) async {
     return await _firebaseCaller.getData(
-      path: FirestorePaths.taskDoneById(GetStorage().read('uidUsuario'),taskId: taskId),
+      path: FirestorePaths.taskDoneById(GetStorage().read(StorageKeys.uidUsuario),taskId: taskId),
       builder: (data, id) {
         if (data is! ServerFailure && data != null) {
           return Right(TaskModel.fromMap(data, id!));
@@ -168,7 +181,7 @@ class TasksRepo {
 
   Future<Either<Failure?, TaskModel>> getTaskDoneBossByName({required String taskId,}) async {
     return await _firebaseCaller.getData(
-      path: FirestorePaths.taskBossDoneById(GetStorage().read('uidUsuario'),taskId: taskId),
+      path: FirestorePaths.taskBossDoneById(GetStorage().read(StorageKeys.lastUIDSup),taskId: taskId),
       builder: (data, id) {
         if (data is! ServerFailure && data != null) {
           return Right(TaskModel.fromMap(data, id!));
@@ -181,299 +194,87 @@ class TasksRepo {
 
 //------------------------- GUARDAR DATOS ---------------------------------
 
-  Future<String> setTaskDoc(TaskModel taskData, String uid) async {
-    return await _firebaseCaller.addDataToCollection(
-        path: FirestorePaths.taskPath(GetStorage().read('uidUsuario')), ///tasks
-        data: taskData.toMap()
-    );
-  }
+  Future<Either<Failure, bool>> addTask(TaskModel taskModel) async {
 
-  Future<Either<Failure, bool>> addSingleTask({ required TaskModel task,}) async {
+    taskModel.taskId = await getTaskId(taskModel);
 
-    /*final _userRepo = ref.watch(userRepoProvider).uidSuper;
-    var usuario = await getUsuario();
-    var uid = usuario?.uId;*/
-    return await (_userRepo != '')
-        ?    _firebaseCaller.setData(
-        path: FirestorePaths.taskBossById(GetStorage().read('uidSup')!,taskId: task.taskId),
-        data: task.toMap(),
-        builder: (data) {
-          if (data is! ServerFailure && data == true) {
-            taskModel = task;
-            return Right(data);
-          } else {
-            return Left(data);
-          }
-        }
-        )
-        :  _firebaseCaller.setData(
-        path: FirestorePaths.taskById(GetStorage().read('uidUsuario')!,taskId: task.taskId),
-        data: task.toMap(),
-        builder: (data) {
-          if (data is! ServerFailure && data == true) {
-            taskModel = task;
-            return Right(data);
-          } else {
-            return Left(data);
-          }
-        }
-    );
-
-
-
-
-  }
-
-  Future<Either<Failure, bool>> addDocToFirebase(TaskModel taskModel) async {
-    // nos da el uid de la tarea
-
-     taskModel.taskId = await setTaskDoc(taskModel,user!).then(
-            (value) => taskModel.taskId = value
-    );
-
-    final result = await addSingleTask(task: taskModel);
-    return await result.fold(
-          (failure) {
-        return Left(failure);
-      },
-          (taskModel) async {
-        if (taskModel == null) {
-          return Right(taskModel);
+    return (GetStorage().read(StorageKeys.rol) == StorageKeys.SUPERVISOR)
+    ? await _firebaseCaller.setData(
+      path: FirestorePaths.taskBossById(GetStorage().read(StorageKeys.lastUIDSup)!,taskId: taskModel.taskId),
+      data: taskModel.toMap(),
+      builder: (data) {
+        if (data is! ServerFailure && data == true) {
+          return Right(data);
         } else {
-          return const Right(true);
+          return Left(data);
         }
       },
-    );
-  }
-
-//boss
-
-  Future<String> setTaskDocBoss(TaskModel taskData, String uid) async {
-    return await _firebaseCaller.addDataToCollection(
-        path: FirestorePaths.taskPathBoss(uid), ///tasks
-        data: taskData.toMap()
-    );
-  }
-
-  Future<Either<Failure, bool>> addSingleTaskBoss({ required TaskModel task,}) async {
-    //var usuario = await getUsuario();
-    //var uid = usuario?.uId;
-    return await _firebaseCaller.setData(
-        path: FirestorePaths.taskBossById(GetStorage().read('uidUsuario'),taskId: task.taskId),
-        data: task.toMap(),
-        builder: (data) {
+    )
+    : await _firebaseCaller.setData(
+      path: FirestorePaths.taskById(GetStorage().read(StorageKeys.uidUsuario)!,
+          taskId: taskModel.taskId),
+      data: taskModel.toMap(),
+          builder: (data) {
           if (data is! ServerFailure && data == true) {
-            taskModel = task;
-            return Right(data);
+          return Right(data);
           } else {
-            return Left(data);
+          return Left(data);
           }
-        }
-    );
+          },
+    )
+
+    ;
   }
 
-  Future<Either<Failure, bool>> addDocToFirebaseBoss(TaskModel taskModel) async {
-    // nos da el uid de la tarea
-    taskModel.taskId = await setTaskDocBoss(taskModel,user!).then(
-            (value) => taskModel.taskId = value
-    );
-
-    final result = await addSingleTaskBoss(task: taskModel);
-    return await result.fold(
-          (failure) {
-        return Left(failure);
-      },
-          (taskModel) async {
-        if (taskModel == null) {
-          return Right(taskModel);
-        } else {
-          return const Right(true);
-        }
-      },
-    );
-  }
-
-
-//------------------------- Copiar DATOS ---------------------------------
-
-
-  //static String taskById(String uid,{required String taskId}) => 'users/$uid/tasks/$taskId';
-
-  //static String taskDoneById(String uid,{required String taskId}) => 'users/$uid/tasksDone/$taskId';
-
-  Future<Either<Failure, bool>> copyDataSupervised (TaskModel taskModel) async {
-
-    final result = await addSingleTaskDone(task: taskModel);
-    return await result.fold(
-          (failure) {
-        return Left(failure);
-      },
-          (taskModel) async {
-        if (taskModel == null) {
-          return Right(taskModel);
-        } else {
-          return const Right(true);
-        }
-      },
-    );
-  }
-
-  Future<Either<Failure, bool>> addSingleTaskDone({ required TaskModel task,}) async {
-    /*var usuario = await getUsuario();
-    var uid = usuario?.uId;*/
-    return await _firebaseCaller.setData(
-        path: FirestorePaths.taskDoneById(GetStorage().read('uidUsuario'),taskId: task.taskId),
-        data: task.toMap(),
-        builder: (data) {
-          if (data is! ServerFailure && data == true) {
-            taskModel = task;
-            return Right(data);
-          } else {
-            return Left(data);
-          }
-        }
+  Future<String> getTaskId(TaskModel taskModel) async {
+    return
+      (GetStorage().read(StorageKeys.rol) == StorageKeys.SUPERVISOR)
+      ? await _firebaseCaller.addDataToCollection(
+          path: FirestorePaths.taskPath(GetStorage().read(StorageKeys.lastUIDSup)), ///tasks
+          data: taskModel.toMap()
+      )
+      : await _firebaseCaller.addDataToCollection(
+        path: FirestorePaths.taskPath(GetStorage().read(StorageKeys.uidUsuario)), ///tasks
+        data: taskModel.toMap()
     );
   }
 
   //------------------------- DELETE DATOS ---------------------------------
 
-  Future<void> deleteSingleTask({required TaskModel taskModel}) async {
-    cancelNotification(taskModel.idNotification!);
-    return await _firebaseCaller.deleteData(
-        path: FirestorePaths.taskById(GetStorage().read('uidUsuario')!,taskId: taskModel.taskId));
+  Future<void> deleteTask(TaskModel taskModel) async {
+    (GetStorage().read('rol') == StorageKeys.SUPERVISOR)
+          ? await _firebaseCaller.deleteData(
+        path: FirestorePaths.taskBossById(
+            GetStorage().read(StorageKeys.lastUIDSup)!,taskId: taskModel.taskId),
+      )
+          : await _firebaseCaller.deleteData(
+        path: FirestorePaths.taskById(GetStorage().read(StorageKeys.uidUsuario)!,
+            taskId: taskModel.taskId),
+      );
   }
 
-  Future<void> deleteSingleTaskDone({required TaskModel taskModel}) async {
-    return await _firebaseCaller.deleteData(
-        path: FirestorePaths.taskDoneById(GetStorage().read('uidUsuario')!,taskId: taskModel.taskId));
-  }
-
-  Future<void> deleteSingleTaskBoss({required TaskModel taskModel}) async {
-    cancelNotification(taskModel.idNotification!);
-    return await _firebaseCaller.deleteData(
-        path: FirestorePaths.taskBossById(GetStorage().read('uidUsuario')!,taskId: taskModel.taskId));
-  }
-
-  Future<void> deleteSingleTaskDoneBoss({required TaskModel taskModel}) async {
-    return await _firebaseCaller.deleteData(
-        path: FirestorePaths.taskBossDoneById(GetStorage().read('uidUsuario')!,taskId: taskModel.taskId));
-  }
-
-
-  Stream<List<TaskModel>> getNotiTaskStream() {
-    Notifications().cancelScheduledNotifications();
-    var actualHour = DateTime.now();
-    var actualDay = getTranslateDay();
-
-    var formatter = DateFormat('hh:mm');
-    String formattedDate = formatter.format(actualHour);
-
-    return  _firebaseCaller.collectionStream<TaskModel>(
-      path: FirestorePaths.taskPath(GetStorage().read('uidUsuario')!),
-      queryBuilder: (query) => query
-          .where("days", arrayContains: actualDay)
-          .where("done", isEqualTo: StorageKeys.falso),
-      builder: (snapshotData, snapshotId) {
-        log('getNoti task repo 1');
-        return TaskModel.fromMap(snapshotData!, snapshotId);
-      },
-    );
-  }
-
-  Stream<List<TaskModel>> getNotModTasksStream() {
-    return _firebaseCaller.collectionStream<TaskModel>(
-      path: FirestorePaths.taskPath(GetStorage().read('uidUsuario')!),
-      queryBuilder: (query) => query
-          .where('editable', isEqualTo: StorageKeys.falso),
-      builder: (snapshotData, snapshotId) {
-        return TaskModel.fromMap(snapshotData!, snapshotId);
-      },
-    );
-  }
-
-  //tareas hechas
-  Stream<List<TaskModel>> getTasksCompletedStream() {
-    return _firebaseCaller.collectionStream<TaskModel>(
-      path: FirestorePaths.taskPath(GetStorage().read('uidUsuario')!),
-      queryBuilder: (query) => query
-          .where('done', isEqualTo: StorageKeys.verdadero),
-      builder: (snapshotData, snapshotId) {
-        return TaskModel.fromMap(snapshotData!, snapshotId);
-      },
-    );
-  }
-
-
-  UserModel? returnUsuario() {
-    UserModel? user;
-    getUsuario().then((value) => user = value);
-    return user;
-  }
-
-  Future<UserModel?> getUsuario() async {
-    final result = await _userRepo.getUserData(GetStorage().read('uidUsuario')!);
-    return result.fold(
-          (failure) {
-            return null;
-          },
-          (userModel) {
-            return userModel;
-      },
-    );
-  }
-
-  //obtenemos la informacion de nuestro supervisado mediante su uid
-  Future<UserModel?> getInfoSupervisado(String uid) async {
-    final result = await _userRepo.getUserData(uid);
-    return result.fold(
-          (failure) {
-        return null;
-      },
-          (userModel) {
-        return userModel;
-      },
-    );
-  }
-
-  Future<Either<Failure, UserModel>> getUser() async {
-    final result = await _userRepo.getUserData(GetStorage().read('uidUsuario')!);
-    return result.fold(
-      (failure) {
-        return  Left(failure);
-      },
-      (userModel) {
-        return Right(userModel!);
-      },
-    );
-  }
 
   // MODIFICAR ELIMINAR COSAS --------------------------------------------------
 
-  //cancelar todas las notificaciones, borrar ids, marcar done false
-   void resetTasks(TaskModel taskModel) async {
-
-    //obtenemos tareas, cancelamos sus notificaciones, ponemos isNotificationSet
-     // a false y cambiamos a no hechas todas
-     log("**** INSIDE SET CRON ${GetStorage().read('CronSet')}");
-    //diferenciamos si es tarea de supervisor o no
-    if (taskModel.editable == StorageKeys.verdadero)
-    {
-      log("**** CRON RESETEAMOS CON ${GetStorage().read('uidUsuario')}");
-      await resetTask(task: taskModel);
-    } else {
-      log("**** BOSS CRON RESETEAMOS CON ${GetStorage().read('uidUsuario')}");
-      await await resetTaskBoss(task: taskModel);
-    }
-
-  }
-
-  Future<Either<Failure, bool>> resetTask({required TaskModel task}) async {
-    return await _firebaseCaller.updateData(
-      path: FirestorePaths.taskById(GetStorage().read('uidUsuario')!,taskId: task.taskId),
+  Future<Either<Failure, bool>> resetTasks({required TaskModel taskModel}) async {
+    return (GetStorage().read(StorageKeys.rol) == StorageKeys.SUPERVISOR)
+     ? await _firebaseCaller.updateData(
+      path: FirestorePaths.taskBossById(GetStorage().read(StorageKeys.lastUIDSup)!,taskId: taskModel.taskId),
       data: {
-        'isNotificationSet': StorageKeys.falso,
         'done': StorageKeys.falso,
-        'idNotification': [],
+      },
+      builder: (data) {
+        if (data is! ServerFailure && data == true) {
+          return Right(data);
+        } else {
+          return Left(data);
+        }
+      },
+    )
+    : await _firebaseCaller.updateData(
+      path: FirestorePaths.taskById(GetStorage().read(StorageKeys.uidUsuario)!,taskId: taskModel.taskId),
+      data: {
+        'done': StorageKeys.falso,
       },
       builder: (data) {
         if (data is! ServerFailure && data == true) {
@@ -485,27 +286,10 @@ class TasksRepo {
     );
   }
 
-  Future<Either<Failure, bool>> resetTaskBoss({required TaskModel task}) async {
+  Future<Either<Failure, bool>> checkTask({required TaskModel taskModel}) async {
     return await _firebaseCaller.updateData(
-      path: FirestorePaths.taskBossById(GetStorage().read('uidUsuario')!,taskId: task.taskId),
-      data: {
-        'isNotificationSet': StorageKeys.falso,
-        'done': StorageKeys.falso,
-        'idNotification': [],
-      },
-      builder: (data) {
-        if (data is! ServerFailure && data == true) {
-          return Right(data);
-        } else {
-          return Left(data);
-        }
-      },
-    );
-  }
-
-  Future<Either<Failure, bool>> checkTask({required TaskModel task}) async {
-    return await _firebaseCaller.updateData(
-      path: FirestorePaths.taskById(GetStorage().read('uidUsuario')!,taskId: task.taskId),
+      path: FirestorePaths.taskById(
+          GetStorage().read(StorageKeys.uidUsuario)!,taskId: taskModel.taskId),
       data: {
         'done': StorageKeys.verdadero,
       },
@@ -519,9 +303,26 @@ class TasksRepo {
     );
   }
 
-  Future<Either<Failure, bool>> checkTaskBoss({required TaskModel task}) async {
+  Future<Either<Failure, bool>> unCheckTask({required TaskModel taskModel}) async {
     return await _firebaseCaller.updateData(
-      path: FirestorePaths.taskBossById(GetStorage().read('uidUsuario')!,taskId: task.taskId),
+      path: FirestorePaths.taskById(GetStorage().read(StorageKeys.uidUsuario)!,
+          taskId: taskModel.taskId),
+      data: {
+        'done': StorageKeys.falso,
+      },
+      builder: (data) {
+        if (data is! ServerFailure && data == true) {
+          return Right(data);
+        } else {
+          return Left(data);
+        }
+      },
+    );
+  }
+
+  Future<Either<Failure, bool>> checkTaskBoss({required TaskModel taskModel}) async {
+    return await _firebaseCaller.updateData(
+      path: FirestorePaths.taskBossById(GetStorage().read(StorageKeys.lastUIDSup)!,taskId: taskModel.taskId),
       data: {
         'done': StorageKeys.verdadero,
       },
@@ -535,11 +336,11 @@ class TasksRepo {
     );
   }
 
-  Future<Either<Failure, bool>> checkSetNoti({required TaskModel task}) async {
+  Future<Either<Failure, bool>> unCheckTaskBoss({required TaskModel taskModel}) async {
     return await _firebaseCaller.updateData(
-      path: FirestorePaths.taskById(GetStorage().read('uidUsuario'),taskId: task.taskId),
+      path: FirestorePaths.taskBossById(GetStorage().read(StorageKeys.lastUIDSup)!, taskId: taskModel.taskId),
       data: {
-        'isNotificationSet': StorageKeys.verdadero,
+        'done': StorageKeys.falso,
       },
       builder: (data) {
         if (data is! ServerFailure && data == true) {
@@ -551,12 +352,10 @@ class TasksRepo {
     );
   }
 
-  Future<Either<Failure, bool>> checkSetNotiBoss({required TaskModel task}) async {
+  Future<Either<Failure, bool>> updateTask(TaskModel taskModel) async {
     return await _firebaseCaller.updateData(
-      path: FirestorePaths.taskBossById(GetStorage().read('uidUsuario'),taskId: task.taskId),
-      data: {
-        'isNotificationSet': StorageKeys.verdadero,
-      },
+      path: FirestorePaths.taskById(GetStorage().read(StorageKeys.uidUsuario)!,taskId: taskModel.taskId),
+      data: taskModel.toMap(),
       builder: (data) {
         if (data is! ServerFailure && data == true) {
           return Right(data);
@@ -566,15 +365,10 @@ class TasksRepo {
       },
     );
   }
-
-  Future<Either<Failure, bool>> addNotification(TaskModel task) async {
-    List<int> list = await setNotiInSupervised(task);
+  Future<Either<Failure, bool>> updateTaskBoss(TaskModel taskModel) async {
     return await _firebaseCaller.updateData(
-      path: FirestorePaths.taskById(GetStorage().read('uidUsuario'),taskId: task.taskId),
-      data: {
-        'idNotification': list,
-        'isNotificationSet': StorageKeys.verdadero,
-      },
+      path: FirestorePaths.taskBossById(GetStorage().read(StorageKeys.lastUIDSup)!,taskId: taskModel.taskId),
+      data: taskModel.toMap(),
       builder: (data) {
         if (data is! ServerFailure && data == true) {
           return Right(data);
@@ -585,143 +379,5 @@ class TasksRepo {
     );
   }
 
-  Future<Either<Failure, bool>> addNotificationBoss(TaskModel task, List<int> ids) async {
-    return await _firebaseCaller.updateData(
-      path: FirestorePaths.taskBossById(GetStorage().read('uidUsuario'),taskId: task.taskId),
-      data: {
-        'idNotification': ids,
-        'isNotificationSet': StorageKeys.verdadero,
-      },
-      builder: (data) {
-        if (data is! ServerFailure && data == true) {
-          return Right(data);
-        } else {
-          return Left(data);
-        }
-      },
-    );
-  }
-
-  Future<Either<Failure, bool>> cancelTodayNotifications({required TaskModel task}) async {
-    var now = DateTime.now().weekday;
-    //si nos quedan ids de notificacion o no
-    //if(task.idNotification?.length != 0) {
-    //numero de ids que tenemos que borrar
-    var numDelete = task.notiHours?.length;
-    //borramos desde el primero hasta el numero de ids que correspondan a ese día
-    Iterable? idCancel = task.idNotification;
-
-    //cancelamos esas notificaciones
-    idCancel?.forEach((element) {
-      Notifications().cancelScheduledNotification(element);
-    });
-
-
-    List<int> ids = [];
-
-    //quitamos el día que hemos hecho
-    List? taskMinusDay = task.days;
-
-    //si estamos en ultimo día de rep de esa semana
-    if(taskMinusDay?.length == 1){
-      //notificaciones de 0
-      await makesNewNotification(task.days!, task.notiHours!)
-          .then((value) => ids = value
-      );
-    } else{
-      taskMinusDay?.remove(getStrDay(now));
-      await makesNewNotification(taskMinusDay!, task.notiHours!)
-          .then((value) => ids = value
-      );
-    }
-
-
-    return await _firebaseCaller.updateData(
-      path: FirestorePaths.taskById(GetStorage().read('uidUsuario')!, taskId: task.taskId),
-      data: {
-        'idNotification': ids
-      },
-      builder: (data) {
-        if (data is! ServerFailure && data == true) {
-          return Right(data);
-        } else {
-          return Left(data);
-        }
-      },
-    );
-    // }
-
-  }
-
-  //TODO
-  Future<Either<Failure, bool>> updateIds({required TaskModel task}) async {
-    List<int> ids = [];
-
-
-    await makesNewNotification(task.days!, task.notiHours!)
-        .then((value) => ids = value
-    );
-
-    return await _firebaseCaller.updateData(
-      path: FirestorePaths.taskById(GetStorage().read('uidUsuario')!,taskId: task.taskId),
-      data: {
-        'idNotification': ids
-      },
-      builder: (data) {
-        if (data is! ServerFailure && data == true) {
-          return Right(data);
-        } else {
-          return Left(data);
-        }
-      },
-    );
-  }
-
-
-  Future<Either<Failure, bool>> updateTask(Map<String, dynamic> datos,{required String taskId,}) async {
-    return await _firebaseCaller.updateData(
-      path: FirestorePaths.taskById(GetStorage().read('uidUsuario')!,taskId: taskId),
-      data: datos,
-      builder: (data) {
-        if (data is! ServerFailure && data == true) {
-          return Right(data);
-        } else {
-          return Left(data);
-        }
-      },
-    );
-  }
-
-  Future<Either<Failure, bool>> updateTaskBoss(Map<String, dynamic> datos,{required String taskId,}) async {
-    return await _firebaseCaller.updateData(
-      path: FirestorePaths.taskBossById(GetStorage().read('uidUsuario')!,taskId: taskId),
-      data: datos,
-      builder: (data) {
-        if (data is! ServerFailure && data == true) {
-          return Right(data);
-        } else {
-          return Left(data);
-        }
-      },
-    );
-  }
-
-
-  cancelNotification(List<dynamic> listId){
-    listId.forEach((element) { AwesomeNotifications().cancel(element);});
-  }
-
-  Future<List<int>> makesNewNotification(List<dynamic> days, List<dynamic> hour) async {
-   List<int> reIds = [];
-    for (var element in days) {
-      for (var element2 in hour) {
-        await Notifications().reCreateReminderNotification(
-            getNumDay(element),element2)
-            .then((value) => reIds.add(value)
-        );
-      }
-    }
-    return reIds;
-  }
 
 }

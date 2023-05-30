@@ -17,8 +17,11 @@ class RoutePaths {
   ///ProfileNestedRoutes
   static const profile = 'profile';
 
+  static const petitions = 'petitions';
+
   ///SettingsNestedRoutes
   static const settings = 'settings';
+  static const supervisores = 'supervisores';
   static const settingsLanguage = '$settings/language';
   static const settingsName = '$settings/name';
 

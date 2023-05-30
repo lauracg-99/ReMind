@@ -8,6 +8,7 @@ abstract class HomeBaseNavUtils {
     GlobalKey<NavigatorState>(debugLabel: 'page1'),
     GlobalKey<NavigatorState>(debugLabel: 'page2'),
     GlobalKey<NavigatorState>(debugLabel: 'page3'),
+    GlobalKey<NavigatorState>(debugLabel: 'page4'),
   ];
 
   static const navScreens = [
@@ -25,6 +26,12 @@ abstract class HomeBaseNavUtils {
     NestedNavigatorScreen(
       index: 2,
       screenPath: RoutePaths.settings,
+      onGenerateRoute: AppRouter.generateSettingsNestedRoute,
+    ),
+
+    NestedNavigatorScreen(
+      index: 3,
+      screenPath: RoutePaths.supervisores,
       onGenerateRoute: AppRouter.generateSettingsNestedRoute,
     ),
   ];

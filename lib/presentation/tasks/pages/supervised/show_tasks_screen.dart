@@ -7,19 +7,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:remind/data/auth/manage_supervised/solicitud.dart';
 import 'package:remind/data/firebase/repo/firestore_paths.dart';
+import 'package:remind/domain/auth/repo/user_repo.dart';
+import 'package:remind/presentation/solicitudes/components/num_solicitudes_component.dart';
 import '../../../../common/storage_keys.dart';
+import '../../../../data/auth/providers/user_list_notifier.dart';
 import '../../../../data/firebase/repo/firebase_caller.dart';
 import '../../../../data/tasks/models/task_model.dart';
+import '../../../../data/tasks/providers/task_provider.dart';
 import '../../../../domain/services/localization_service.dart';
 import '../../../notifications/utils/notifications.dart';
+import '../../../routes/navigation_service.dart';
 import '../../../styles/app_colors.dart';
 import '../../../styles/sizes.dart';
+import '../../../utils/dialog_message_state.dart';
 import '../../../widgets/buttons/custom_button.dart';
+import '../../../widgets/buttons/custom_text_button.dart';
 import '../../../widgets/custom_text.dart';
+import '../../../widgets/dialog_widget.dart';
 import '../../../widgets/loading_indicators.dart';
 import '../../components/card_item_component.dart';
-import '../../providers/task_provider.dart';
 import '../../providers/task_to_do.dart';
 
 class ShowTasks extends HookConsumerWidget {
@@ -35,18 +43,19 @@ class ShowTasks extends HookConsumerWidget {
 
     GetStorage().write('screen','show');
     var uidUser = GetStorage().read('uidUsuario');
+    var email = GetStorage().read('email');
+    var numElementos = 0;
+    var numNotis = 0;
     final firestore = ref.watch(firebaseProvider);
     useEffect(() {
-      final subscription = firestore
+      firestore
           .collection(FirestorePaths.taskPath(uidUser))
           .snapshots()
-          .listen((querySnapshot) {
-              querySnapshot.docChanges.forEach((change) {
+          .listen((querySnapshot) { querySnapshot.docChanges.forEach((change) {
           if (change.type == DocumentChangeType.modified) {
             final modifiedDocument = change.doc;
             final modifiedDocumentId = modifiedDocument.id;
             final modifiedDocumentData = modifiedDocument.data();
-
             // Aquí puedes usar modifiedDocumentId para obtener el UID del documento que ha cambiado
             log('UID del documento modificado: $modifiedDocumentId');
             var task = TaskModel.fromMap(
@@ -64,36 +73,17 @@ class ShowTasks extends HookConsumerWidget {
               Notifications().setNotification(task);
             }
           }
-        });
-          });
-          final firebase2 = firestore
-              .collection(FirestorePaths.taskPathBoss(uidUser))
-              .snapshots()
-              .listen((querySnapshot) {
-            querySnapshot.docChanges.forEach((change) {
-              if (change.type == DocumentChangeType.modified) {
-                final modifiedDocument = change.doc;
-                final modifiedDocumentId = modifiedDocument.id;
-                final modifiedDocumentData = modifiedDocument.data();
 
-                // Aquí puedes usar modifiedDocumentId para obtener el UID del documento que ha cambiado
-                log('UID del documento modificado: $modifiedDocumentId');
-                var task = TaskModel.fromMap(modifiedDocumentData!, modifiedDocumentId);
+          //si se borra por lo que sea cancelamos notis
+          if (change.type == DocumentChangeType.removed) {
+            final modifiedDocument = change.doc;
+            final modifiedDocumentId = modifiedDocument.id;
+            final modifiedDocumentData = modifiedDocument.data();
+            var task = TaskModel.fromMap(modifiedDocumentData!, modifiedDocumentId);
+            AwesomeNotifications().cancelNotificationsByGroupKey(task.taskId);
 
-                //la tarea se ha marcado como hecha => no necesitamos las notis de ese día
-                if(task.done == StorageKeys.verdadero){
-                  AwesomeNotifications().cancelNotificationsByGroupKey(task.taskId);
-                }
-                //la tarea se ha modificado y aún no está hecha => establecemos las notificaciones
-                if(task.done == StorageKeys.falso){
-                  //borramos notificación
-                  AwesomeNotifications().cancelNotificationsByGroupKey(task.taskId);
-                  //ponemos el grupo
-                  Notifications().setNotification(task);
-                }
-              }
-            });
-
+          }
+              });
       });
 
       /*return () {
@@ -101,9 +91,76 @@ class ShowTasks extends HookConsumerWidget {
       };*/
     }, []);
 
-    final taskToDoStreamAll = ref.watch(taskMultipleAll);
+    useEffect(() {
+      //si estado es pendiente saca la modal
+      firestore.collection(FirestorePaths.userPetitionCollection(uidUser)).snapshots().listen((querySnapshot) {
+        numElementos = querySnapshot.docs.length;
+        querySnapshot.docs.forEach((element) {
+          if (querySnapshot.docs.isNotEmpty) {
+            Solicitud solicitud = Solicitud.fromMap(element.data());
+            solicitud.id = element.id;
+            //si hay peticiones pendientes
+            if (solicitud.estado != 'pendiente'){
+              if(numElementos != 0) {
+                numElementos = numElementos - 1;
+                ref.watch(numSolicitudesProvider.notifier).changeState(change: numElementos);
+              };
+            } else {
+              ref.watch(numSolicitudesProvider.notifier).changeState(change: numElementos);
+            }
 
-    if (GetStorage().read('rol') != 'supervisor') {
+          }
+        });
+
+        querySnapshot.docChanges.forEach((change) {
+          if (querySnapshot.docs.isNotEmpty) {
+            if (change.type == DocumentChangeType.modified) {
+              final modifiedDocument = change.doc;
+              final documentId = modifiedDocument.id;
+              final modifiedDocumentData = modifiedDocument.data();
+              GetStorage().write('notificarPeticion', false);
+              if(modifiedDocumentData != null) {
+                Solicitud solicitud = Solicitud.fromMap(modifiedDocumentData);
+                if (solicitud.estado == 'pendiente' && !GetStorage().read('notificarPeticion')) {
+                  solicitud.id = documentId;
+                  log('solicitud ${solicitud.id} ${solicitud
+                      .emailSup} ${solicitud.estado} ${solicitud
+                      .emailBoss} ${documentId}');
+                  Notifications().acceptPetitionNoti(solicitud);
+                  managePetition(context, ref, solicitud: solicitud);
+                }
+              }
+            }
+            if (change.type == DocumentChangeType.added) {
+              final modifiedDocument = change.doc;
+              final documentId = modifiedDocument.id;
+              final modifiedDocumentData = modifiedDocument.data();
+
+              if(modifiedDocumentData != null){
+                Solicitud solicitud = Solicitud.fromMap(modifiedDocumentData);
+                var notiPet = GetStorage().read('notificarPeticion') ?? false;
+                if (solicitud.estado == 'pendiente' && !notiPet) {
+                  solicitud.id = documentId;
+                  log('solicitud ${solicitud.id} ${solicitud.emailSup} ${solicitud.estado} ${solicitud.emailBoss} ${documentId}');
+                  Notifications().acceptPetitionNoti(solicitud);
+                  managePetition(context, ref, solicitud: solicitud);
+                }
+
+              }
+
+
+            }
+          }
+        });
+      });
+      }, []);
+
+    final taskToDoStreamAll = ref.watch(getTasks);
+    if(GetStorage().read('firstTimeLogIn') != null) {
+      log('*** first ${GetStorage().read('firstTimeLogIn')}');
+    }
+
+    if (GetStorage().read(StorageKeys.SUPERVISOR) != 'supervisor') {
       setSupervisor(false);
     } else {
       setSupervisor(true);
@@ -124,7 +181,12 @@ class ShowTasks extends HookConsumerWidget {
         if(GetStorage().read('reset') == StorageKeys.verdadero){
           _resetTasks(ref, taskToDo);
         }
-        return (taskToDo.isEmpty || (taskToDo[0].length == 0 && taskToDo[1].length == 0) )
+        if(GetStorage().read('firstTimeLogIn') != null) {
+            if (GetStorage().read('firstTimeLogIn')) {
+              setNotificationsFirstTime(taskToDo);
+            }
+          }
+          return (taskToDo.isEmpty)
         ? CustomText.h4(
             context,
             tr(context).noTask,
@@ -137,35 +199,13 @@ class ShowTasks extends HookConsumerWidget {
             horizontal: Sizes.screenHPaddingMedium(context),
           ),
           separatorBuilder: (context, index) => SizedBox(height: Sizes.vMarginHigh(context),),
-          itemCount: taskToDo[0].length + taskToDo[1].length,
+          itemCount: taskToDo.length,
           itemBuilder: (context, index) {
             List<Widget> list = [];
-            if(index != taskToDo[0].length + taskToDo[1].length) {
-                    var supervised = taskToDo[0].length;
-                    var boss = taskToDo[1].length;
-                    // supervised es 2 -> index: 0,1
-                    if (index < supervised) {
-                      //supervisado
-                      if(taskToDo[0][index].cancelNoti == StorageKeys.verdadero && taskToDo[0][index].isNotificationSet == StorageKeys.verdadero){
-                        ref.read(taskProvider.notifier).deleteSingleTask(taskModel: taskToDo[0][index]);
-                      }
-                      list.add(CardItemComponent(
-                        taskModel: taskToDo[0][index],
-                      ));
-
-                    } else {
-                      if (index - supervised  < boss) {
-                        var indexBoss = index - supervised;
-                        // tengo que esperar a que este activada si no no borra nada y no se desactiva
-                        if(taskToDo[1][indexBoss].cancelNoti == StorageKeys.verdadero && taskToDo[1][indexBoss].isNotificationSet == StorageKeys.verdadero){
-                          ref.read(taskProvider.notifier).deleteTaskbyBoss(taskModel: taskToDo[1][indexBoss]);
-                        }
-                        list.add(CardItemComponent(
-                          taskModel: taskToDo[1][indexBoss],
-                        ));
-                      }
-                    }
-                  }
+            list.add(
+                CardItemComponent(
+                taskModel: taskToDo[index],
+                ));
 
                 return Column(children:list);
             },
@@ -186,28 +226,20 @@ class ShowTasks extends HookConsumerWidget {
                   CustomButton(
                       text: tr(context).recharge,
                       onPressed: (){
-                        ref.refresh(taskMultipleToDoStreamProviderNOTDONE);
-                        ref.refresh(taskMultipleToDoStreamProviderDONE);
-                        ref.refresh(taskMultipleAll);
+                        ref.refresh(getTasks);
                       })
                 ]),
     loading: () => LoadingIndicators.instance.smallLoadingAnimation(context)
-
-
     );
   }
 
-  static void _resetTasks(WidgetRef ref, List<List<TaskModel>> taskToDo){
-    for (var listas in taskToDo) {
-      for (var element in listas) {
-        if (element.done == StorageKeys.verdadero) {
-          if(element.editable == StorageKeys.verdadero) {
-            ref.watch(taskProvider.notifier).resetTask(task: element);
-          } else {
-            ref.watch(taskProvider.notifier).resetTaskBoss(task: element);
-          }
-        }
+  static void _resetTasks(WidgetRef ref, List<TaskModel> taskToDo){
+    for (var tarea in taskToDo) {
+
+      if (tarea.done == StorageKeys.verdadero) {
+          ref.watch(taskProvider.notifier).resetTask(null,tarea);
       }
+
     }
     GetStorage().write('reset',StorageKeys.falso);
     GetStorage().write('CronSet',StorageKeys.falso);
@@ -215,4 +247,62 @@ class ShowTasks extends HookConsumerWidget {
   }
 
 
+  void managePetition(BuildContext context, WidgetRef ref, {required Solicitud solicitud}) {
+    // set up the buttons
+    Widget okButton = CustomTextButton(
+      child: CustomText.h4(
+          context,
+          'Aceptar',
+          color: AppColors.blue
+      ),
+      onPressed:  () {
+        //checkTask( context,taskModel: taskModel);
+        NavigationService.goBack(context,rootNavigator: true);
+        solicitud.estado = 'aceptada';
+        ref.watch(userRepoProvider).updatePetition(solicitud);
+      },
+    );
+
+    Widget cancelButton = CustomTextButton(
+      child: CustomText.h4(
+          context,
+          'Denegar',
+          color: AppColors.red
+      ),
+      onPressed:  () {
+        solicitud.estado = 'rechazada';
+        ref.watch(userRepoProvider).updatePetition(solicitud);
+        NavigationService.goBack(context,rootNavigator: true);
+      },
+    );
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: CustomText.h2(context, tr(context).adv),
+      content: CustomText.h3(context,'Quiere ser tu supervisor '), // todo: tr
+      actions: [
+        cancelButton,
+        okButton,
+      ],
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(20.0))
+      ),
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  setNotificationsFirstTime(List<TaskModel> listTasks){
+    log('*** primera vez');
+    listTasks.forEach((task) {
+      Notifications().setNotification(task);
+    });
+
+    GetStorage().write('firstTimeLogIn', false);
+  }
 }

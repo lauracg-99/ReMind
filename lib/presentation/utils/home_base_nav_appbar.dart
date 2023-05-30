@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:remind/presentation/solicitudes/components/num_solicitudes_component.dart';
 import '../../domain/services/localization_service.dart';
 import '../../domain/services/platform_service.dart';
 import '../providers/home_base_nav_providers.dart';
 import '../routes/navigation_service.dart';
 import '../routes/route_paths.dart';
+import '../screens/home_screen.dart';
 import '../styles/app_colors.dart';
 import '../styles/sizes.dart';
 import '../widgets/custom_app_bar_widget.dart';
@@ -56,14 +58,13 @@ class HomeBaseNavAppBar extends ConsumerWidget
   Widget build(BuildContext context, ref) {
     final currentIndex = ref.watch(HomeBaseNavProviders.currentIndex);
     final currentRoute = ref.watch(HomeBaseNavProviders.routes[currentIndex]);
+    final seeNum = ref.watch(numSolicitudesProvider);
 
     if (GetStorage().read('rol') != 'supervisor') {
       setSupervisor(false);
     } else {
       setSupervisor(true);
     }
-    //log('Home base nav ${supervisor}');
-
     switch (currentRoute) {
 
       ///HomeNestedRoutes
@@ -74,17 +75,55 @@ class HomeBaseNavAppBar extends ConsumerWidget
           scaffoldKey: scaffoldKey,
           hasMenuButton:
               PlatformService.instance.isMaterialApp() ? true : false,
-          customTitle: CustomText.h2(
+          /*customTitle: CustomText.h2(
             context,
-            tr(context).appName,
+            tr(context).
+            appName,
             color: Theme.of(context).colorScheme.primary,
-            alignment:
-            (supervisor)
-                ? Alignment.centerRight
-                : Alignment.center,
-          ),
+            alignment: (supervisor) ? Alignment.centerRight : Alignment.center,
+          ),*/
           centerTitle: true,
           trailingActions: [
+            IconButton(
+              alignment: Alignment.centerRight,
+              onPressed: () {
+                NavigationService.push(
+                  context,
+                  isNamed: true,
+                  page: RoutePaths.petitions,
+                );
+              },
+              icon: Stack(
+                children: [
+                  Icon(
+                    Icons.inbox_outlined,
+                    color: Theme.of(context).iconTheme.color,
+                  ),
+                  (seeNum != 0)
+                          ? Positioned(
+                              right: 0,
+                              top: 0,
+                              child: Container(
+                                padding: EdgeInsets.all(2),
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Text(
+                                  seeNum.toString(),
+                                  // Número de notificaciones pendientes
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 6,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            )
+                          : SizedBox(),
+                ],
+              ),
+            ),
             IconButton(
                 alignment: Alignment.centerRight,
                 onPressed: () {
@@ -123,9 +162,10 @@ class HomeBaseNavAppBar extends ConsumerWidget
       case RoutePaths.profile:
         return CustomAppBar(
           context,
-          color: Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
-              ? AppColors.lightBlack
-              : AppColors.white,
+          color:
+              Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
+                  ? AppColors.lightBlack
+                  : AppColors.white,
           hasBackButton:
               PlatformService.instance.isMaterialApp() ? true : false,
           customTitle: CustomText.h2(
@@ -147,9 +187,10 @@ class HomeBaseNavAppBar extends ConsumerWidget
                           message: tr(context).info_perfil);
                     }
                   },
-                  icon:  Icon(
+                  icon: Icon(
                     Icons.info_outline,
-                    color: Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
+                    color: Theme.of(context).iconTheme.color ==
+                            AppColors.lightThemeIconColor
                         ? AppColors.lightBlack
                         : AppColors.white,
                   )),
@@ -162,9 +203,10 @@ class HomeBaseNavAppBar extends ConsumerWidget
       case RoutePaths.settings:
         return CustomAppBar(
           context,
-          color: Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
-              ? AppColors.lightBlack
-              : AppColors.white,
+          color:
+              Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
+                  ? AppColors.lightBlack
+                  : AppColors.white,
           hasBackButton:
               PlatformService.instance.isMaterialApp() ? true : false,
           customTitle: CustomText.h2(
@@ -183,7 +225,8 @@ class HomeBaseNavAppBar extends ConsumerWidget
                   },
                   icon: Icon(
                     Icons.info_outline,
-                    color: Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
+                    color: Theme.of(context).iconTheme.color ==
+                            AppColors.lightThemeIconColor
                         ? AppColors.lightBlack
                         : AppColors.white,
                   )),
@@ -194,18 +237,22 @@ class HomeBaseNavAppBar extends ConsumerWidget
             title: tr(context).settings,
           ),*/
         );
+
       case RoutePaths.settingsLanguage:
         return CustomAppBar(
           context,
-          color: Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
-              ? AppColors.lightBlack
-              : AppColors.white,
+          color:
+              Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
+                  ? AppColors.lightBlack
+                  : AppColors.white,
           hasBackButton: true,
           customTitle: Text(tr(context).language,
               style: TextStyle(
-                color: Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
-              ? AppColors.lightBlack
-              : AppColors.white,)),
+                color: Theme.of(context).iconTheme.color ==
+                        AppColors.lightThemeIconColor
+                    ? AppColors.lightBlack
+                    : AppColors.white,
+              )),
           trailingActions: [
             Container(
               padding: EdgeInsets.only(right: Sizes.vMarginMedium(context)),
@@ -230,15 +277,17 @@ class HomeBaseNavAppBar extends ConsumerWidget
         return CustomAppBar(
           context,
           hasBackButton: true,
-          color: Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
-              ? AppColors.lightBlack
-              : AppColors.white,
-          customTitle: Text(
-            tr(context).change_name, style:
-          TextStyle(color: Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
-              ? AppColors.lightBlack
-              : AppColors.white,)
-             ),
+          color:
+              Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
+                  ? AppColors.lightBlack
+                  : AppColors.white,
+          customTitle: Text(tr(context).change_name,
+              style: TextStyle(
+                color: Theme.of(context).iconTheme.color ==
+                        AppColors.lightThemeIconColor
+                    ? AppColors.lightBlack
+                    : AppColors.white,
+              )),
           trailingActions: [
             Container(
               padding: EdgeInsets.only(right: Sizes.vMarginMedium(context)),
@@ -251,7 +300,7 @@ class HomeBaseNavAppBar extends ConsumerWidget
                   icon: Icon(
                     Icons.info_outline,
                     color: Theme.of(context).iconTheme.color ==
-                        AppColors.lightThemeIconColor
+                            AppColors.lightThemeIconColor
                         ? AppColors.lightBlack
                         : AppColors.white,
                   )),
@@ -259,6 +308,79 @@ class HomeBaseNavAppBar extends ConsumerWidget
           ],
         );
 
+      case RoutePaths.supervisores:
+        return CustomAppBar(
+          context,
+          color:
+              Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
+                  ? AppColors.lightBlack
+                  : AppColors.white,
+          hasBackButton:
+              PlatformService.instance.isMaterialApp() ? true : false,
+          customTitle: CustomText.h3(
+            context,
+            'Selecciona tu supervisado',
+            alignment: Alignment.centerLeft,
+          ),
+          trailingActions: [
+            Container(
+              padding: EdgeInsets.only(right: Sizes.vMarginSmall(context)),
+              child: IconButton(
+                  alignment: Alignment.center,
+                  onPressed: () {
+                    if (GetStorage().read('rol') == 'supervisor') {
+                      AppDialogs.showInfo(context,
+                          message: tr(context).info_perfil_boss);
+                    } else {
+                      AppDialogs.showInfo(context,
+                          message: tr(context).info_perfil);
+                    }
+                  },
+                  icon: Icon(
+                    Icons.info_outline,
+                    color: Theme.of(context).iconTheme.color ==
+                            AppColors.lightThemeIconColor
+                        ? AppColors.lightBlack
+                        : AppColors.white,
+                  )),
+            )
+          ],
+        );
+
+      case RoutePaths.petitions:
+        return CustomAppBar(
+          context,
+          hasBackButton: true,
+          color:
+              Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
+                  ? AppColors.lightBlack
+                  : AppColors.white,
+          customTitle: Text(tr(context).change_name,
+              style: TextStyle(
+                color: Theme.of(context).iconTheme.color ==
+                        AppColors.lightThemeIconColor
+                    ? AppColors.lightBlack
+                    : AppColors.white,
+              )),
+          trailingActions: [
+            Container(
+              padding: EdgeInsets.only(right: Sizes.vMarginMedium(context)),
+              child: IconButton(
+                  alignment: Alignment.center,
+                  onPressed: () {
+                    AppDialogs.showInfo(context,
+                        message: tr(context).info_change_name);
+                  },
+                  icon: Icon(
+                    Icons.info_outline,
+                    color: Theme.of(context).iconTheme.color ==
+                            AppColors.lightThemeIconColor
+                        ? AppColors.lightBlack
+                        : AppColors.white,
+                  )),
+            )
+          ],
+        );
       default:
         return const SizedBox();
     }

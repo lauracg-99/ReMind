@@ -26,15 +26,16 @@ class SplashProvider {
     _mainCoreProvider.isConnectedToInternet().then((value) async {
       if (value) {
         initializeData().then(
-              (_) {
+              (_) async {
                 log('**** CRON FALSE');
                 GetStorage().write('CronSet',StorageKeys.falso);
                 GetStorage().write('reset',StorageKeys.falso);
-            NavigationService.pushReplacementAll(
-              NavigationService.context,
-              isNamed: true,
-              page: secondPage,
-            );
+                await _mainCoreProvider.initUser();
+                NavigationService.pushReplacementAll(
+                  NavigationService.context,
+                  isNamed: true,
+                  page: secondPage,
+                );
             if (secondPage == RoutePaths.homeBase) {
               //FirebaseMessagingService.instance.getInitialMessage();
             }
@@ -68,8 +69,9 @@ class SplashProvider {
 //    log('hasValidAuth $hasValidAuth');
     if (hasValidAuth) {
       //cancelamos los cron hechos para volver a ponerlos
-
+      secondPage = RoutePaths.homeBase;
       //si el email ha sido verificado si es supervisor
+/*
 
       bool isBoss = await _mainCoreProvider.isBoss();
 //      log('isBoss $isBoss');
@@ -89,6 +91,7 @@ class SplashProvider {
         //no es supervisor
         secondPage = RoutePaths.homeBase;
       }
+*/
 
     } else {
       //recheck notification

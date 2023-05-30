@@ -59,19 +59,19 @@ dependencies:
 
   cloud_firestore: #https://pub.dev/packages/cloud_firestore
 
-  flutter_material_pickers: ^3.1.4+1
+  #flutter_material_pickers: ^3.1.4+1
   jiffy: ^5.0.0
   flutter_animator: ^3.2.1
   animate_do: ^2.1.0
   intl: ^0.17.0-nullsafety
-  progress_dialog: ^1.2.4
+  #progress_dialog: ^1.2.4
   pull_to_refresh: ^2.0.0
   google_sign_in: ^5.3.3
-  circular_check_box: ^1.0.4
+  #circular_check_box: ^1.0.4
 
   flashy_tab_bar2: ^0.0.4
   awesome_notifications: ^0.7.4+1
-  firebase_messaging: ^12.0.0
+  firebase_messaging: ^13.1.0
   firebase_core_platform_interface: 4.5.1
   device_info_plus: ^4.0.0
   url_launcher: ^6.1.2
@@ -92,7 +92,7 @@ dependencies:
 
   #seleccionar varias cosas
   multi_select_flutter: ^4.1.2
-  smart_select: ^4.3.2
+  #smart_select: ^4.3.2
   sticky_headers: ^0.3.0+2
 
   #permisos
@@ -132,7 +132,7 @@ dependencies:
   day_picker: ^2.1.1
   getwidget: ^3.0.1
   chips_choice_null_safety: ^2.0.6
-  lite_rolling_switch: ^0.1.1
+  #lite_rolling_switch: ^0.1.1
   email_validator:
   toggle_switch: ^2.0.1
   cron: ^0.5.0
@@ -143,6 +143,7 @@ dependencies:
     git:
       url: https://github.com/Davenchy/flutter_launcher_icons.git
       ref: fixMinSdkParseFlutter2.8
+  cloud_functions: ^3.3.9
 
 
 

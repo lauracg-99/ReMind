@@ -1,11 +1,11 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 
+import '../../data/tasks/providers/task_provider.dart';
 import '../../domain/services/localization_service.dart';
 import '../routes/navigation_service.dart';
 import '../routes/route_paths.dart';
 import '../styles/app_colors.dart';
-import '../tasks/providers/task_provider.dart';
 import '../widgets/dialog_widget.dart';
 import 'dialog_message_state.dart';
 
@@ -33,12 +33,11 @@ class AppDialogs {
       textButton2: tr(context).cancel,
       onPressed: () {
         log('aceptar');
-        TaskNotifier.aceptar = true;
+
         NavigationService.goBack(context,rootNavigator: true);
       },
       onPressed2: (){
         log('NO aceptar');
-        TaskNotifier.aceptar = false;
         NavigationService.goBack(context,rootNavigator: true);
       }
     );
@@ -78,7 +77,7 @@ class AppDialogs {
     await DialogWidget.showCustomDialog(
       context: context,
       dialogWidgetState: DialogWidgetState.correct,
-      title: message,
+      title: tr(context).addTaskDone,
       textButton: tr(context).oK,
       onPressed: () {
         NavigationService.goBack(context,rootNavigator: true);
@@ -111,6 +110,18 @@ class AppDialogs {
       context: context,
       dialogWidgetState: DialogWidgetState.warning,
       title: tr(context).fill_core,
+      textButton: tr(context).oK,
+      onPressed: () {
+        NavigationService.goBack(context,rootNavigator: true);
+      },
+    );
+  }
+
+  static Future showWarningPersonalice(BuildContext context, {String? message}) async {
+    await DialogWidget.showCustomDialog(
+      context: context,
+      dialogWidgetState: DialogWidgetState.warning,
+      title: message,
       textButton: tr(context).oK,
       onPressed: () {
         NavigationService.goBack(context,rootNavigator: true);

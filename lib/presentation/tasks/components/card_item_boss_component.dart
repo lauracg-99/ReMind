@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:remind/data/tasks/providers/task_provider.dart';
 import '../../../common/storage_keys.dart';
 import '../../../data/tasks/models/task_model.dart';
 import '../../../domain/services/localization_service.dart';
@@ -12,7 +13,6 @@ import '../../widgets/buttons/custom_text_button.dart';
 import '../../widgets/card_button_component.dart';
 import '../../widgets/card_user_details_component.dart';
 import '../../widgets/custom_text.dart';
-import '../providers/task_provider.dart';
 import 'card_red_button_component.dart';
 
 
@@ -93,7 +93,7 @@ class CardItemBossComponent extends ConsumerWidget {
                     title: 'Deshacer',
                     isColored: false,
                     onPressed: () {
-                      ref.read(taskProvider.notifier).undoCheckTaskBoss(taskModel: taskModel);
+                      ref.read(taskProvider.notifier).unCheckTask(context,taskModel);
                     },
                   ),
                   ])
@@ -103,7 +103,7 @@ class CardItemBossComponent extends ConsumerWidget {
     );
   }
 
-  showAlertDialogDelete(BuildContext context, ref) {
+  showAlertDialogDelete(BuildContext context, WidgetRef ref) {
     // set up the buttons
     Widget okButton = CustomTextButton(
       child: CustomText.h4(
@@ -112,7 +112,7 @@ class CardItemBossComponent extends ConsumerWidget {
           color: AppColors.blue
       ),
       onPressed:  () {
-        ref.read(taskProvider.notifier).deleteSingleTaskDone(taskModel: taskModel);
+        ref.watch(taskProvider.notifier).deleteTask(context,taskModel);
         NavigationService.goBack(context,rootNavigator: true);
       },
     );

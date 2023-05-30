@@ -11,7 +11,6 @@ import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/custom_text.dart';
 import '../../../widgets/loading_indicators.dart';
 import '../../components/card_item_component.dart';
-import '../../providers/task_provider.dart';
 import '../../providers/task_to_do.dart';
 
 class CompletedTasks extends HookConsumerWidget {
@@ -20,11 +19,10 @@ class CompletedTasks extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
     GetStorage().write('screen','complete');
-    final taskToDoStreamAll = ref.watch(taskMultipleToDoStreamProviderDONE);
+    final taskToDoStreamAll = ref.watch(getTasksDone);
     return taskToDoStreamAll.when(
-        data: (taskToDo) {
-          log('CompletedTasks length ${taskToDo[0].length} y boss ${taskToDo[1].length}');
-          return (taskToDo.isEmpty || (taskToDo[0].length == 0 && taskToDo[1].length == 0))
+        data: (taskDone) {
+          return (taskDone.isEmpty)
               ? CustomText.h4(
                   context,
                   tr(context).noTask,
@@ -39,26 +37,13 @@ class CompletedTasks extends HookConsumerWidget {
                   separatorBuilder: (context, index) => SizedBox(
                     height: Sizes.vMarginHigh(context),
                   ),
-                  itemCount: (taskToDo[0].length + taskToDo[1].length),
+                  itemCount: taskDone.length,
                   itemBuilder: (context, index) {
                     List<Widget> list = [];
-                    var supervised = taskToDo[0].length;
-                    var boss = taskToDo[1].length;
-
-                    if (index < supervised) {
-                      if(taskToDo[0][index].cancelNoti != StorageKeys.falso){
-                        ref.read(taskProvider.notifier).deleteSingleTask(taskModel: taskToDo[0][index]);
-                      }
-                      list.add( CardItemComponent(taskModel: taskToDo[0][index],));
-                    } else {
-                      if (index - supervised < boss) {
-                        var indexBoss = index - supervised;
-                        if(taskToDo[1][indexBoss].cancelNoti != StorageKeys.falso){
-                          ref.read(taskProvider.notifier).deleteTaskbyBoss(taskModel: taskToDo[1][indexBoss]);
-                        }
-                        list.add(CardItemComponent(taskModel: taskToDo[1][indexBoss],));
-                      }
-                    }
+                    list.add(
+                        CardItemComponent(
+                          taskModel: taskDone[index],
+                        ));
                     return Column(children: list);
                   },
                 );

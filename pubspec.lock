@@ -209,14 +209,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.6"
-  circular_check_box:
-    dependency: "direct main"
-    description:
-      name: circular_check_box
-      sha256: "045a805f082a90e5d0d7ee8339a5600d9c71590ad1e40dcf2014d1ad0dcdbfd5"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.4"
   clock:
     dependency: transitive
     description:
@@ -249,6 +241,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.8.10"
+  cloud_functions:
+    dependency: "direct main"
+    description:
+      name: cloud_functions
+      sha256: "178269fe538500e7a08474772f422bc288278aa872b7ff5cfd95c2353b6dedb1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.3.9"
+  cloud_functions_platform_interface:
+    dependency: transitive
+    description:
+      name: cloud_functions_platform_interface
+      sha256: "0a115312ee3847ec3587ba23efa121b06190ce558955c1c2d86a1f142034d427"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.1.19"
+  cloud_functions_web:
+    dependency: transitive
+    description:
+      name: cloud_functions_web
+      sha256: ae20bccbfab929c9246bfe9064d00debc950bcf86ce6be1ca5085de814075dbd
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.3.7"
   code_builder:
     dependency: transitive
     description:
@@ -557,10 +573,10 @@ packages:
     dependency: "direct main"
     description:
       name: firebase_messaging
-      sha256: "3a2e5c067a52868afbcefcdffa06ef2aa84a6e7bf5c8bc5eeed9d8dd0c7671bc"
+      sha256: "6126f8f6f3bba6e3ffff05300711615c388eb31e0a7431cebe5514f6572cbdff"
       url: "https://pub.dev"
     source: hosted
-    version: "12.0.3"
+    version: "13.1.0"
   firebase_messaging_platform_interface:
     dependency: transitive
     description:
@@ -646,14 +662,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.3.0"
-  flutter_colorpicker:
-    dependency: transitive
-    description:
-      name: flutter_colorpicker
-      sha256: "458a6ed8ea480eb16ff892aedb4b7092b2804affd7e046591fb03127e8d8ef8b"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.3"
   flutter_datetime_picker:
     dependency: "direct main"
     description:
@@ -725,14 +733,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_material_pickers:
-    dependency: "direct main"
-    description:
-      name: flutter_material_pickers
-      sha256: "982f9cb809d156d71256155e4c97400f09a9664df50c992e8701a9026caf0f4d"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.1.4+1"
   flutter_picker:
     dependency: "direct main"
     description:
@@ -1111,14 +1111,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.1"
-  lite_rolling_switch:
-    dependency: "direct main"
-    description:
-      name: lite_rolling_switch
-      sha256: "79dbd6a7907234b626ca2b0d3bab90a1de8cf9ca930420c1b4b68d0eb7374076"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.1"
   loading_animations:
     dependency: "direct main"
     description:
@@ -1399,14 +1391,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.2.4"
-  progress_dialog:
-    dependency: "direct main"
-    description:
-      name: progress_dialog
-      sha256: "2f92c7664ef569939c8c2c38bdf770e2d791d4e9075efe38d7fff0940afbcadd"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.2.4"
   provider:
     dependency: "direct main"
     description:
@@ -1540,14 +1524,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
-  smart_select:
-    dependency: "direct main"
-    description:
-      name: smart_select
-      sha256: c0cb49aeb5fb9f9d8138eb02c8c29f307c93c72d4a70a38052dcd34471ab6578
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.3.2"
   source_gen:
     dependency: transitive
     description:

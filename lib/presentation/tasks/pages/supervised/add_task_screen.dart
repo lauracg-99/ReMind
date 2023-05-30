@@ -8,7 +8,9 @@ import 'package:get_storage/get_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../../common/storage_keys.dart';
 import '../../../../data/tasks/models/task_model.dart';
+import '../../../../data/tasks/providers/task_provider.dart';
 import '../../../../domain/services/localization_service.dart';
+import '../../../routes/navigation_service.dart';
 import '../../../screens/popup_page_nested.dart';
 import '../../../styles/app_colors.dart';
 import '../../../styles/sizes.dart';
@@ -25,7 +27,6 @@ import '../../providers/name_task_provider.dart';
 import '../../providers/repe_noti_provider.dart';
 import '../../providers/time_range_picker_provider.dart';
 import '../../utils/utilities.dart';
-import '../../providers/task_provider.dart';
 
 
 class AddTaskScreen extends HookConsumerWidget {
@@ -181,20 +182,16 @@ class AddTaskScreen extends HookConsumerWidget {
                         : AppColors.darkThemePrimary,
                     onPressed: () async {
 
-                      String isNotificationSet = StorageKeys.falso;
                         if (days.tags.toString() == '[]') {
                           days.tags.add(getStrDay(DateTime
                               .now()
                               .weekday));
                         }
                       if (repetitions.getBoth() != 0) {
-                          //para luego poder cancelar las notificaciones
-                          List<int> id = [];
                          // if(range.getSumaRange() > repetitions.getBoth()) {
                               TaskModel task = TaskModel(
                                   taskName: nameController.text,
                                   days: saveDays(days.tags.toString()),
-                                  idNotification: id,
                                   notiHours: notiHours(range.getIniHour(),
                                       range.getfinHour(), repetitions.getBt()),
                                   begin: range.getIniHour(),
@@ -205,14 +202,19 @@ class AddTaskScreen extends HookConsumerWidget {
                                   lastUpdate:
                                       Timestamp.fromDate(DateTime.now()),
                                   taskId: '',
-                                  isNotificationSet: StorageKeys.verdadero,
-                                  cancelNoti: StorageKeys.falso);
+                                  authorUID: GetStorage().read('uidUsuario'),
+                              );
 
-                              ref.read(taskProvider.notifier).addDocToFirebase(context, task);
-
-                            /*}else{
-                              AppDialogs.showWarningAddRange(context);
-                            }*/
+                              ref.read(taskProvider.notifier).addTask(task).then((value) =>
+                                  value.fold((failure) {
+                                        AppDialogs.showErrorDialog(context, message: failure.message);
+                                      },
+                                          (success) {
+                                    log('*** add ok');
+                                        AppDialogs.addTaskOK(context);
+                                      }
+                                  )
+                              );
                           } else {
                         AppDialogs.showErrorNeutral(context,
                             message: tr(context).rangeWarning);

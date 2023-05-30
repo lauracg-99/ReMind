@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import '../../common/storage_keys.dart';
 import '../../domain/services/localization_service.dart';
 import '../providers/home_base_nav_providers.dart';
 import '../styles/app_images.dart';
@@ -54,6 +56,16 @@ class MainDrawer extends ConsumerWidget {
                     indexNotifier.state = 2;
                   },
                 ),
+                (GetStorage().read(StorageKeys.rol) == StorageKeys.SUPERVISOR)
+                ? DrawerItem(
+                  title: 'Supervisados',
+                  icon: AppImages.name,
+                  onTap: () {
+                    scaffoldKey.currentState!.openEndDrawer();
+                    indexNotifier.state = 3;
+                  },
+                )
+                : SizedBox(),
 
 
                 SizedBox(

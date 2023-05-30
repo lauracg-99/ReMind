@@ -9,6 +9,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../common/storage_keys.dart';
 import '../../../../data/tasks/models/task_model.dart';
+import '../../../../data/tasks/providers/task_provider.dart';
 import '../../../../domain/services/localization_service.dart';
 import '../../../screens/popup_page_nested.dart';
 import '../../../styles/app_colors.dart';
@@ -24,7 +25,6 @@ import '../../components/time_picker_component.dart';
 import '../../providers/multi_choice_provider.dart';
 import '../../providers/name_task_provider.dart';
 import '../../providers/repe_noti_provider.dart';
-import '../../providers/task_provider.dart';
 import '../../providers/time_range_picker_provider.dart';
 import '../../utils/utilities.dart';
 
@@ -193,13 +193,11 @@ class AddTaskScreenBoss extends HookConsumerWidget {
                         }
 
                       if (repetitions.getBoth() != 0) {
-                        List<int> id = [];
                       // no puede repertirse cada más minutos que rango hay
                        //if(range.getSumaRange() > repetitions.getBoth()) {
                               TaskModel task = TaskModel(
                                   taskName: nameController.text,
                                   days: saveDays(days.tags.toString()),
-                                  idNotification: id,
                                   notiHours: notiHours(range.getIniHour(),
                                       range.getfinHour(), repetitions.getBt()),
                                   begin: range.getIniHour(),
@@ -210,15 +208,18 @@ class AddTaskScreenBoss extends HookConsumerWidget {
                                   lastUpdate:
                                       Timestamp.fromDate(DateTime.now()),
                                   taskId: '',
-                                  isNotificationSet: StorageKeys.falso,
-                                  cancelNoti: StorageKeys.falso
+                                  authorUID: GetStorage().read('uidUsuario'),
                                 );
 
-                              ref.read(taskProvider.notifier).addDocToFirebaseBoss(context, task);
+                              ref.read(taskProvider.notifier).addTask(task).then((value) =>
+                                  value.fold((failure) {
+                                    AppDialogs.showErrorDialog(context, message: failure.message);
+                                  }, (success) {
+                                    AppDialogs.addTaskOK(context);
+                                  }
+                                  )
+                              );
 
-                            /*}else{
-                                  AppDialogs.showWarningAddRange(context);
-                            }*/
                           } else{
                         AppDialogs.showWarning(context);
                   };
@@ -226,15 +227,6 @@ class AddTaskScreenBoss extends HookConsumerWidget {
               );
                   }
                   )
-              /*: CustomButton(
-              text: 'Añadir',
-              buttonColor: AppColors.grey,
-              onPressed: (){
-                AppDialogs.showWarning(context);
-              }),*/
-              //tasksRepoProvider
-              //
-              //const LogoutComponent(),
             ],
           ),
         ),

@@ -12,12 +12,11 @@ import '../../widgets/custom_text_field.dart';
 class ResetTextFieldsSection extends StatelessWidget {
   const ResetTextFieldsSection({
     required this.emailController,
-    required this.onFieldSubmitted,
+
     Key? key,
   }) : super(key: key);
 
   final TextEditingController emailController;
-  final Function(String)? onFieldSubmitted;
 
   @override
   Widget build(BuildContext context) {

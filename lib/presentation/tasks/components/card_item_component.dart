@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../common/storage_keys.dart';
 import '../../../data/tasks/models/task_model.dart';
+import '../../../data/tasks/providers/task_provider.dart';
 import '../../../domain/services/localization_service.dart';
 import '../../routes/navigation_service.dart';
 import '../../routes/route_paths.dart';
@@ -13,7 +14,6 @@ import '../../widgets/buttons/custom_text_button.dart';
 import '../../widgets/card_button_component.dart';
 import '../../widgets/card_user_details_component.dart';
 import '../../widgets/custom_text.dart';
-import '../providers/task_provider.dart';
 import 'card_red_button_component.dart';
 
 class CardItemComponent extends ConsumerWidget {
@@ -140,7 +140,7 @@ class CardItemComponent extends ConsumerWidget {
                       title: 'Deshacer', //todo: tr
                       isColored: false,
                       onPressed: () {
-                        ref.watch(taskProvider.notifier).undoCheckTask(taskModel: taskModel);
+                        ref.read(taskProvider.notifier).unCheckTask(context,taskModel);
                       },
                     )
                         : const SizedBox()
@@ -152,7 +152,7 @@ class CardItemComponent extends ConsumerWidget {
     );
   }
 
-  showAlertDialogCheck(BuildContext context, ref) {
+  showAlertDialogCheck(BuildContext context, WidgetRef ref) {
 
     // set up the buttons
     Widget okButton = CustomTextButton(
@@ -163,9 +163,9 @@ class CardItemComponent extends ConsumerWidget {
       ),
       onPressed:  () {
         if (taskModel.editable == StorageKeys.verdadero){
-          ref.watch(taskProvider.notifier).checkTask(context, taskModel: taskModel);
+          ref.read(taskProvider.notifier).checkTask(context, taskModel);
         }else{
-          ref.watch(taskProvider.notifier).checkTaskBoss(taskModel: taskModel);
+          ref.read(taskProvider.notifier).checkTaskBoss(context, taskModel);
         }
 
         NavigationService.goBack(context,rootNavigator: true);
@@ -204,7 +204,7 @@ class CardItemComponent extends ConsumerWidget {
     );
   }
 
-  showAlertDialogDelete(BuildContext context, ref) {
+  showAlertDialogDelete(BuildContext context, WidgetRef ref) {
     // set up the buttons
     Widget okButton = CustomTextButton(
       child: CustomText.h4(
@@ -213,8 +213,7 @@ class CardItemComponent extends ConsumerWidget {
           color: AppColors.blue
       ),
       onPressed:  () {
-        ref.read(taskProvider.notifier).checkDeleteNoti(taskModel: taskModel);
-
+        ref.read(taskProvider.notifier).deleteTask(context, taskModel);
         NavigationService.goBack(context,rootNavigator: true);
       },
     );

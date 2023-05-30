@@ -28,7 +28,6 @@ class RegisterTextFieldsSection extends StatelessWidget {
     required this.see,
     required this.iconButton2,
     required this.see2,
-    required this.onFieldSubmitted,
     Key? key,
   }) : super(key: key);
 
@@ -37,7 +36,6 @@ class RegisterTextFieldsSection extends StatelessWidget {
   final TextEditingController emailController2;
   final TextEditingController passwordController;
   final TextEditingController passwordController2;
-  final Function(String)? onFieldSubmitted;
   final IconButton iconButton;
   final bool see;
 
@@ -109,7 +107,6 @@ class RegisterTextFieldsSection extends StatelessWidget {
         textInputAction: TextInputAction.next,
         obscureText: see,
         suffixIcon: iconButton,
-        onFieldSubmitted: onFieldSubmitted,
       ),
 
       CustomTextField(
@@ -121,7 +118,6 @@ class RegisterTextFieldsSection extends StatelessWidget {
         textInputAction: TextInputAction.next,
         obscureText: see2,
         suffixIcon: iconButton2,
-        onFieldSubmitted: onFieldSubmitted,
       ),
 
       CustomCheckBoxComponent()

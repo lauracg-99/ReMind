@@ -123,12 +123,12 @@ class MainCoreProvider {
   }
 
 
-  setSupervisedUid(UserModel userModel) async {
+/*  setSupervisedUid(UserModel userModel) async {
     await _userRepo.setSupervisedUid(userModel);
    GetStorage().write('uidSup',userModel.uidSupervised);
    GetStorage().write('emailSup',userModel.email);
 
-  }
+  }*/
 
   Future<bool> isBossValid() async {
     return  _authRepo.isVerifiedEmail();
@@ -149,6 +149,14 @@ class MainCoreProvider {
         }
       },
     );
+  }
+
+  Future initUser() async {
+    String uID = getCurrentUserAuthUid() ?? '';
+
+    if(uID != ''){
+      await _userRepo.getUserData(uID);
+    }
   }
 
   Future logoutUser() async {
