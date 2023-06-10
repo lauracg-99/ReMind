@@ -28,34 +28,13 @@ class RepeNotiComponent extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ref){
     var repeNoti = ref.watch(timeRepetitionProvider.notifier);
-
-    String range = ref.read(timeRangeButtonProvider.notifier).getHours();
-    String hour = ref.watch(timeRepetitionProvider.notifier).getHr();
-    String min = ref.watch(timeRepetitionProvider.notifier).getMinute();
-
     bool chose = ref.read(timeRepetitionProvider.notifier).getChoosen();
-    //var warning =  ref.read(timeRepetitionProvider.notifier).getW();
+
     return Column(children:[
-      SizedBox(height: Sizes.vMarginSmall(context),),
-      CustomText.h3(
-        context,
-        tr(context).repeat_noti,
-        color: Theme.of(context).textTheme.headline4!.color,
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-        textAlign: TextAlign.center,
-      ),
-      SizedBox(height: Sizes.vMarginSmall(context),),
-      //(!ref.read(timeRepetitionProvider.notifier).getChoosen())
       (chose)
       ? CupertinoTimerPicker(
           mode: CupertinoTimerPickerMode.hm,
           onTimerDurationChanged: (value){
-            //if(hours != '00:00 - 00:00'){
-
-            /*log('VALUE Hr ${value.inHours.toString()}');
-              log('VALUE MIn ${value.inMinutes.toString()}');*/
-
               repeNoti.setHr(value.inHours.toString());
               repeNoti.setMinuteHour(value.inHours, value.inMinutes);
               repeNoti.setMin(value.inMinutes.toString());
@@ -64,69 +43,15 @@ class RepeNotiComponent extends ConsumerWidget {
 
               ref.refresh(timeRepetitionProvider.notifier);
 
-                  /*ref
-                      .watch(timeRepetitionProvider.notifier)
-                      .setHr(value.inMinutes.toString());
-                  ref
-                      .watch(timeRepetitionProvider.notifier)
-                      .setW(getRange(range, repeNoti.getHr()));*/
-
-
-
               })
         : SizedBox(),
 
       //TODO STRING
-      CustomText.h3(context, repeNoti.getTime()),
-
-      /*Container(
-        child: Card(
-          elevation: 6,
-          shadowColor: AppColors.blue,
-          margin: EdgeInsets.all(5),
-          shape: RoundedRectangleBorder(
-            borderRadius:
-            BorderRadius.circular(Sizes.cardRadius(context)),
-          ),
-          child:
-            GestureDetector(
-              child: Container(padding: EdgeInsets.all(10), child:CustomText.h3(context,tiempo(min))),
-              onTap: (){
-                ref.watch(timeRepetitionProvider.notifier).setChoosen(true);
-            },),
-        ),
-
-        ),*/
+      //CustomText.h3(context, repeNoti.getTime()),
 
       SizedBox(height: Sizes.vMarginSmall(context),),
 
       SizedBox(height: Sizes.vMarginMedium(context),),
-
-      /*(modo != 'mod')
-          ? Row(children: [
-        SizedBox(width: Sizes.vMarginHighest(context)*1.2,),
-        CupertinoButton(
-            child: CustomText.h4(context,'Cancelar',color: AppColors.red),
-            onPressed: (){
-              ref.watch(timeRepetitionProvider.notifier).setChoosen(true);
-              print(chose);
-            }),
-        SizedBox(width: Sizes.vMarginHighest(context)*3.3,),
-        (ref.read(timeRepetitionProvider.notifier).getW() || min == '0')
-            ? CupertinoButton(
-            child: CustomText.h4(context,'Ok',color: AppColors.grey),
-            onPressed: (){
-              //nada
-            })
-            : CupertinoButton(
-            child: CustomText.h4(context,'Ok',color: AppColors.blue),
-            onPressed: (){
-              ref.watch(timeRepetitionProvider.notifier).setChoosen(false);
-              print(chose);
-            })
-      ])
-          : SizedBox(),*/
-
 
     ])
 

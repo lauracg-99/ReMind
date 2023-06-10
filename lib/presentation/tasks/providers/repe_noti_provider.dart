@@ -98,7 +98,10 @@ class TimeRepetitionButton extends StateNotifier<String> {
   }
 
   clean(){
-    hr='';
+    both='';
+    minuteInt = 0;
+    hourInt = 0;
+
   }
   List<Widget> actions = [];
 

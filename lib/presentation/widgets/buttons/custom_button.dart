@@ -101,7 +101,9 @@ class CustomButton extends StatelessWidget {
             CustomText.h4(
               context,
               text!,
-              color: buttonColor == null ? const Color(0xffffffff) : null,
+              color: buttonColor == null
+                  ? const Color(0xffffffff)
+                  : null,
               weight: FontStyles.fontWeightMedium,
               alignment: Alignment.center,
             ),

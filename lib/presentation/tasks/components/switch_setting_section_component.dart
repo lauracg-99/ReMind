@@ -2,6 +2,7 @@ import 'package:chips_choice_null_safety/chips_choice_null_safety.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get_storage/get_storage.dart';
 import '../../../data/tasks/models/task_model.dart';
 import '../../../domain/services/localization_service.dart';
 import '../../routes/navigation_service.dart';
@@ -9,6 +10,7 @@ import '../../routes/route_paths.dart';
 import '../../styles/app_colors.dart';
 import '../../styles/sizes.dart';
 import '../providers/multi_choice_provider.dart';
+import '../utils/utilities.dart';
 
 
 class ChooseDaySectionComponent extends ConsumerWidget {
@@ -42,10 +44,11 @@ class ChooseDaySectionComponent extends ConsumerWidget {
                   child: ChipsChoice<String>.multiple(
                     value: multiChoiceValue,
                     onChanged: (value) {
+
                       ref
                           .watch(selectDaysMultiChoice.notifier)
                           .changeChoice(val: value, mix: multiChoiceValue);
-
+                      GetStorage().write('listaDias', ordenarDias(value));
                       //con esto pillo los dias
                       //print(ref.read(selectDaysMultiChoice.notifier).tags);
                     },
@@ -62,15 +65,6 @@ class ChooseDaySectionComponent extends ConsumerWidget {
                       ),
                     ),
                   ),
-           /*: CustomText.h4(
-            context,
-            'Se repetirá solamente hoy ',
-            color: Theme.of(context).textTheme.headline4!.color,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-          ),*/
-
           SizedBox(
             height: Sizes.vMarginMedium(context),
           ),
@@ -78,14 +72,14 @@ class ChooseDaySectionComponent extends ConsumerWidget {
   }
 
   static List<String> daysList = [
-    "Lunes",
-    "Martes",
-    "Miércoles",
-    "Jueves",
-    "Viernes",
-    "Sábado",
-    "Domingo",
-    "Todos los días"
+    'Lunes',
+    'Martes',
+    'Miércoles',
+    'Jueves',
+    'Viernes',
+    'Sábado',
+    'Domingo',
+    'Todos los días'
   ];
 
   // multiple choice value

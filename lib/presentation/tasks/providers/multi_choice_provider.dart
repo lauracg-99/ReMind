@@ -18,6 +18,16 @@ class MultiChoice extends StateNotifier<List<String>> {
     tags = selectedChoices;
   }
 
+   List<String> semana = [
+    "Lunes",
+    "Martes",
+    "Miércoles",
+    "Jueves",
+    "Viernes",
+    "Sábado",
+    "Domingo",
+  ];
+
   changeChoice({required List<String> val,required List<String> mix }){
     if (val.contains("Todos los días")) {
       if (val.last != "Todos los días") {
@@ -25,9 +35,14 @@ class MultiChoice extends StateNotifier<List<String>> {
       } else {
         val = ["Todos los días"];
       }
+    } else {
+      if(val.contains("Lunes") && val.contains("Martes") && val.contains("Miércoles")
+          && val.contains("Jueves") && val.contains("Viernes")
+          && val.contains("Sábado") &&  val.contains("Domingo")){
+        val = ["Todos los días"];
+      }
     }
-    //daySelectController.text = getDiasString(sortDay(tags)).toString();
-   // print('multi '+mix.toString());
+
     mix=val;
     tags = mix;
     state = mix;

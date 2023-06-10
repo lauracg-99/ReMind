@@ -187,3 +187,54 @@ String getTranslateDay(){
   }
   return day;
 }
+
+List<String> ordenarDias(List<String> dias){
+  return getDiasString(sortDay(dias));
+}
+
+List<dynamic> sortDay(List<String> selectedDia) {
+  List<dynamic> numbers = [];
+
+  for (var element in selectedDia) {
+    numbers.add(mapDays[element]);
+  }
+  numbers.sort();
+  return numbers;
+}
+
+Map<String, dynamic> mapDays = {
+  "Lunes": 1,
+  "Martes": 2,
+  "Miércoles": 3,
+  "Jueves": 4,
+  "Viernes": 5,
+  "Sábado": 6,
+  "Domingo": 7,
+  "Todos los días": 8
+  //"Todos los días"
+};
+
+List<String> daysList = [
+  'Lunes',
+  'Martes',
+  'Miércoles',
+  'Jueves',
+  'Viernes',
+  'Sábado',
+  'Domingo',
+  'Todos los días'
+];
+
+List<String> getDiasString(List<dynamic> numeros) {
+  List<String> tags = [];
+  numeros.forEach((element) {
+    //print(element.toString());
+    if (element < 8) {
+      //va de 0..7 no de 1..8
+      tags.add(daysList.elementAt(element - 1));
+    } else {
+      tags.add("Todos los días");
+    }
+  });
+  return tags;
+}

@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import '../../../domain/services/localization_service.dart';
 import '../../styles/app_colors.dart';
 import '../../styles/sizes.dart';
+import '../../widgets/buttons/custom_text_button.dart';
 import '../../widgets/custom_text.dart';
 
 //Create a Provider
@@ -55,8 +56,8 @@ class TimeRangeButton extends StateNotifier<String> {
   }*/
 
   clean(){
-    hi='';
-    hf ='';
+    hi = '00:00';
+    hf = '00:00';
   }
 
   Picker ps = Picker(
@@ -97,13 +98,44 @@ class TimeRangeButton extends StateNotifier<String> {
     return hora;
   }
 
+
   showPicker(BuildContext context){
+
+    Widget okButton = CustomTextButton(
+      child: CustomText.h4(context, tr(context).oK, color: AppColors.blue),
+        onPressed: (){
+          //log('okey');
+
+          ps.onConfirm!(ps, ps.selecteds);
+          pe.onConfirm!(pe, pe.selecteds);
+
+
+          horaInicial = hi;
+          horaFinal = hf;
+
+          var inputFormat = DateFormat.Hm();
+          var inputDateInicio = inputFormat.parse(hi);
+          var inputDateFin = inputFormat.parse(hf);
+
+          ref.refresh(timeRangeButtonProvider);
+          navigationPop(context);
+
+        }
+    );
+
+    Widget cancelButton = CustomTextButton(
+      child: CustomText.h4(context, tr(context).cancel, color: AppColors.red),
+      onPressed: () {
+        ref.refresh(timeRangeButtonProvider);
+        navigationPop(context);
+      },
+    );
     showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text(tr(context).choose_range),
-            actions: actions,
+            actions: [cancelButton, okButton],
             content: Container(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,85 +145,6 @@ class TimeRangeButton extends StateNotifier<String> {
                   ps.makePicker(),
                    Text(tr(context).fin_range),
                   pe.makePicker(),
-
-                  SizedBox(
-                    height: Sizes.vMarginSmall(context),
-                  ),
-
-                  Row(
-                      children: [
-                        SizedBox(
-                            height: 50,
-                            width: 120,
-                            child: CupertinoButton(
-
-                                child: CustomText.h4(context,'Cancelar',color: AppColors.red,),
-                                onPressed: (){
-                                  // todo borrar hora no valida
-                                  ref.refresh(timeRangeButtonProvider);
-                                  navigationPop(context);
-                                })),
-
-                        SizedBox(
-                          width: Sizes.vMarginSmallest(context),
-                        ),
-
-                        SizedBox(
-                        height: 50,
-                        width: 120,
-                        child: CupertinoButton(
-                          child: CustomText.h4(context,'Guardar',color: AppColors.blue,),
-                          onPressed: (){
-                            //log('okey');
-
-                            ps.onConfirm!(ps, ps.selecteds);
-                            pe.onConfirm!(pe, pe.selecteds);
-
-
-                            horaInicial = hi;
-                            horaFinal = hf;
-
-                            var inputFormat = DateFormat.Hm();
-                            var inputDateInicio = inputFormat.parse(hi);
-                            var inputDateFin = inputFormat.parse(hf);
-
-                            //if(inputDateInicio.isAfter(inputDateFin)){//AppDialogs.showErrorNeutral(context,message: tr(context).rangeWarning);}
-
-                            //log('oneTime TRPP ${!oneTime}');
-                            /*if(!oneTime) {
-                              if(inputDateInicio.minute <= DateTime.now().minute) {
-                                //log(' first if ${inputDateInicio.minute} ${DateTime.now().minute}');
-                                if(inputDateInicio.hour <= DateTime.now().hour){
-                                  //log(' second if ${inputDateInicio.hour} ${DateTime.now().hour}');
-                                  //navigationPop(context);
-                                  AppDialogs.showErrorNeutral(context,
-                                      message: 'Si es para hoy no se puede viajar al pasado, '
-                                          'tiene que ser antes de: '
-                                          '${DateTime.now().hour} : ${DateTime.now().minute} o elige otro día');
-                                  //navigationPop(context);
-                                }else{
-                                  ref.refresh(timeRangeButtonProvider);
-                                  navigationPop(context);
-                                }
-                              }else{
-                                ref.refresh(timeRangeButtonProvider);
-                                navigationPop(context);
-                              }
-
-                            }else{*/
-                              ref.refresh(timeRangeButtonProvider);
-                              navigationPop(context);
-
-
-                            //state = '$horaInicial - $horaFinal';
-                            //log(state);
-                            //ref.refresh(timeRangeButtonProvider);
-                            //navigationPop(context);
-                          }),),
-
-
-
-                    ]),
             ],
               ),
             ),
