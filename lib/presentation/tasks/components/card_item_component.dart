@@ -162,11 +162,12 @@ class CardItemComponent extends ConsumerWidget {
           color: AppColors.blue
       ),
       onPressed:  () {
-        if (taskModel.editable == StorageKeys.verdadero){
+        ref.read(taskProvider.notifier).checkTask(context, taskModel);
+        /*if (taskModel.editable == StorageKeys.verdadero){
           ref.read(taskProvider.notifier).checkTask(context, taskModel);
         }else{
           ref.read(taskProvider.notifier).checkTaskBoss(context, taskModel);
-        }
+        }*/
 
         NavigationService.goBack(context,rootNavigator: true);
       },

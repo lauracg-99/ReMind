@@ -4,8 +4,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:remind/presentation/solicitudes/components/num_solicitudes_component.dart';
+import '../../common/storage_keys.dart';
 import '../../domain/services/localization_service.dart';
 import '../../domain/services/platform_service.dart';
 import '../providers/home_base_nav_providers.dart';
@@ -16,6 +21,7 @@ import '../styles/app_colors.dart';
 import '../styles/sizes.dart';
 import '../widgets/custom_app_bar_widget.dart';
 import '../widgets/custom_text.dart';
+import 'package:get_storage/get_storage.dart';
 import 'dialogs.dart';
 
 /// The default height of the toolbar component of the [AppBar].
@@ -75,15 +81,32 @@ class HomeBaseNavAppBar extends ConsumerWidget
           scaffoldKey: scaffoldKey,
           hasMenuButton:
               PlatformService.instance.isMaterialApp() ? true : false,
-          /*customTitle: CustomText.h2(
+          customTitle: CustomText.h2(
             context,
-            tr(context).
-            appName,
-            color: Theme.of(context).colorScheme.primary,
+            GetStorage().read(StorageKeys.lastEmailSup) ?? '',
+            color: Theme.of(context).colorScheme.secondary,
             alignment: (supervisor) ? Alignment.centerRight : Alignment.center,
-          ),*/
+          ),
           centerTitle: true,
           trailingActions: [
+
+          (!supervisor)
+               ? IconButton(
+              alignment: Alignment.centerRight,
+              onPressed: () {
+                var message =
+                getMessage(GetStorage().read('screen'), context);
+                AppDialogs.showInfo(context, message: message);
+                //log('HOMEBASENAV ${GetStorage().read('screen')}');
+                //Navigator.pop(context);
+                //todo: segun pantalla
+              },
+              icon: Icon(
+                Icons.info_outline,
+                color: Theme.of(context).iconTheme.color,
+              ))
+              : SizedBox(),
+
             IconButton(
               alignment: Alignment.centerRight,
               onPressed: () {
@@ -124,20 +147,9 @@ class HomeBaseNavAppBar extends ConsumerWidget
                 ],
               ),
             ),
-            IconButton(
-                alignment: Alignment.centerRight,
-                onPressed: () {
-                  var message =
-                      getMessage(GetStorage().read('screen'), context);
-                  AppDialogs.showInfo(context, message: message);
-                  //log('HOMEBASENAV ${GetStorage().read('screen')}');
-                  //Navigator.pop(context);
-                  //todo: segun pantalla
-                },
-                icon: Icon(
-                  Icons.info_outline,
-                  color: Theme.of(context).iconTheme.color,
-                )),
+
+
+
             (supervisor)
                 ? IconButton(
                     alignment: Alignment.centerRight,
