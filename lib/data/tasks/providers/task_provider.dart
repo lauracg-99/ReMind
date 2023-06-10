@@ -11,7 +11,7 @@ import '../repo/task_repo.dart';
 final tasksRepoProvider = Provider<TasksRepo>((ref) => TasksRepo(ref));
 
 final taskProvider =
-StateNotifierProvider.autoDispose<TaskNotifier, TaskState>((ref) {
+StateNotifierProvider<TaskNotifier, TaskState>((ref) {
   return TaskNotifier(ref);
 });
 
@@ -169,14 +169,14 @@ class TaskNotifier extends StateNotifier<TaskState> {
     final result = await _tasksRepo.unCheckTaskBoss(taskModel: taskModel);
     return await result.fold(
             (failure) {
-          state = TaskState.error(errorText: failure.message);
-          AppDialogs.showErrorDialog(context, message: failure.message);
-          return Left(failure);
-        },
+              state = TaskState.error(errorText: failure.message);
+              AppDialogs.showErrorDialog(context, message: failure.message);
+              return Left(failure);
+            },
             (task) async {
-          state = const TaskState.available();
-          return Right(task);
-        }
+              state = const TaskState.available();
+              return Right(task);
+            }
     );
   }
 

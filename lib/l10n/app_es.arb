@@ -124,6 +124,7 @@
   "repeat_noti": "¿Cada cuantos minutos quieres que se repita la notificación?",
   "adv": "Advertencia",
   "adv_done": "Vas a marcar la tarea como hecha, ¿Seguimos?",
+  "adv_undo": "Vas a desmarcar la tarea como hecha, ¿Seguimos?",
   "adv_delete" : "Vas a borrar la tarea, ¿Seguimos?",
   "@_ROL": {
   },

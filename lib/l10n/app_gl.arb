@@ -124,6 +124,7 @@
   "repeat_noti": "Cada cantos minutos queres que se repita a notificación?",
   "adv": "Advertencia",
   "adv_done": "Vai marcar a tarefa como feita, continuamos?",
+  "adv_undo": "Vai desmarcar a tarefa como feita, continuamos?",
   "adv_delete" : "Vai eliminar a tarefa, continuamos?",
   "@_ROL": {
   },

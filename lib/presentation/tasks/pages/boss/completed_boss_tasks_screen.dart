@@ -24,28 +24,32 @@ class CompletedBossTasks extends HookConsumerWidget {
   Widget build(BuildContext context, ref) {
     GetStorage().write('screen','completeBoss');
     final taskToDoStreamAllCompleted = ref.watch(getTasksSupDone);
+    log('upv ${GetStorage().read(StorageKeys.uidUsuario)}');
+    log('dow ${GetStorage().read(StorageKeys.lastUIDSup)}');
     List<Supervised> listaUsuarios = ref.watch(userRepoProvider).userModel?.supervisados ?? [];
     return taskToDoStreamAllCompleted.when(
         data: (taskToDo) {
-          return (taskToDo.isEmpty )
+          log('length ${taskToDo.length}');
+          return (taskToDo.isEmpty)
               ? CustomText.h4(
-            context,
-            tr(context).noTask,
-            color: AppColors.grey,
-            alignment: Alignment.center,
-          )
+                context,
+                tr(context).noTask,
+                color: AppColors.grey,
+                alignment: Alignment.center,
+              )
               : ListView.separated(
-            padding: EdgeInsets.symmetric(
-              vertical: Sizes.screenVPaddingDefault(context),
-              horizontal: Sizes.screenHPaddingMedium(context),
-            ),
-            separatorBuilder: (context, index) => SizedBox(height: Sizes.vMarginHigh(context),),
-            itemCount: taskToDo.length,
-            itemBuilder: (context, index) {
-              List<Widget> list = [];
-              list.add(CardItemBossComponent(taskModel: taskToDo[index],));
-              return Column(children: list);
-            },
+                  padding: EdgeInsets.symmetric(
+                    vertical: Sizes.screenVPaddingDefault(context),
+                    horizontal: Sizes.screenHPaddingMedium(context),
+                  ),
+                  separatorBuilder: (context, index) => SizedBox(height: Sizes.vMarginHigh(context),),
+                  itemCount: taskToDo.length,
+                  itemBuilder: (context, index) {
+                    List<Widget> list = [];
+                    log('task ${taskToDo[index].taskName}');
+                    list.add(CardItemBossComponent(taskModel: taskToDo[index],));
+                    return Column(children: list);
+                  },
 
           );
         },

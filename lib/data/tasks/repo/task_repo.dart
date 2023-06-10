@@ -76,7 +76,6 @@ class TasksRepo {
 
   Stream<List<TaskModel>> getTasksDoneStreamSup() {
     return  _firebaseCaller.collectionStream<TaskModel>(
-      //uid de usuario
       path: FirestorePaths.taskPath(GetStorage().read(StorageKeys.lastUIDSup)),
       queryBuilder: (query) => query
           .where("done", isEqualTo: StorageKeys.verdadero)
@@ -340,7 +339,7 @@ class TasksRepo {
     return await _firebaseCaller.updateData(
       path: FirestorePaths.taskBossById(GetStorage().read(StorageKeys.lastUIDSup)!, taskId: taskModel.taskId),
       data: {
-        'done': StorageKeys.falso,
+        "done": StorageKeys.falso,
       },
       builder: (data) {
         if (data is! ServerFailure && data == true) {

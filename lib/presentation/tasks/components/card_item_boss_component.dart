@@ -93,7 +93,7 @@ class CardItemBossComponent extends ConsumerWidget {
                     title: 'Deshacer',
                     isColored: false,
                     onPressed: () {
-                      ref.read(taskProvider.notifier).unCheckTask(context,taskModel);
+                      showAlertDialogUnCheck(context, ref);
                     },
                   ),
                   ])
@@ -103,6 +103,52 @@ class CardItemBossComponent extends ConsumerWidget {
     );
   }
 
+  showAlertDialogUnCheck(BuildContext context, WidgetRef ref) {
+
+    // set up the buttons
+    Widget okButton = CustomTextButton(
+      child: CustomText.h4(
+          context,
+          tr(context).oK,
+          color: AppColors.blue
+      ),
+      onPressed:  () {
+        ref.read(taskProvider.notifier).unCheckTaskBoss(context, taskModel);
+        NavigationService.goBack(context,rootNavigator: true);
+      },
+    );
+
+    Widget cancelButton = CustomTextButton(
+      child: CustomText.h4(
+          context,
+          tr(context).cancel,
+          color: AppColors.red
+      ),
+      onPressed:  () {
+        NavigationService.goBack(context,rootNavigator: true);
+      },
+    );
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: CustomText.h2(context, tr(context).adv),
+      content: CustomText.h3(context,tr(context).adv_undo), // todo: tr
+      actions: [
+        cancelButton,
+        okButton,
+      ],
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(20.0))
+      ),
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
   showAlertDialogDelete(BuildContext context, WidgetRef ref) {
     // set up the buttons
     Widget okButton = CustomTextButton(
