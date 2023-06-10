@@ -81,10 +81,10 @@ class HomeBaseNavAppBar extends ConsumerWidget
           scaffoldKey: scaffoldKey,
           hasMenuButton:
               PlatformService.instance.isMaterialApp() ? true : false,
-          customTitle: CustomText.h2(
+          customTitle: CustomText.h1(
             context,
             GetStorage().read(StorageKeys.lastEmailSup) ?? '',
-            color: Theme.of(context).colorScheme.secondary,
+            color: Theme.of(context).iconTheme.color,
             alignment: (supervisor) ? Alignment.centerRight : Alignment.center,
           ),
           centerTitle: true,

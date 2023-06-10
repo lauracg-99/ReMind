@@ -50,8 +50,22 @@ class AddTaskScreenBoss extends HookConsumerWidget {
     final nameController = useTextEditingController(text: '');
 
     final w = (MediaQuery.of(context).size.width)/ 3;
-    Color red = Theme.of(context).inputDecorationTheme.errorBorder?.borderSide.color ?? Colors.redAccent;
-    Color blue = Theme.of(context).inputDecorationTheme.focusColor ?? Colors.blue;
+    var containerColor = Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
+        ? AppColors.white
+        : AppColors.lightBlack;
+
+    var shadow = Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
+        ? AppColors.white
+        : AppColors.lightBlack;
+
+    Color red = Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
+        ? Theme.of(context).inputDecorationTheme.errorBorder?.borderSide.color ?? Colors.redAccent
+        : Color(0xFF9B1C1C);
+
+    Color blue = Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
+        ? AppColors.lightThemePrimary
+        : AppColors.darkThemePrimary;
+        //Theme.of(context).inputDecorationTheme.focusColor ?? Colors.blue;
 
     if(GetStorage().read('listaDias') == null){
       GetStorage().write('listaDias',[]);
@@ -116,12 +130,12 @@ class AddTaskScreenBoss extends HookConsumerWidget {
                                                     decoration: BoxDecoration(
                                                       boxShadow: [
                                                         BoxShadow(
-                                                          color: Colors.blue.withOpacity(0.35),
+                                                          color: shadow.withOpacity(0.35),
                                                           offset: const Offset(0, 3),
                                                           blurRadius: 10,
                                                         ),
                                                       ],
-                                                      color: Colors.white,
+                                                      color: containerColor,
                                                       borderRadius: BorderRadius.circular(10.0),
                                                       border: (repetitions.getBt() == '')
                                                           ? Border.all(
@@ -187,12 +201,12 @@ class AddTaskScreenBoss extends HookConsumerWidget {
                                                     decoration: BoxDecoration(
                                                       boxShadow: [
                                                         BoxShadow(
-                                                          color: Colors.blue.withOpacity(0.35),
+                                                          color: shadow.withOpacity(0.35),
                                                           offset: const Offset(0, 3),
                                                           blurRadius: 10,
                                                         ),
                                                       ],
-                                                      color: Colors.white,
+                                                      color: containerColor,
                                                       borderRadius: BorderRadius.circular(10.0),
                                                       border: ('${range.getIniHour()} - ${range.getfinHour()}' == '00:00 - 00:00')
                                                           ? Border.all(
@@ -263,12 +277,12 @@ class AddTaskScreenBoss extends HookConsumerWidget {
                                                     decoration: BoxDecoration(
                                                         boxShadow: [
                                                           BoxShadow(
-                                                            color: Colors.blue.withOpacity(0.35),
+                                                            color: shadow.withOpacity(0.35),
                                                             offset: const Offset(0, 3),
                                                             blurRadius: 10,
                                                           ),
                                                         ],
-                                                        color: Colors.white,
+                                                        color: containerColor,
                                                         borderRadius: BorderRadius.circular(10.0),
                                                         border:
                                                         (GetStorage().read('listaDias').toString() == '[]')

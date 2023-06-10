@@ -37,6 +37,7 @@ class PendingPetitions extends HookConsumerWidget {
       body:petitionsStream.when(
         data: (petitionsToDo) {
           log('petitionsToDo ${petitionsToDo.length}');
+          var count = petitionsToDo.length;
           return (petitionsToDo.isEmpty)
               ? CustomText.h4(
                   context,
@@ -55,23 +56,28 @@ class PendingPetitions extends HookConsumerWidget {
                   itemCount: petitionsToDo.length,
                   itemBuilder: (context, index) {
                     List<Widget> list = [];
+                    //contamos el número de peticiones
                     if(petitionsToDo[index].estado == 'pendiente' || petitionsToDo[index].estado == 'rechazada'){
+                      log('add ${count}');
                       list.add(
                           PetitionCardItemComponent(
                             solicitud: petitionsToDo[index],
                           )
                       );
+                    } else {
+                      //restamos las que no estan pendientes ni rechazadas
+                      if (count > 0){
+                        count--;
+                      }
                     }
-
-                    if(list.isEmpty){
-                      list.add(CustomText.h4(
-                        context,
-                        'Sin notificaciones pendientes',
-                        color: AppColors.grey,
-                        alignment: Alignment.center,
-                      ));
-                    }
-                    return Column(children: list);
+                    return (count == 0)
+                        ? Column(children: [CustomText.h4(
+                            context,
+                            'Sin notificaciones pendientes',
+                            color: AppColors.grey,
+                            alignment: Alignment.center,
+                          )])
+                        : Column(children: list);
                   },
                 );
         },
