@@ -188,6 +188,36 @@ String getTranslateDay(){
   return day;
 }
 
+String tiempo(String hr){
+  String t = "";
+  //print(hr);
+  log('hr ${hr}');
+  if(hr != '00:00 - 00:00' && hr.isNotEmpty){
+    int minutos = int.parse(hr);
+    int hora = 0;
+    if (minutos > 60) {
+      log('pre m ${minutos}');
+      hora = (minutos / 60).truncate();
+      minutos = minutos - hora * 60;
+      log('h ${hora}');
+      log('m ${minutos}');
+      if(minutos != 0){
+        t = 'Repetir cada ${hora} horas ${minutos} minutos';
+      } else {
+        if(hora == 1){
+          t = 'Repetir cada ${hora} hora';
+        } else {
+          t = 'Repetir cada ${hora} horas';
+        }
+      }
+
+    } else {
+      t = 'Repetir cada ${minutos} minutos';
+    }
+  }
+  return t;
+}
+
 List<String> ordenarDias(List<String> dias){
   return getDiasString(sortDay(dias));
 }

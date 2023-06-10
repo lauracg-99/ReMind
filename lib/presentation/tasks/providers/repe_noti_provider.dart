@@ -132,8 +132,10 @@ class TimeRepetitionButton extends StateNotifier<String> {
       title: const Text("Selecciona cada cuanto quieres que se repita"),
       selectedTextStyle: const TextStyle(color: Colors.blue),
       onConfirm: (Picker picker, List value) {
+        log('value.toString() ${value.toString()}');
         var split = value.toString().replaceAll('[', '');
         split = split.replaceAll(']', '');
+        log('esto ${split}');
         hr = split;
       }
   );

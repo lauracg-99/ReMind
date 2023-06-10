@@ -419,22 +419,6 @@ class AddTaskScreen extends HookConsumerWidget {
   }
 
 
-  bool checkDatosAll(
-      String name, String days, String begin, String end, int numRepetition) {
-    bool check = false;
-    log('**** ' + name + days + begin + end + numRepetition.toString());
-
-    //dias
-    if (name != '' &&
-        days.isNotEmpty &&
-        begin != '' &&
-        end != '' &&
-        numRepetition != 0) {
-      check = true;
-    }
-    return check;
-  }
-
   showAlertDias(BuildContext context, WidgetRef ref) {
     // set up the buttons
     Widget okButton = CustomTextButton(
@@ -598,30 +582,5 @@ class AddTaskScreen extends HookConsumerWidget {
     GetStorage().write('listaDias',[]);
   }
 
-  String tiempo(String hr){
-    String t = "";
-    //print(hr);
-    log('hr ${hr}');
-    if(hr != '00:00 - 00:00' && hr.isNotEmpty){
-      int minutos = int.parse(hr);
-      int hora = 0;
-      if (minutos > 60) {
-        hora = (minutos / 60).truncate();
-        minutos = minutos - hora * 60;
-        if(minutos != 0){
-          t = 'Repetir cada ${hora} horas ${minutos} minutos';
-        } else {
-          if(hora == 1){
-            t = 'Repetir cada ${hora} hora';
-          } else {
-            t = 'Repetir cada ${hora} horas';
-          }
-        }
 
-      } else {
-        t = 'Repetir cada ${minutos} minutos';
-      }
-    }
-    return t;
-  }
 }

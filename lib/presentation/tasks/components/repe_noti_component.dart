@@ -35,10 +35,12 @@ class RepeNotiComponent extends ConsumerWidget {
       ? CupertinoTimerPicker(
           mode: CupertinoTimerPickerMode.hm,
           onTimerDurationChanged: (value){
+            log('value.inHours.toString() ${value.inHours.toString()}');
+            log('value.inMinutes.toString() ${value.inMinutes.toString()}');
               repeNoti.setHr(value.inHours.toString());
               repeNoti.setMinuteHour(value.inHours, value.inMinutes);
               repeNoti.setMin(value.inMinutes.toString());
-              var sum = value.inHours*60 + value.inMinutes;
+              var sum = value.inMinutes;
               repeNoti.setBoth(sum.toString());
 
               ref.refresh(timeRepetitionProvider.notifier);
