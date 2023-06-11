@@ -87,9 +87,13 @@ class HomeBaseNavAppBar extends ConsumerWidget
               PlatformService.instance.isMaterialApp() ? true : false,
           customTitle: CustomText.h1(
             context,
-            seeName ?? '',
+            (seeName == '')
+            ? (GetStorage().read(StorageKeys.lastNameSup) != null)
+              ? GetStorage().read(StorageKeys.lastNameSup)
+              : ''
+            : seeName,
             color: Theme.of(context).iconTheme.color,
-            alignment: (supervisor) ? Alignment.centerRight : Alignment.center,
+            alignment: Alignment.center,
           ),
           centerTitle: true,
           trailingActions: [

@@ -22,6 +22,7 @@ class StorageKeys {
 
   static const String lastUIDSup = 'lastUIDSup';
   static const String lastEmailSup = 'lastEmailSup';
+  static const String lastNameSup = 'lastNameSup';
   static const String supervisados = 'supervisados';
 
   static const String SUPERVISOR = 'supervisor';

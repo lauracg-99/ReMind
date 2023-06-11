@@ -17,19 +17,23 @@ import '../../../data/firebase/repo/firebase_caller.dart';
 import '../../../data/firebase/repo/firestore_paths.dart';
 import '../../../domain/auth/repo/user_repo.dart';
 import '../../routes/navigation_service.dart';
+import '../../routes/route_paths.dart';
 import '../../screens/popup_page_nested.dart';
 import '../../solicitudes/utils/app_bar_solicitudes.dart';
 import '../../styles/app_colors.dart';
 import '../../styles/app_images.dart';
 import '../../styles/sizes.dart';
 import '../../tasks/providers/task_to_do.dart';
+import '../../utils/dialog_message_state.dart';
 import '../../utils/dialogs.dart';
 import '../../widgets/buttons/custom_button.dart';
 import '../../widgets/buttons/custom_text_button.dart';
 import '../../widgets/cached_network_image_circular.dart';
 import '../../widgets/custom_text.dart';
+import '../../widgets/dialog_widget.dart';
 import '../../widgets/loading_indicators.dart';
 import '../card_supervised_details_components.dart';
+import '../components/name_supervised_component.dart';
 import '../components/supervised_card_item_component.dart';
 
 class SelectSupervised extends HookConsumerWidget {
@@ -37,7 +41,7 @@ class SelectSupervised extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    var usuario = ref.watch(userRepoProvider).getDatosUsuario(GetStorage().read(StorageKeys.uidUsuario));
+    //var usuario = ref.watch(userRepoProvider).getDatosUsuario(GetStorage().read(StorageKeys.uidUsuario));
     var supervisadosList = ref.watch(supervisoresProvider);
 
     return PopUpPageNested(
@@ -177,19 +181,43 @@ class SelectSupervised extends HookConsumerWidget {
                                       ),
                                       IconButton(
                                         icon: Icon(Icons.delete, color: AppColors.accentColorDark,),
-                                        onPressed: () {
-                                          //showAlertDialogDelete(context, ref, supervisado.supervisados![index].uId);
+                                        onPressed: () async {
+
                                           log('datos: ${GetStorage().read(StorageKeys.lastUIDSup)} '
                                               '${supervisado.supervisados![index].uId}');
                                           if(GetStorage().read(StorageKeys.lastUIDSup) == supervisado.supervisados![index].uId){
                                             ref.watch(userRepoProvider).updateSelectUserUIDLast();
+                                            ref.watch(nameSupervisedProvider.notifier).changeState(change: '');
                                           }
                                           ref.watch(userRepoProvider).deleteSupervisedByUID( supervisado.supervisados![index].uId);
                                           GetStorage().write(StorageKeys.lastUIDSup, '');
                                           GetStorage().write(StorageKeys.lastEmailSup, '');
+                                          GetStorage().write(StorageKeys.lastNameSup, '');
 
-                                          // ref.refresh(supervisoresProvider);
-                                          // Código para mostrar el cuadro de diálogo de eliminación
+
+                                          //AppDialogs.showInfo(context,message: 'Ya no supervisa a este usuario');
+
+                                          await DialogWidget.showCustomDialog(
+                                            context: context,
+                                            dialogWidgetState:
+                                            Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
+                                                ? DialogWidgetState.info
+                                                : DialogWidgetState.infoDark,
+                                            title: tr(context).info,
+                                            description: 'Ya no supervisa a este usuario',
+                                            backgroundColor: AppColors.lightThemePrimaryColor,
+                                            textButton: tr(context).oK,
+                                            onPressed: () {
+                                              //NavigationService.goBack(context,rootNavigator: true);
+                                              NavigationService.pushReplacementAll(
+                                                NavigationService.context,
+                                                isNamed: true,
+                                                page: RoutePaths.home,
+                                              );
+                                            },
+                                          );
+                                          
+
                                         },
                                       ),
                                     ],

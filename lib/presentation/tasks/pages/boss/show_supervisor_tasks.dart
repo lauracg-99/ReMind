@@ -41,13 +41,11 @@ class ShowSupervisorTasks extends HookConsumerWidget {
     final taskToDoStreamBoss = ref.watch(getTasksSup);
 
    List<Supervised> listaUsuarios = ref.watch(userRepoProvider).userModel?.supervisados ?? [];
-log('listaUsuarios ${listaUsuarios}');
+
     useEffect(() {
       //si estado es pendiente saca la modal
       firestore.collection(FirestorePaths.userPetitionCollection(uidUser)).snapshots().listen((querySnapshot) {
-        querySnapshot.docs.forEach((element) {
-          log('pettition hay');
-        });
+
         querySnapshot.docChanges.forEach((change) {
           if (querySnapshot.docs.isNotEmpty) {
             //pasamos de pendiente a aceptada o rechazada
@@ -69,22 +67,13 @@ log('listaUsuarios ${listaUsuarios}');
                 managePetition(context, ref, solicitud: solicitud);
               }
 
-              if (change.type == DocumentChangeType.modified) {
-                final modifiedDocument = change.doc;
-                final documentId = modifiedDocument.id;
-                final modifiedDocumentData = modifiedDocument.data();
+              if (solicitud.estado == 'borrar') {
+                solicitud.id = documentId;
+                log('solicitud ${solicitud.id} ${solicitud
+                    .emailSup} ${solicitud.estado} ${solicitud
+                    .emailBoss} ${documentId}');
+                ref.watch(userRepoProvider).deletePetition(solicitud);
 
-                if(modifiedDocumentData != null) {
-                  Solicitud solicitud = Solicitud.fromMap(modifiedDocumentData);
-                  if (solicitud.estado == 'borrar') {
-                    solicitud.id = documentId;
-                    log('solicitud ${solicitud.id} ${solicitud
-                        .emailSup} ${solicitud.estado} ${solicitud
-                        .emailBoss} ${documentId}');
-                    ref.watch(userRepoProvider).deletePetition(solicitud);
-
-                  }
-                }
               }
 
               if (solicitud.estado == 'rechazado'){
@@ -93,11 +82,11 @@ log('listaUsuarios ${listaUsuarios}');
                 //borramos la petición
               }
             }
-
           }
         });
       });
     }, []);
+
     return taskToDoStreamBoss.when(
         data: (taskToDo) {
           return (listaUsuarios.isEmpty)
@@ -181,11 +170,11 @@ log('listaUsuarios ${listaUsuarios}');
       },
     );
 
-
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
       title: CustomText.h2(context, tr(context).adv),
-      content: CustomText.h3(context,'Tu petición ha sido aceptada'), // todo: tr
+      content: CustomText.h3(context,'Tu petición para supervisar a '
+          '${solicitud.emailSup} ha sido aceptada'), // todo: tr
       actions: [
         okButton,
       ],

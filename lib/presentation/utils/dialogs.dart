@@ -64,7 +64,7 @@ class AppDialogs {
           ? DialogWidgetState.info
           : DialogWidgetState.infoDark,
       title: tr(context).info,
-      description: message!,
+      description: message ?? '',
       backgroundColor: AppColors.lightThemePrimaryColor,
       textButton: tr(context).oK,
       onPressed: () {

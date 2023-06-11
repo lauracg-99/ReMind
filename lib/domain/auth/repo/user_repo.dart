@@ -245,6 +245,7 @@ class UserRepo {
         if (data is! ServerFailure && data == true) {
           GetStorage().write(StorageKeys.lastUIDSup, selectSupervised.uId);
           GetStorage().write(StorageKeys.lastEmailSup, selectSupervised.email);
+          GetStorage().write(StorageKeys.lastNameSup, selectSupervised.name);
           ref.watch(nameSupervisedProvider.notifier).changeState(change: selectSupervised.name ?? selectSupervised.email);
           return Right(data);
         } else {
@@ -301,6 +302,7 @@ class UserRepo {
 
     dependencies.write(StorageKeys.lastEmailSup, '');
     dependencies.write(StorageKeys.lastUIDSup, '');
+    dependencies.write(StorageKeys.lastNameSup, '');
     //dependencies.writeListUsers(StorageKeys.supervisados, []);
 
     return await _firebaseCaller.updateData(
@@ -498,6 +500,7 @@ class UserRepo {
     //GetStorage().write(StorageKeys.supervisados, '');
     GetStorage().write(StorageKeys.SUPERVISOR, '');
     GetStorage().write(StorageKeys.name, '');
+    GetStorage().write(StorageKeys.lastNameSup, '');
 
     GetStorage().erase();
   }
