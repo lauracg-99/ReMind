@@ -30,28 +30,36 @@ class CompletedBossTasks extends HookConsumerWidget {
     return taskToDoStreamAllCompleted.when(
         data: (taskToDo) {
           log('length ${taskToDo.length}');
-          return (taskToDo.isEmpty)
+          return (listaUsuarios.isEmpty)
               ? CustomText.h4(
-                context,
-                tr(context).noTask,
-                color: AppColors.grey,
-                alignment: Alignment.center,
-              )
-              : ListView.separated(
-                  padding: EdgeInsets.symmetric(
-                    vertical: Sizes.screenVPaddingDefault(context),
-                    horizontal: Sizes.screenHPaddingMedium(context),
-                  ),
-                  separatorBuilder: (context, index) => SizedBox(height: Sizes.vMarginHigh(context),),
-                  itemCount: taskToDo.length,
-                  itemBuilder: (context, index) {
-                    List<Widget> list = [];
-                    log('task ${taskToDo[index].taskName}');
-                    list.add(CardItemBossComponent(taskModel: taskToDo[index],));
-                    return Column(children: list);
-                  },
+                  context,
+                  'Necesita añadir supervisados' + '\n' + 'para poder usar esta cuenta',
+                  color: AppColors.grey,
+                  alignment: Alignment.center,
+                  textAlign: TextAlign.center,
+                )
+              : (taskToDo.isEmpty)
+                  ? CustomText.h4(
+                    context,
+                    tr(context).noTask,
+                    color: AppColors.grey,
+                    alignment: Alignment.center,
+                  )
+                  : ListView.separated(
+                      padding: EdgeInsets.symmetric(
+                        vertical: Sizes.screenVPaddingDefault(context),
+                        horizontal: Sizes.screenHPaddingMedium(context),
+                      ),
+                      separatorBuilder: (context, index) => SizedBox(height: Sizes.vMarginHigh(context),),
+                      itemCount: taskToDo.length,
+                      itemBuilder: (context, index) {
+                        List<Widget> list = [];
+                        log('task ${taskToDo[index].taskName}');
+                        list.add(CardItemBossComponent(taskModel: taskToDo[index],));
+                        return Column(children: list);
+                      },
 
-          );
+              );
         },
         error: (err, stack) => Column(
             mainAxisAlignment: MainAxisAlignment.center,

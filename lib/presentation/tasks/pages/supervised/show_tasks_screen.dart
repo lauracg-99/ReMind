@@ -129,6 +129,14 @@ class ShowTasks extends HookConsumerWidget {
                   Notifications().acceptPetitionNoti(solicitud);
                   managePetition(context, ref, solicitud: solicitud);
                 }
+               if (solicitud.estado == 'borrar') {
+                    solicitud.id = documentId;
+                    log('solicitud ${solicitud.id} ${solicitud
+                        .emailSup} ${solicitud.estado} ${solicitud
+                        .emailBoss} ${documentId}');
+                    ref.watch(userRepoProvider).deletePetition(solicitud);
+
+                  }
               }
             }
             if (change.type == DocumentChangeType.added) {

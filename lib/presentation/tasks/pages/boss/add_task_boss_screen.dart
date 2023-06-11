@@ -8,8 +8,10 @@ import 'package:get_storage/get_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../common/storage_keys.dart';
+import '../../../../data/auth/models/supervised.dart';
 import '../../../../data/tasks/models/task_model.dart';
 import '../../../../data/tasks/providers/task_provider.dart';
+import '../../../../domain/auth/repo/user_repo.dart';
 import '../../../../domain/services/localization_service.dart';
 import '../../../routes/navigation_service.dart';
 import '../../../screens/popup_page_nested.dart';
@@ -70,6 +72,8 @@ class AddTaskScreenBoss extends HookConsumerWidget {
     if(GetStorage().read('listaDias') == null){
       GetStorage().write('listaDias',[]);
     }
+    List<Supervised> listaUsuarios = ref.watch(userRepoProvider).userModel?.supervisados ?? [];
+
 //todo: info icon
 
     return PopUpPageNested(
@@ -83,7 +87,19 @@ class AddTaskScreenBoss extends HookConsumerWidget {
                           vertical: Sizes.screenVPaddingDefault(context),
                           horizontal: Sizes.screenHPaddingDefault(context),
                         ),
-                        child: Column(
+                        child: (listaUsuarios.isEmpty)
+                            ? Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                SizedBox(height: MediaQuery.of(context).size.height * 0.35,),
+                                CustomText.h4(
+                                context,
+                                'Necesita añadir supervisados' + '\n' + 'para poder usar esta cuenta',
+                                color: AppColors.grey,
+                                alignment: Alignment.center,
+                                textAlign: TextAlign.center,)
+                              ])
+                            : Column(
                           children: <Widget>[
                             //nombre tarea
                             GestureDetector(

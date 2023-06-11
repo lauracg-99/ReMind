@@ -8,6 +8,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:remind/common/dependencies.dart';
 import 'package:remind/common/storage_keys.dart';
+import 'package:remind/presentation/tasks/providers/name_task_provider.dart';
 import 'dart:io';
 import '../../../data/auth/manage_supervised/solicitud.dart';
 import '../../../data/auth/models/supervised.dart';
@@ -16,6 +17,7 @@ import '../../../data/error/failures.dart';
 import '../../../data/firebase/repo/firebase_caller.dart';
 import '../../../data/firebase/repo/firestore_paths.dart';
 import '../../../data/firebase/repo/i_firebase_caller.dart';
+import '../../../presentation/profile/components/name_supervised_component.dart';
 import '../../../presentation/utils/dialogs.dart';
 
 final userRepoProvider = Provider<UserRepo>((ref) => UserRepo(ref));
@@ -111,6 +113,8 @@ class UserRepo {
       newEmail = newSupUser.email;
       dependencies.write(StorageKeys.lastUIDSup, newUId);
       dependencies.write(StorageKeys.lastEmailSup, newEmail);
+      ref.watch(nameSupervisedProvider.notifier).changeState(change:
+      newSupUser.name ?? newEmail);
     } else {
       newUId = usuario.lastUIDSup ?? '';
       newEmail = usuario.lastEmailSup ?? '';
@@ -181,6 +185,25 @@ class UserRepo {
     );
   }
 
+  Future<Either<Failure, bool>> updateSelectUserUIDLast() async {
+
+    return await _firebaseCaller.updateData(
+      path: FirestorePaths.userUId(GetStorage().read(StorageKeys.uidUsuario)),
+      data: {
+        'lastUIDSup': '',
+        'lastEmailSup': '',
+      },
+      builder: (data) {
+        if (data is! ServerFailure && data == true) {
+          //userModel = userModel!.copyWith(uidSupervised: user.uidSupervised);
+          return Right(data);
+        } else {
+          return Left(data);
+        }
+      },
+    );
+  }
+
   Future<Either<Failure, bool>> selectedSupervisedByUID(Supervised selectSupervised, String selected) async {
 
     final updatedSupervisados = userModel?.supervisados?.map((supervised) {
@@ -222,6 +245,7 @@ class UserRepo {
         if (data is! ServerFailure && data == true) {
           GetStorage().write(StorageKeys.lastUIDSup, selectSupervised.uId);
           GetStorage().write(StorageKeys.lastEmailSup, selectSupervised.email);
+          ref.watch(nameSupervisedProvider.notifier).changeState(change: selectSupervised.name ?? selectSupervised.email);
           return Right(data);
         } else {
           return Left(data);
@@ -232,28 +256,29 @@ class UserRepo {
 
 
   Future<Either<Failure, bool>> deleteSupervisedByUID(String uid) async {
+    log('uid sup $uid');
     List<Supervised>? list = userModel?.supervisados ?? [];
-    if(list != null) {
-      if(list.isNotEmpty) {
-        list.forEach((supervisado) {
-          if (supervisado.uId == uid) {
-            list.remove(supervisado);
-          }
-        });
-      }
+    List<Supervised>? manageList = list;
+
+    if (manageList.isNotEmpty) {
+      manageList.removeWhere((supervisado) => supervisado.uId == uid);
     }
 
+    list = manageList;
     List<Map<String, dynamic>> supervisedListMap =
-    list.map((supervised) => supervised.toMap()).toList();
+        list.map((supervised) => supervised.toMap()).toList() ?? [];
+
+    log('supervisedListMap ${supervisedListMap.toString()} ${GetStorage().read(StorageKeys.uidUsuario)}');
+    log('path: ${FirestorePaths.userUId(GetStorage().read(StorageKeys.uidUsuario))}');
+
 
     return await _firebaseCaller.updateData(
-      path: FirestorePaths.userUId(uid),
+      path: FirestorePaths.userUId(GetStorage().read(StorageKeys.uidUsuario)),
       data: {
-        'supervisados': FieldValue.arrayUnion(supervisedListMap)
+        'supervisados': supervisedListMap
       },
       builder: (data) {
         if (data is! ServerFailure && data == true) {
-          //userModel = userModel!.copyWith(uidSupervised: user.uidSupervised);
           return Right(data);
         } else {
           return Left(data);
@@ -261,6 +286,7 @@ class UserRepo {
       },
     );
   }
+
 
   Future<Either<Failure, bool>> deleteSupervisedAll(String uid) async {
     List<Supervised>? list = userModel?.supervisados ?? [];

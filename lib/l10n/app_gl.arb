@@ -133,6 +133,7 @@
   "addSupervised": "Engadir Supervisado",
   "error_sup": "Error ó engadir o supervisado",
   "info_error_sup": "O supervisado engadido xa é supervisor doutra conta tes que engadir outra conta que non teña ese rol.",
+  "adv_del_sup": "Quere borrar a este supervisado",
   "@_SETTINGS": {
   },
   "change": "Cambiar",

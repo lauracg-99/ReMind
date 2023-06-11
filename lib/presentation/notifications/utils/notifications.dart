@@ -93,7 +93,13 @@ class Notifications {
           //'asset://assets/images/balloons-in-sky.jpg',
           notificationLayout: NotificationLayout.BigPicture,
           //payload: {'notificationId': '1234567890'}
-        ));
+        ),
+      actionButtons: [
+
+      ]
+    );
+
+
   }
 
   Future<void> setNotification(TaskModel taskModel) async {

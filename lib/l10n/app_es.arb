@@ -1,7 +1,7 @@
 {
   "@_CORE": {
   },
-  "appName": "NeuroCheck",
+  "appName": "ReMind",
   "fontFamily": "SanFrancisco",
   "noInternetConnection": "No hay conexión a internet",
   "pleaseCheckYourDeviceNetwork": "Por favor comprueba la conexión de tu dispositivo",
@@ -133,6 +133,7 @@
   "addSupervised": "Añadir Supervisado",
   "error_sup": "Error al añadir supervisado",
   "info_error_sup": "El supervisado añadido ya es supervisor de otra cuenta tienes que añadir otra cuenta que no tenga ese rol.",
+  "adv_del_sup": "¿Quiere borrar a este supervisado",
   "@_SETTINGS": {
   },
   "change": "Cambiar",

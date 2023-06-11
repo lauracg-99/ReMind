@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:get_storage/get_storage.dart';
@@ -13,6 +14,7 @@ import 'package:remind/presentation/solicitudes/components/num_solicitudes_compo
 import '../../common/storage_keys.dart';
 import '../../domain/services/localization_service.dart';
 import '../../domain/services/platform_service.dart';
+import '../profile/components/name_supervised_component.dart';
 import '../providers/home_base_nav_providers.dart';
 import '../routes/navigation_service.dart';
 import '../routes/route_paths.dart';
@@ -65,6 +67,8 @@ class HomeBaseNavAppBar extends ConsumerWidget
     final currentIndex = ref.watch(HomeBaseNavProviders.currentIndex);
     final currentRoute = ref.watch(HomeBaseNavProviders.routes[currentIndex]);
     final seeNum = ref.watch(numSolicitudesProvider);
+    var seeName = ref.watch(nameSupervisedProvider);
+
 
     if (GetStorage().read('rol') != 'supervisor') {
       setSupervisor(false);
@@ -83,7 +87,7 @@ class HomeBaseNavAppBar extends ConsumerWidget
               PlatformService.instance.isMaterialApp() ? true : false,
           customTitle: CustomText.h1(
             context,
-            GetStorage().read(StorageKeys.lastEmailSup) ?? '',
+            seeName ?? '',
             color: Theme.of(context).iconTheme.color,
             alignment: (supervisor) ? Alignment.centerRight : Alignment.center,
           ),
