@@ -115,6 +115,7 @@ class AddSupervisedScreen extends HookConsumerWidget {
                   controller: emailController,
                   onChanged: (value) {
                     emailController.text = value;
+                    log('text fiel ${value}');
                     GetStorage().write('userSelected', false);
                     emailController.selection =
                         TextSelection.fromPosition(TextPosition(
@@ -123,14 +124,47 @@ class AddSupervisedScreen extends HookConsumerWidget {
                     ref.refresh(userListProvider);
                   },
                 ),
-                userList.when(
+                Container(
+                  margin: EdgeInsets.symmetric(
+                    vertical: Sizes.vMarginMedium(context),
+                  ),
+                  decoration: BoxDecoration(
+                    color: (emailController.text.isEmpty)
+                        ? Colors.transparent
+                        : Theme.of(context).scaffoldBackgroundColor,
+                    borderRadius: BorderRadius.circular(
+                      Sizes.dialogSmallRadius(context),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: (emailController.text.isEmpty)
+                            ? Colors.transparent
+                            : Theme.of(context).hintColor.withOpacity(0.15),
+                        offset: const Offset(0, 3),
+                        blurRadius: 10,
+                      ),
+                    ],
+                  ),
+                  child: userList.when(
                   data: (user) {
-
+                    String textoSinEspacios = emailController.text.replaceAll(RegExp(r'\s+'), '');
+                    var search = textoSinEspacios;
+                    // Obtén los usuarios que coinciden con el texto introducido
+                    List<UserModel> filteredUsers = user.where((usuario) =>
+                    usuario.email.startsWith(search) && search != '').toList();
+                    if (filteredUsers.isEmpty && emailController.text.isNotEmpty) {
+                      // No se encontraron usuarios, mostrar el campo "No se han encontrado usuarios"
+                      return CustomTileComponent(
+                        title: 'No se han encontrado usuarios',
+                        leadingIcon: Icons.info,
+                        onTap: () {},
+                      );
+                    }
                     return (!GetStorage().read('userSelected'))
                     ? ListView.separated(
                       shrinkWrap: true,
                       separatorBuilder: (context, index) => SizedBox(
-                        height: Sizes.vMarginHigh(context),
+                        //height: Sizes.vMarginSmall(context),
                       ),
                       itemCount: user.length,
                       itemBuilder: (context, index) {
@@ -141,7 +175,7 @@ class AddSupervisedScreen extends HookConsumerWidget {
                         List<String> emails = [];
                         Map<String, String> valores = Map<String, String>();
 
-                        log('*** usuario ${usuario.email} ${usuario.uId} ${usuario.image}');
+                        //log('*** usuario ${usuario.email} ${usuario.uId} ${usuario.image}');
 
                         for (var individual in user) {
                           emails.add(individual.email);
@@ -150,26 +184,36 @@ class AddSupervisedScreen extends HookConsumerWidget {
 
                         if (usuario.email.startsWith(search) && search != '') {
                           if (usuario.email != GetStorage().read('email')) {
-                            list.add(CustomTileComponent(
-                              title: usuario.email,
-                              onTap: () async {
-                                FocusScope.of(context).unfocus();
-                                GetStorage().write('userSelected', true);
-                                emailController.text = usuario.email;
-                                emailController.selection =
-                                    TextSelection.fromPosition(TextPosition(
-                                        offset: emailController.text.length)
-                                    );
-                                GetStorage().write('emailSelected', usuario.email);
-                                GetStorage().write('uidSelected', usuario.uId);
-                                GetStorage().write('uidSelectedFoto', usuario.image);
+                            //log('*** usuarioemail ${usuario.email}');
+                            list.add(
+                                CustomTileComponent(
+                                  title: usuario.email,
+                                  leadingIcon: Icons.account_circle,
+                                  onTap: () async {
+                                    FocusScope.of(context).unfocus();
+                                    GetStorage().write('userSelected', true);
+                                    emailController.text = usuario.email;
+                                    emailController.selection = TextSelection.fromPosition(TextPosition(
+                                            offset: emailController.text.length)
+                                        );
+                                    GetStorage().write('emailSelected', usuario.email);
+                                    GetStorage().write('uidSelected', usuario.uId);
+                                    GetStorage().write('uidSelectedFoto', usuario.image);
 
-                                ref.refresh(userListProvider);
-                              },
+                                    ref.refresh(userListProvider);
+                                  },
                             ));
+                          } else {
+                            if(valores.isNotEmpty){
+                              return CustomTileComponent(
+                                title: 'No se han encontrado usuarios',
+                                leadingIcon: Icons.info,
+                                onTap: () {},
+                              );
+                            }
                           }
                         }
-                        return Column(children: list);
+                        return (list.isEmpty) ? SizedBox() : Column(children: list);
                       },
                     )
                     : SizedBox();
@@ -177,34 +221,30 @@ class AddSupervisedScreen extends HookConsumerWidget {
                   error: (err, stack) => Column(),
                   loading: () =>
                       LoadingIndicators.instance.smallLoadingAnimation(context),
+                )),
+                SizedBox(
+                  height: Sizes.vMarginSmall(context),
                 ),
-              ],
-            ),
-            SizedBox(
-              height: Sizes.vMarginSmall(context),
-            ),
-          (GetStorage().read('userSelected'))
-            //boton
-              ? Consumer(
-              builder: (context, ref, child) {
-                final authLoading = ref.watch(
-                  authProvider.select((state) => state.maybeWhen(
-                      loading: () => true, orElse: () => false)),
-                );
-                return authLoading
-                    ? LoadingIndicators.instance.smallLoadingAnimation(
+                Consumer(
+                    builder: (context, ref, child) {
+                      final authLoading = ref.watch(
+                        authProvider.select((state) => state.maybeWhen(
+                            loading: () => true, orElse: () => false)),
+                      );
+                      return authLoading
+                          ? LoadingIndicators.instance.smallLoadingAnimation(
                         context,
                         width: Sizes.loadingAnimationButton(context),
                         height: Sizes.loadingAnimationButton(context),
                       )
-                    : CustomButton(
-                        text: tr(context).addSupervised,
-                        onPressed: () {
+                          : CustomButton(
+                          text: tr(context).addSupervised,
+                          onPressed: () {
 
                             var emailSup = GetStorage().read('emailSelected');
                             var uidSup = GetStorage().read('uidSelected');
                             var fotoSub = GetStorage().read('uidSelectedFoto');
-                            log('*** selected uidSup $uidSup y emailSup $emailSup');
+                           // log('*** selected uidSup $uidSup y emailSup $emailSup');
                             if (emailSup != null && uidSup != null) {
                               var solicitud = Solicitud(
                                 id: '',
@@ -223,28 +263,28 @@ class AddSupervisedScreen extends HookConsumerWidget {
                                   .then((value) =>
 
                                   value.fold((failure) {
-                                        AppDialogs.showWarningPersonalice(
-                                            context,
-                                            message:
-                                                'ya le has enviado una petición a este usuario');
-                                        GetStorage().write('userSelected', false);
-                                      }, (success) {
+                                    AppDialogs.showWarningPersonalice(
+                                        context,
+                                        message:
+                                        'ya le has enviado una petición a este usuario');
+                                    GetStorage().write('userSelected', false);
+                                  }, (success) {
 
-                                        AppDialogs.showInfo(context,
-                                            message: 'Petición enviada').then((value) => NavigationService.goBack(context));
+                                    AppDialogs.showInfo(context,
+                                        message: 'Petición enviada').then((value) => NavigationService.goBack(context));
 
                                   }
-                                      )
-                                      );
+                                  )
+                              );
                               //ref.watch(userRepoProvider).setPetitionTOSup(solicitud);
                             }
                           }
-                          );}
-                        )
-              : SizedBox()
+                      );
+                    }
+                )
               ]),
-            ),
-          ),
+            ]),
+          ),)
         );
   }
 }
