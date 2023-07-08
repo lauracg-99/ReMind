@@ -56,12 +56,15 @@ class SelectSupervised extends HookConsumerWidget {
             supervisadosList.when(
               data: (supervisado) {
               log('supervisado lengs ${supervisado.supervisados!.length} ${supervisado.supervisados}');
-              return (supervisado.supervisados == [])
-              ? CustomText.h1(
+              return (supervisado.supervisados!.isEmpty)
+              ? CustomText.h3(
                 context,
-                'No hay supervisados',
-                color: AppColors.blue,
+                'No hay supervisados', // todo: tr
                 alignment: Alignment.center,
+                padding: EdgeInsets.symmetric(
+                  vertical: Sizes.screenVPaddingDefault(context),
+                  horizontal: Sizes.screenHPaddingDefault(context),
+                ),
                 )
               : ListView.separated(
                   shrinkWrap: true,
