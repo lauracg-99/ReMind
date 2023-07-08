@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../common/storage_keys.dart';
 import '../../../data/auth/models/user_model.dart';
@@ -40,6 +41,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
   late MainCoreProvider _mainCoreProvider;
   late AuthRepo _authRepo;
   late UserRepo _userRepo;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
 
   static bool supervisor = false;
@@ -79,6 +82,93 @@ class AuthNotifier extends StateNotifier<AuthState> {
       },
     );
   }
+
+  Future<void> deleteGoogleAccount() async {
+    try {
+      await _googleSignIn.disconnect();
+      // Opcionalmente, puedes revocar los tokens de acceso con:
+      // await _googleSignIn.disconnect().then((_) => _googleSignIn.signOut());
+      print('Cuenta de Google eliminada exitosamente.');
+    } catch (error) {
+      print('Error al eliminar la cuenta de Google: $error');
+    }
+  }
+
+  Future<Either<Failure, bool>> signInWithGoogle() async {
+
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      final GoogleSignInAuthentication googleAuth = await googleUser!
+          .authentication;
+
+      final OAuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final UserCredential userCredential = await _auth.signInWithCredential(
+          credential);
+      final User? user = userCredential.user;
+
+
+        final AdditionalUserInfo? additionalUserInfo = userCredential
+            .additionalUserInfo;
+        final bool isNewUser = additionalUserInfo?.isNewUser ?? false;
+
+        if (isNewUser) {
+          // El usuario es nuevo, solicitar información adicional para el registro
+          GetStorage().write('firstTimeLogIn', true);
+          var getStorage = GetStorage();
+          //getStorage.write("user", user);
+          getStorage.write(StorageKeys.uidUsuario, user?.uid);
+          getStorage.write(StorageKeys.email, user?.email);
+          getStorage.write(StorageKeys.name,  user?.displayName);
+
+
+          return Right(false);
+        } else {
+          // El usuario ya ha iniciado sesión previamente, proceder con el flujo normal
+          // Resto de tu lógica después de iniciar sesión
+          GetStorage().write('firstTimeLogIn', false);
+          state = const AuthState.loading();
+          final result = await _authRepo.signInWithGoogle();
+          return await result.fold(
+                (failure) {
+                  state = AuthState.error(errorText: failure.message);
+                  return Left(failure);
+                },
+                (user) async {
+              state = const AuthState.available();
+              UserModel userModel = user;
+              var getStorage = GetStorage();
+              getStorage.write(StorageKeys.uidUsuario, user.uId);
+              getStorage.write(StorageKeys.email, user.email);
+              getStorage.write(StorageKeys.rol, user.rol);
+
+              if (user.rol == StorageKeys.SUPERVISOR) {
+                getStorage.write(StorageKeys.lastEmailSup, user.lastEmailSup);
+                getStorage.write(StorageKeys.lastUIDSup, user.lastUIDSup);
+              }
+              return const Right(true);
+            },
+          );
+      }
+  }
+
+  Future<User?> getCurrentUser() async {
+    final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+    final GoogleSignInAuthentication googleAuth = await googleUser!.authentication;
+
+    final OAuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    final UserCredential userCredential = await _auth.signInWithCredential(credential);
+    final User? user = userCredential.user;
+
+    return user;
+  }
+
 
 
   Future<Either<Failure, bool>> createUserWithEmailAndPassword( {
@@ -132,85 +222,4 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   }
 
-/*
-  enviarEmailVerification(BuildContext context) async {
-    state = const AuthState.loading();
-   // NavigationService.removeAllFocus(context);
-    final result = await _authRepo.sendEmailVerification(context,);
-    result.fold(
-            (failure) {
-              state = AuthState.error(errorText: failure.message);
-              AppDialogs.showErrorDialog(context, message: failure.message);
-            },
-            (done){
-              state = AuthState.available();
-         //     navigationToCheckScreen(context);
-        }
-    );
-  }
-
-  void enviarEmailSupervisor(BuildContext context) async {
-    state = const AuthState.loading();
-    // NavigationService.removeAllFocus(context);
-    final result = await _authRepo.sendEmailVerification(context,);
-    result.fold(
-            (failure) {
-          state = AuthState.error(errorText: failure.message);
-          AppDialogs.showErrorDialog(context, message: failure.message);
-        },
-            (done){
-          state = AuthState.available();
-          //navigationToCheckScreen(context);
-        }
-    );
-  }
-*/
-
-  /*openCollection(UserModel userModel) async {
-    await _mainCoreProvider.openCollection(userModel);
-  }*/
-
-/*  Future submitRegister(BuildContext context, UserModel userModel) async {
-
-    final result = await _mainCoreProvider.setUserToFirebase(userModel);
-    await result.fold(
-          (failure) {
-        state = AuthState.error(errorText: failure.message);
-        AppDialogs.showErrorDialog(context, message: failure.message);
-      },
-        (isSet) async {
-          if((userModel.rol == StorageKeys.SUPERVISOR)) {
-          await _authRepo.sendEmailVerification(context);
-        } else{
-            AuthState.available();
-          }
-
-        if (GetStorage().read('rol') != 'supervisor') {
-          setSupervisor(false);
-        } else {
-          setSupervisor(true);
-        }
-        (!supervisor)
-          ? navigationToHomeScreen(context)
-          : navigationToCheckScreen(context);
-      },
-    );
-  }
-
-
-  navigationToCheckScreen(BuildContext context) {
-    NavigationService.pushReplacementAll(
-      context,
-      isNamed: true,
-      page: RoutePaths.verifyEmail,
-    );
-  }
-
-  navigationToLogin(BuildContext context) {
-    NavigationService.pushReplacementAll(
-      context,
-      isNamed: true,
-      page: RoutePaths.authLogin,
-    );
-  }*/
 }

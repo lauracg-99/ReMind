@@ -4,6 +4,7 @@ class RoutePaths {
   static const authLogin = '/auth';
   static const authRegister = '/authRegister';
   static const authReset = '/authReset';
+  static const chooseRol = '/chooseRol';
 
   static const verifyEmail = '/verifyEmail';
   static const homeBase = '/home_base';

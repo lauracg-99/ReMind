@@ -6,6 +6,7 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:remind/common/dependencies.dart';
 import 'package:remind/common/storage_keys.dart';
@@ -35,6 +36,8 @@ class AuthRepo {
   final Ref ref;
   late IFirebaseCaller _firebaseCaller;
   late UserRepo _userRepo;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   var dependencies = Dependencies();
 
@@ -66,6 +69,45 @@ class AuthRepo {
       return Left(ServerFailure(message: errorMessage));
     }
   }
+
+  Future<Either<Failure, UserModel>> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      final GoogleSignInAuthentication googleAuth = await googleUser!.authentication;
+
+      final OAuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final UserCredential userCredential = await _auth.signInWithCredential(credential);
+      final User? user = userCredential.user;
+
+      log('*** auth_repo userCredential.user?.uid');
+      log(userCredential.toString());
+      dependencies.write(StorageKeys.uidUsuario, userCredential.user?.uid);
+      dependencies.write(StorageKeys.email, user?.email);
+      dependencies.write(StorageKeys.cron, StorageKeys.falso);
+      dependencies.write(StorageKeys.reset, StorageKeys.falso);
+
+      UserModel usuario = await _userRepo.getDatosUsuario(dependencies.read(StorageKeys.uidUsuario));
+      if(usuario.rol == StorageKeys.SUPERVISOR) {
+        dependencies.write(StorageKeys.lastUIDSup, usuario.lastUIDSup);
+        dependencies.write(StorageKeys.lastEmailSup, usuario.lastEmailSup);
+      }
+
+      return Right(usuario);
+
+    } on FirebaseAuthException catch (errorMessage) {
+      return Left(ServerFailure(message: errorMessage));
+
+    } catch (e) {
+      log(e.toString());
+      final errorMessage = Exceptions.errorMessage(e);
+      return Left(ServerFailure(message: errorMessage));
+    }
+  }
+
 
 
   Stream<List<UserModel>> getUsersStream() {

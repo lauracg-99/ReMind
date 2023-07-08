@@ -74,7 +74,7 @@ class TaskModel {
       notiHours: task.notiHours,
       done: task.done ?? '',
       numRepetition: task.numRepetition ?? 0,
-      authorUID: task.authorUID ?? '',
+      authorUID: task.authorUID,
       lastUpdate: task.lastUpdate,
     );
   }

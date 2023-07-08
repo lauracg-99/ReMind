@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:remind/presentation/auth/pages/choose_rol_screen.dart';
 import 'package:remind/presentation/routes/route_paths.dart';
 import '../../data/tasks/models/task_model.dart';
 import '../auth/pages/add_supervised_screen.dart';
@@ -55,6 +56,13 @@ class AppRouter {
       case RoutePaths.authLogin:
         return NavigationSlideFromSide(
           const LoginScreen(),
+          settings: settings,
+          transitionDuration: const Duration(microseconds: 700),
+        );
+
+      case RoutePaths.chooseRol:
+        return NavigationSlideFromSide(
+          const ChooseRolScreen(),
           settings: settings,
           transitionDuration: const Duration(microseconds: 700),
         );

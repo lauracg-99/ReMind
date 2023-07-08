@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -108,6 +110,75 @@ class LoginFormComponent extends HookConsumerWidget {
                     );
                   }
                 },
+              );
+            },
+          ),
+
+          InkWell(
+            child: Container(
+                width: Sizes.availableScreenWidth(context)/2,
+                height: Sizes.availableScreenHeight(context)/18,
+                margin: EdgeInsets.only(top: 25),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color:Colors.black
+                ),
+                child: Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        Container(
+                          height: 30.0,
+                          width: 30.0,
+                          decoration: BoxDecoration(
+                            /*image: DecorationImage(
+                                image:
+                                AssetImage('assets/google.jpg'),
+                                fit: BoxFit.cover),*/
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        Text('Sign in with Google',
+                          style: TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white
+                          ),
+                        ),
+                      ],
+                    )
+                )
+            ),
+            onTap: () async{
+              ref.watch(authProvider.notifier)
+                  .signInWithGoogle().then(
+                      (value) =>
+                      value.fold(
+                              (failure) {
+                                log('*** noup');
+                                ref.watch(authProvider.notifier).deleteGoogleAccount();
+                                AppDialogs.showErrorDialog(context, message: failure.message);
+                              },
+
+                              (success) {
+                                final firstTimeLogIn = GetStorage().read('firstTimeLogIn');
+                                log('*** firstTimeLogIn ${firstTimeLogIn}');
+                                if (firstTimeLogIn){
+                                  NavigationService.push(
+                                    context,
+                                    isNamed: true,
+                                    page: RoutePaths.chooseRol,
+                                  );
+                                } else {
+                                  NavigationService.pushReplacement(
+                                  context,
+                                  isNamed: true,
+                                  page: RoutePaths.home,
+                                );
+                                }
+
+                          }
+                      )
               );
             },
           ),

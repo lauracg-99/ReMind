@@ -267,7 +267,7 @@ class UserRepo {
 
     list = manageList;
     List<Map<String, dynamic>> supervisedListMap =
-        list.map((supervised) => supervised.toMap()).toList() ?? [];
+        list.map((supervised) => supervised.toMap()).toList();
 
     log('supervisedListMap ${supervisedListMap.toString()} ${GetStorage().read(StorageKeys.uidUsuario)}');
     log('path: ${FirestorePaths.userUId(GetStorage().read(StorageKeys.uidUsuario))}');
