@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -7,6 +6,10 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:remind/presentation/auth/widgets/see_password.dart';
+import 'package:remind/presentation/styles/app_colors.dart';
+import 'package:remind/presentation/styles/app_images.dart';
+import 'package:remind/presentation/widgets/custom_image.dart';
+import 'package:remind/presentation/widgets/custom_text.dart';
 import '../../../data/error/exceptions.dart';
 import '../../../domain/services/localization_service.dart';
 import '../../routes/navigation_service.dart';
@@ -70,7 +73,7 @@ class LoginFormComponent extends HookConsumerWidget {
             },
           ),
           SizedBox(
-            height: Sizes.vMarginSmall(context),
+            height: Sizes.vMarginMedium(context),
           ),
           //boton
           Consumer(
@@ -86,6 +89,7 @@ class LoginFormComponent extends HookConsumerWidget {
                 height: Sizes.loadingAnimationButton(context),
               )
                   : CustomButton(
+                width: Sizes.availableScreenWidth(context)/1.5,
                 text: tr(context).signIn,
                 onPressed: () {
                   if (loginFormKey.currentState!.validate()) {
@@ -114,36 +118,89 @@ class LoginFormComponent extends HookConsumerWidget {
             },
           ),
 
+          SizedBox(
+            height: Sizes.vMarginHigh(context),
+          ),
+          CustomButton(
+            width: Sizes.availableScreenWidth(context)/1.5,
+            text: tr(context).register,
+            onPressed: () {
+              NavigationService.push(
+                context,
+                isNamed: true,
+                page: RoutePaths.authRegister,
+              );
+            },
+          ),
+          SizedBox(
+            height: Sizes.vMarginMedium(context),
+          ),
           InkWell(
             child: Container(
-                width: Sizes.availableScreenWidth(context)/2,
+                width: Sizes.availableScreenWidth(context)/1.5,
                 height: Sizes.availableScreenHeight(context)/18,
-                margin: EdgeInsets.only(top: 25),
+                margin: EdgeInsets.only(top: 0),
+                child: Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        CustomText.h4(
+                          context,
+                          tr(context).reset,
+                          color: Theme.of(context).iconTheme.color,
+                          underline: true,
+                        ),
+                      ],
+                    )
+                )
+            ),
+            onTap: () {
+                NavigationService.push(
+                context,
+                isNamed: true,
+                page: RoutePaths.authReset,
+                );
+            },
+          ),
+          SizedBox(
+            height: Sizes.vMarginSmall(context),
+          ),
+          Container(
+            width: Sizes.availableScreenWidth(context)/2,
+            child: Divider(
+              color: Theme.of(context).dividerColor,
+              thickness: 1,
+            ),
+          ),
+          SizedBox(
+            height: Sizes.vMarginMedium(context),
+          ),
+          InkWell(
+            child: Container(
+                width: Sizes.availableScreenWidth(context)/1.5,
+                height: Sizes.availableScreenHeight(context)/18,
+                margin: EdgeInsets.only(top: 0),
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color:Colors.black
+                  borderRadius: BorderRadius.circular(15),
+                  color:AppColors.grayWhite,
+                  border: Border.all(
+                    width: 1,
+                    color: AppColors.grey,
+                  ),
                 ),
                 child: Center(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
-                        Container(
-                          height: 30.0,
-                          width: 30.0,
-                          decoration: BoxDecoration(
-                            /*image: DecorationImage(
-                                image:
-                                AssetImage('assets/google.jpg'),
-                                fit: BoxFit.cover),*/
-                            shape: BoxShape.circle,
-                          ),
+                        CustomImage.s5(
+                          context,
+                          AppImages.googleLogo,
+                          fit: BoxFit.cover,
+                          //imageAndTitleAlignment: MainAxisAlignment.start,
                         ),
-                        Text('Sign in with Google',
-                          style: TextStyle(
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white
-                          ),
+                        CustomText.h3(
+                          context,
+                          'Inicia sesión con Google', // todo: tr
                         ),
                       ],
                     )
@@ -155,27 +212,27 @@ class LoginFormComponent extends HookConsumerWidget {
                       (value) =>
                       value.fold(
                               (failure) {
-                                log('*** noup');
-                                ref.watch(authProvider.notifier).deleteGoogleAccount();
-                                AppDialogs.showErrorDialog(context, message: failure.message);
-                              },
+                            log('*** noup');
+                            ref.watch(authProvider.notifier).deleteGoogleAccount();
+                            AppDialogs.showErrorDialog(context, message: failure.message);
+                          },
 
                               (success) {
-                                final firstTimeLogIn = GetStorage().read('firstTimeLogIn');
-                                log('*** firstTimeLogIn ${firstTimeLogIn}');
-                                if (firstTimeLogIn){
-                                  NavigationService.push(
-                                    context,
-                                    isNamed: true,
-                                    page: RoutePaths.chooseRol,
-                                  );
-                                } else {
-                                  NavigationService.pushReplacement(
-                                  context,
-                                  isNamed: true,
-                                  page: RoutePaths.home,
-                                );
-                                }
+                            final firstTimeLogIn = GetStorage().read('firstTimeLogIn');
+                            log('*** firstTimeLogIn ${firstTimeLogIn}');
+                            if (firstTimeLogIn){
+                              NavigationService.push(
+                                context,
+                                isNamed: true,
+                                page: RoutePaths.chooseRol,
+                              );
+                            } else {
+                              NavigationService.pushReplacement(
+                                context,
+                                isNamed: true,
+                                page: RoutePaths.home,
+                              );
+                            }
 
                           }
                       )

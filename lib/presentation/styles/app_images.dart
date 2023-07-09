@@ -4,6 +4,7 @@ import 'dart:core';
 class AppImages {
   static const String jsonPath = 'assets/json/';
   static const String loginIcon = '${loginImagesPath}loginIcon2.png';
+  static const String googleLogo = '${loginImagesPath}google_logo.png';
   static const String loginIconDark = '${loginImagesPath}loginIcon2_dark.png';
   static const String loginIcon2 = '${loginImagesPath}login2.png';
   static const String profileCat = '${appIconsPath}profile/icon_cat.png';

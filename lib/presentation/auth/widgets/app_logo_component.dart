@@ -14,7 +14,7 @@ class AppLogoComponent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        CustomImage(
+        /*CustomImage(
           context,
           Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
               ? AppImages.loginIcon
@@ -24,7 +24,7 @@ class AppLogoComponent extends StatelessWidget {
           //width: Sizes.loginLogoSize(context),
           fit: BoxFit.cover,
           //imageAndTitleAlignment: MainAxisAlignment.start,
-        ),
+        ),*/
         SizedBox(
           height: Sizes.vMarginSmallest(context),
         ),
@@ -37,7 +37,7 @@ class AppLogoComponent extends StatelessWidget {
               context,
               //tr(context).welcome,
               alignment: Alignment.center,
-              tr(context).signInToYourAccount,
+              tr(context).signIn,
               color: AppColors.grey,
             ),),
           //SizedBox(width: Sizes.vMarginExtreme(context),),

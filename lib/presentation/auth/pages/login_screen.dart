@@ -39,35 +39,8 @@ class LoginScreen extends StatelessWidget {
               SizedBox(
                 height: Sizes.vMarginHigh(context),
               ),
-              //const WelcomeComponent(),
               const LoginFormComponent(),
-              SizedBox(
-                height: Sizes.vMarginHigh(context),
-              ),
-               CustomButton(
-                    text: tr(context).register,
-                    onPressed: () {
-                      NavigationService.push(
-                        context,
-                        isNamed: true,
-                        page: RoutePaths.authRegister,
-                      );
-                    },
-                  ),
-              SizedBox(
-                height: Sizes.vMarginHigh(context),
-              ),
-              CustomButton(
-                text: tr(context).reset,
-                buttonColor: Theme.of(context).primaryColor,
-                onPressed: () {
-                  NavigationService.push(
-                    context,
-                    isNamed: true,
-                    page: RoutePaths.authReset,
-                  );
-                },
-              ),
+
               ]),
           ),
         ),
