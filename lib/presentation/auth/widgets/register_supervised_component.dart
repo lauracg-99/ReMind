@@ -118,7 +118,7 @@ class RegisterSupervisedFormComponent extends HookConsumerWidget {
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
       title: CustomText.h2(context, tr(context).cancelSupAviso),
-      content: CustomText.h3(context,tr(context).cancelAddSup), // todo: tr
+      content: CustomText.h3(context,tr(context).cancelAddSup),
       actions: [
         cancelButton,
         okButton,

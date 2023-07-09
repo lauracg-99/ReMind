@@ -374,7 +374,7 @@ class AddTaskScreenBoss extends HookConsumerWidget {
                                 height: Sizes.loadingAnimationButton(context),
                               )
                                   : CustomButton(
-                                text: 'Añadir', //todo: lbl
+                                text: tr(context).add,
                                 onPressed: () async {
                                   if (days.tags.toString() == '[]') {
                                     days.tags
@@ -427,13 +427,13 @@ class AddTaskScreenBoss extends HookConsumerWidget {
                             SizedBox(height: Sizes.vMarginHigh(context),),
 
                             CustomButton(
-                              text: 'Borrar campos', //todo: lbl
+                              text: tr(context).delete_fields,
                               buttonColor: Colors.red,
                               onPressed: ()  {
                                 cleanField(ref);
                                 nameController.clear();
                                 AppDialogs.showInfo(context,
-                                    message: 'Se han limpiado todos los campos');
+                                    message: tr(context).delete_fields_info);
                               },
                             ),
 

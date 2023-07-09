@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_picker/Picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path/path.dart';
 
 import '../../../domain/services/localization_service.dart';
 import '../../styles/app_colors.dart';
@@ -129,7 +130,7 @@ class TimeRepetitionButton extends StateNotifier<String> {
       ],
       //todo: tr
       hideHeader: true,
-      title: const Text("Selecciona cada cuanto quieres que se repita"),
+      title: const Text("Selecciona días repetición"),
       selectedTextStyle: const TextStyle(color: Colors.blue),
       onConfirm: (Picker picker, List value) {
         log('value.toString() ${value.toString()}');

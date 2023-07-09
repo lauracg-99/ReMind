@@ -131,7 +131,7 @@ class CardItemBossComponent extends ConsumerWidget {
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
       title: CustomText.h2(context, tr(context).adv),
-      content: CustomText.h3(context,tr(context).adv_undo), // todo: tr
+      content: CustomText.h3(context,tr(context).adv_undo),
       actions: [
         cancelButton,
         okButton,

@@ -42,7 +42,6 @@ class DeleteComponent extends ConsumerWidget {
   }
 
   showAlertDialogDelete(BuildContext context, SettingsViewModel settingsVM) {
-// todo: tr
     // set up the buttons
     Widget okButton = CustomTextButton(
       child: CustomText.h4(
@@ -130,7 +129,7 @@ class _SharedItemComponent extends StatelessWidget {
           ),
           CustomText.h4(
             context,
-            'Borrar Cuenta', //todo: lbl
+            tr(context).delete_account,
             alignment: Alignment.center,
             weight: FontStyles.fontWeightExtraBold,
             color: AppColors.white,

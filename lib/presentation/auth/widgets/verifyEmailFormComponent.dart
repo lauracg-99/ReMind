@@ -59,7 +59,7 @@ class VerifyEmailFormComponent extends HookConsumerWidget {
                    color: Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
                       ? AppColors.darkGray
                           : AppColors.whiteGray,
-                   tr(context).register_text), // todo: tr
+                   tr(context).register_text),
              ),
              SizedBox(
                height: Sizes.vMarginMedium(context),

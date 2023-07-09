@@ -59,7 +59,7 @@ class SelectSupervised extends HookConsumerWidget {
               return (supervisado.supervisados!.isEmpty)
               ? CustomText.h3(
                 context,
-                'No hay supervisados', // todo: tr
+                tr(context).no_supervised,
                 alignment: Alignment.center,
                 padding: EdgeInsets.symmetric(
                   vertical: Sizes.screenVPaddingDefault(context),

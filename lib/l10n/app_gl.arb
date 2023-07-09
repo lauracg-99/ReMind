@@ -34,6 +34,7 @@
   "welcome": "Benvido",
   "signInToYourAccount": "Inicia sesión ",
   "signIn": "Iniciar Sesión",
+  "signInGoogle": "Iniciar sesión con Google",
   "email": "Email",
   "email2": "Repita su email",
   "password": "Contrasinal",
@@ -60,6 +61,10 @@
   "appSettings": "Configuración da App",
   "theme": "Tema",
   "language": "Idioma",
+  "acept" : "Aceptar",
+  "add": "Engadir",
+  "delete_fields" : "Borrar campos",
+  "delete_fields_info" : "Limpáronse todos os campos",
   "selectYourPreferredLanguage": "Escolle o teu idioma de preferencia",
   "send": "Enviar",
   "re_send" : "Reenviar",
@@ -112,6 +117,7 @@
   "addTaskDone": "Tarefa engadida corretamente",
   "modTaskDone": "Tarea modificada correctamente",
   "hourRange": "Rango horario: ",
+  "range": "Rango",
   "repTime": "Repetir cada: ",
   "days": "días",
   "rangeWarning": "Non podes poner mais notificacions que minutos hai no teu rango horario",
@@ -126,6 +132,7 @@
   "adv_done": "Vai marcar a tarefa como feita, continuamos?",
   "adv_undo": "Vai desmarcar a tarefa como feita, continuamos?",
   "adv_delete" : "Vai eliminar a tarefa, continuamos?",
+  "select_days": "Selecciona cada canto queres que se repita",
   "@_ROL": {
   },
   "askYourDates": "Introduza o seu usuario e contrasinal",
@@ -134,10 +141,12 @@
   "error_sup": "Error ó engadir o supervisado",
   "info_error_sup": "O supervisado engadido xa é supervisor doutra conta tes que engadir outra conta que non teña ese rol.",
   "adv_del_sup": "Quere borrar a este supervisado",
+  "no_supervised": "Non hai supervisados",
   "@_SETTINGS": {
   },
   "change": "Cambiar",
   "name_settings": "Cambiar nombre usuario",
+  "delete_account" : "Borrar Cuenta",
   "@_INFO": {
   },
   "info": "Información",
@@ -156,5 +165,15 @@
   "info_perfil_boss":"Datos da conta utilizando o perfil, neste caso o correo electrónico en uso, o nome (modificable na configuración) e unha foto de perfil que se pode modificar se fai clic nela, cambiándoa por unha foto que xa teña na galería ou facendo unha foto de perfil. foto da época. Tamén ten ao seu cargo o seu papel e o correo do supervisado.",
   "info_config": "Nesta pantalla podes cambiar o modo de uso da aplicación (claro ou escuro), o idioma da aplicación (castelán ou galego) e podes cambiar o teu nome de usuario. Tamén ten un botón para pechar a sesión ou a opción de eliminar a túa conta.",
   "info_change_name" : "Nesta pantalla poderá cambiar o nome de usuario.",
-  "info_change_language" : "Nesta pantalla poderá cambiar o idioma da aplicación"
+  "info_change_language" : "Nesta pantalla poderá cambiar o idioma da aplicación",
+  "@_NOTI": {
+
+  },
+  "toDoNoti" : "Oye, fai isto!!!",
+  "attention" : "Atención!",
+  "user_with" : "O usuario co correo ",
+  "user_wants" : " quere ser o teu supervisor",
+  "acept_pre_peti": "A túa petición para supervisar a",
+  "acept_peti": "foi aceptada"
+
 }

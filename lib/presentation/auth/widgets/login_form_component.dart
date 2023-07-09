@@ -200,7 +200,7 @@ class LoginFormComponent extends HookConsumerWidget {
                         ),
                         CustomText.h3(
                           context,
-                          'Inicia sesión con Google', // todo: tr
+                          tr(context).signInGoogle,
                           color: AppColors.grey,
                         ),
                       ],

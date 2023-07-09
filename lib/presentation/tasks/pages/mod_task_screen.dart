@@ -132,7 +132,7 @@ class ModTaskComponent extends HookConsumerWidget {
                           initialLabelIndex: toggleValue.state,
                           totalSwitches: 3,
                           radiusStyle: true,
-                          labels: ['Días', 'Rango', 'Repetición'],
+                          labels: [tr(context).days.toUpperCase(), tr(context).range, tr(context).repeatAdd],
                           //animate: true,
                           onToggle: (index) {
                             //print('switched to: $index');

@@ -62,7 +62,7 @@ class ShowSupervisorTasks extends HookConsumerWidget {
               if (solicitud.estado == 'aceptada'){
                 log('addSupervisado');
                 GetStorage().write('notificarPeticion', true);
-                Notifications().statusPetitionNoti(solicitud, 'aceptado');
+                Notifications().statusPetitionNoti(context,solicitud, 'aceptado');
                 userProvider.addNewSupervisedByUID(solicitud.uidSup);
                 managePetition(context, ref, solicitud: solicitud);
               }
@@ -78,7 +78,7 @@ class ShowSupervisorTasks extends HookConsumerWidget {
 
               if (solicitud.estado == 'rechazado'){
                 GetStorage().write('notificarPeticion', true);
-                Notifications().statusPetitionNoti(solicitud, 'rechazado');
+                Notifications().statusPetitionNoti(context, solicitud, 'rechazado');
                 //borramos la petición
               }
             }
@@ -159,7 +159,7 @@ class ShowSupervisorTasks extends HookConsumerWidget {
     Widget okButton = CustomTextButton(
       child: CustomText.h4(
           context,
-          'Aceptar',
+          tr(context).acept,
           color: AppColors.blue
       ),
       onPressed:  () {
@@ -173,8 +173,7 @@ class ShowSupervisorTasks extends HookConsumerWidget {
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
       title: CustomText.h2(context, tr(context).adv),
-      content: CustomText.h3(context,'Tu petición para supervisar a '
-          '${solicitud.emailSup} ha sido aceptada'), // todo: tr
+      content: CustomText.h3(context,"${tr(context).acept_pre_peti} ${solicitud.emailSup} ${tr(context).acept_peti}"),
       actions: [
         okButton,
       ],

@@ -1,49 +1,17 @@
 import 'dart:developer';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:remind/data/auth/manage_supervised/solicitud.dart';
 import 'package:remind/presentation/notifications/utils/utilities.dart';
 
 import '../../../data/tasks/models/task_model.dart';
+import '../../../domain/services/localization_service.dart';
 import '../../tasks/utils/utilities.dart';
 
 class Notifications {
-  Future<int> createTaskToDoNotification(int hour, int minute,
-      String taskName) async {
-    int idNotification = createUniqueId();
-//todo: poner mejor notis
-    await AwesomeNotifications().createNotification(
-      content: NotificationContent(
-        id: idNotification,
-        channelKey: 'basic_channel',
-        title:
-        'Oye haz esto!!!',
-        body: '${taskName}',
-        //bigPicture: 'asset://assets/notification_map.png',
-        notificationLayout: NotificationLayout.BigText,
-      ),
-      actionButtons: [
-        NotificationActionButton(
-          key: 'MARK_DONE',
-          label: 'Hecho',
-        ),
-      ],
-      schedule: NotificationCalendar(
-        weekday: DateTime
-            .now()
-            .weekday,
-        hour: hour,
-        minute: minute,
-        second: 0,
-        millisecond: 0,
-        repeats: true,
-      ),
-    );
-    return idNotification;
-  }
-
-  Future<void> acceptPetitionNoti(Solicitud solicitud) async {
+  Future<void> acceptPetitionNoti(BuildContext context, Solicitud solicitud) async {
     int idNotification = createUniqueId();
     GetStorage().write('notificarPeticion', true);
     await AwesomeNotifications().createNotification(
@@ -51,9 +19,9 @@ class Notifications {
             id: idNotification,
             channelKey: 'petitions',
             autoDismissible: false,
-            title: 'Atención!',
+            title: tr(context).attention,
             body:
-            "El usuario con el correo ${solicitud.emailBoss} quiere ser tu supervisor",
+            "${tr(context).user_with} ${solicitud.emailBoss} ${tr(context).user_wants}",
             //bigPicture: 'https://storage.googleapis.com/cms-storage-bucket/d406c736e7c4c57f5f61.png',
             //largeIcon: 'https://storage.googleapis.com/cms-storage-bucket/0dbfcc7a59cd1cf16282.png',
             //'asset://assets/images/balloons-in-sky.jpg',
@@ -77,7 +45,7 @@ class Notifications {
     );
   }
 
-  Future<void> statusPetitionNoti(Solicitud solicitud, String status) async {
+  Future<void> statusPetitionNoti(BuildContext context, Solicitud solicitud, String status) async {
     int idNotification = createUniqueId();
     GetStorage().write('notificarPeticion', true);
     await AwesomeNotifications().createNotification(
@@ -85,9 +53,9 @@ class Notifications {
           id: idNotification,
           channelKey: 'petitions',
           autoDismissible: false,
-          title: 'Atención!',
+          title: tr(context).attention,
           body:
-          "El usuario con el correo ${solicitud.emailSup} ha ${status} tu petición",
+          "${tr(context).user_with} ${solicitud.emailSup} ha ${status} ${tr(context).your_petition}",
           //bigPicture: 'https://storage.googleapis.com/cms-storage-bucket/d406c736e7c4c57f5f61.png',
           //largeIcon: 'https://storage.googleapis.com/cms-storage-bucket/0dbfcc7a59cd1cf16282.png',
           //'asset://assets/images/balloons-in-sky.jpg',

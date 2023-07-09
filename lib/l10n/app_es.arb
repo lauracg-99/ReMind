@@ -34,6 +34,7 @@
   "welcome": "Bienvenido",
   "signInToYourAccount": "Inicia sesión ",
   "signIn": "Iniciar Sesión",
+  "signInGoogle": "Iniciar sesión con Google",
   "email": "Email",
   "email2": "Repita su email",
   "password": "Contraseña",
@@ -61,10 +62,14 @@
   "spanish": "Español",
   "galician": "Galego",
   "settings": "Configuración",
+  "add": "Añadir",
+  "delete_fields" : "Borrar campos",
+  "delete_fields_info" : "Se han limpiado todos los campos",
   "profileSettings": "Configuración de perfil",
   "appSettings": "Configuración de la App",
   "theme": "Tema",
   "language": "Idioma",
+  "acept" : "Aceptar",
   "selectYourPreferredLanguage": "Selecciona tu idioma de preferencia",
   "@_PROFILE": {
   },
@@ -112,6 +117,7 @@
   "addTaskDone": "Tarea añadida correctamente",
   "modTaskDone": "Tarea modificada correctamente",
   "hourRange": "Rango horario: ",
+  "range": "Rango",
   "repTime": "Repetir cada: ",
   "days": "días",
   "rangeWarning": "No puedes poner más notificaciones que minutos hay en tu rango horario",
@@ -126,6 +132,7 @@
   "adv_done": "Vas a marcar la tarea como hecha, ¿Seguimos?",
   "adv_undo": "Vas a desmarcar la tarea como hecha, ¿Seguimos?",
   "adv_delete" : "Vas a borrar la tarea, ¿Seguimos?",
+  "select_days": "Selecciona cada cuanto quieres que se repita",
   "@_ROL": {
   },
   "askYourDates": "Introduzca su usuario y contraseña",
@@ -134,10 +141,12 @@
   "error_sup": "Error al añadir supervisado",
   "info_error_sup": "El supervisado añadido ya es supervisor de otra cuenta tienes que añadir otra cuenta que no tenga ese rol.",
   "adv_del_sup": "¿Quiere borrar a este supervisado",
+  "no_supervised": "No hay supervisados",
   "@_SETTINGS": {
   },
   "change": "Cambiar",
   "name_settings": "Cambiar nombre usuario",
+  "delete_account" : "Borrar Cuenta",
   "@_INFO": {
   },
   "info": "Información",
@@ -156,6 +165,15 @@
   "info_perfil_boss":"Datos de la cuenta usando el perfil en este caso el correo en uso, el nombre (modificable en configuración) y una foto de perfil la cual se podrá modificar si se pulsa sobre ella cambiándola por una foto que ya tenga en la galería o bien tomando una foto en ese momento. Además tiene su rol y el correo del supervisado a su cargo.",
   "info_config": "En esta pantalla podrá cambiar el modo de uso de la app (claro u oscuro) el idioma de la app (castellano o galego) y puede cambiar su nombre de usuario. Además tiene un botón para cerrar sesión o bien la opción de poder borrar su cuenta.",
   "info_change_name" : "En esta pantalla podrá cambiar el nombre de usuario.",
-  "info_change_language" : "En esta pantalla podrá cambiar el idioma de la aplicación"
+  "info_change_language" : "En esta pantalla podrá cambiar el idioma de la aplicación",
+  "@_NOTI": {
 
+  },
+  "toDoNoti" : "Oye haz esto!!!",
+  "attention": "Atención!",
+  "user_with" : "El usuario con el correo",
+  "user_wants" : "quiere ser tu supervisor",
+  "your_petition": "tu petición",
+  "acept_pre_peti" : "Tu petición para supervisar a",
+  "acept_peti" : "ha sido aceptada"
 }

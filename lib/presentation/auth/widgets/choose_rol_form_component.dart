@@ -47,7 +47,7 @@ class ChooseRolFormComponent extends HookConsumerWidget {
                 height: Sizes.loadingAnimationButton(context),
               )
                   : CustomButton(
-                text: "Aceptar", // todo: tr
+                text: tr(context).acept,
                 onPressed: () async {
                   if (chooseRolFormKey.currentState!.validate()) {
                     var rol = (checkBoxValue)

@@ -126,7 +126,7 @@ class ShowTasks extends HookConsumerWidget {
                   log('solicitud ${solicitud.id} ${solicitud
                       .emailSup} ${solicitud.estado} ${solicitud
                       .emailBoss} ${documentId}');
-                  Notifications().acceptPetitionNoti(solicitud);
+                  Notifications().acceptPetitionNoti(context, solicitud);
                   managePetition(context, ref, solicitud: solicitud);
                 }
                if (solicitud.estado == 'borrar') {
@@ -150,7 +150,7 @@ class ShowTasks extends HookConsumerWidget {
                 if (solicitud.estado == 'pendiente' && !notiPet) {
                   solicitud.id = documentId;
                   log('solicitud ${solicitud.id} ${solicitud.emailSup} ${solicitud.estado} ${solicitud.emailBoss} ${documentId}');
-                  Notifications().acceptPetitionNoti(solicitud);
+                  Notifications().acceptPetitionNoti(context, solicitud);
                   managePetition(context, ref, solicitud: solicitud);
                 }
 
@@ -260,7 +260,7 @@ class ShowTasks extends HookConsumerWidget {
     Widget okButton = CustomTextButton(
       child: CustomText.h4(
           context,
-          'Aceptar',
+          tr(context).acept,
           color: AppColors.blue
       ),
       onPressed:  () {

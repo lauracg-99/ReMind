@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:remind/data/auth/manage_supervised/solicitud.dart';
 
 import '../../../domain/auth/repo/user_repo.dart';
+import '../../../domain/services/localization_service.dart';
 import '../../routes/navigation_service.dart';
 import '../../styles/sizes.dart';
 import '../../tasks/components/card_red_button_component.dart';
@@ -60,7 +61,7 @@ class PetitionCardItemComponent extends ConsumerWidget {
                   isColored: true,),
                 SizedBox(width: Sizes.vMarginComment(context),),
                 CardButtonComponent(
-                  title: 'Aceptar',
+                  title: tr(context).acept,
                   onPressed: (){
                     solicitud.estado = 'aceptada';
                     ref.watch(userRepoProvider).updatePetition(solicitud);
