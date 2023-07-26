@@ -220,7 +220,6 @@ class LoginFormComponent extends HookConsumerWidget {
 
                               (success) {
                             final firstTimeLogIn = GetStorage().read('firstTimeLogIn');
-                            log('*** firstTimeLogIn ${firstTimeLogIn}');
                             if (firstTimeLogIn){
                               NavigationService.push(
                                 context,

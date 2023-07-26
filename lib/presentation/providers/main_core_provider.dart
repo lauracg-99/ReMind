@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../data/auth/models/user_model.dart';
 import '../../data/auth/providers/auth_provider.dart';
 import '../../data/auth/repo/auth_repo.dart';
@@ -32,6 +33,8 @@ class MainCoreProvider {
   ///comprobamos la validez del usuario que inicia sesión
   Future<bool> checkValidAuth() async {
     final uid = getCurrentUserAuthUid();
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('getUID', uid ?? "");
     if (uid != null) {
       return await validateAuth(uid);
     } else {

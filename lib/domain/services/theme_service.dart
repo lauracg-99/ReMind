@@ -4,29 +4,26 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../presentation/providers/app_theme_provider.dart';
 
-
 class ThemeService {
   ThemeService._();
 
   static final instance = ThemeService._();
 
-  factory ThemeService(Reader reader) {
-    instance._reader = reader;
+  late ProviderContainer _container;
+
+  factory ThemeService(ProviderContainer container) {
+    instance._container = container;
     return instance;
   }
 
-  late Reader _reader;
-
   bool isDarkMode([ThemeMode? currentTheme, Brightness? platformBrightness]) {
-    final _currentTheme = currentTheme ?? _reader(appThemeProvider);
+    final _currentTheme = currentTheme ?? _container.read(appThemeProvider);
     if (_currentTheme == ThemeMode.system) {
       return (platformBrightness ??
-          SchedulerBinding.instance.window.platformBrightness) ==
+          SchedulerBinding.instance!.window.platformBrightness) ==
           Brightness.dark;
-    } else if (_currentTheme == ThemeMode.dark) {
-      return true;
     } else {
-      return false;
+      return _currentTheme == ThemeMode.dark;
     }
   }
 }

@@ -1,4 +1,5 @@
-import 'package:chips_choice_null_safety/chips_choice_null_safety.dart';
+
+import 'package:chips_choice/chips_choice.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -58,7 +59,7 @@ class ChooseDaySectionComponent extends ConsumerWidget {
                       label: (i, v) => v,
                     ),
                     wrapped: true,
-                    choiceStyle: C2ChoiceStyle(color:
+                    choiceStyle: C2ChipStyle(iconColor:
                      Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
                         ? AppColors.accentColorLight
                         : AppColors.darkThemePrimary,

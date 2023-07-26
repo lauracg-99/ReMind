@@ -114,8 +114,8 @@ class TimeRepetitionButton extends StateNotifier<String> {
       adapter: NumberPickerAdapter(
           data: [
             NumberPickerColumn(
-              initValue: 1,
-              begin: 0,
+              initValue: 15,
+              begin: 15,
               end: 999,
             ),
           ]

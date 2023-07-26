@@ -392,7 +392,7 @@ class AddTaskScreenBoss extends HookConsumerWidget {
                                             range.getfinHour(), repetitions.getBt()),
                                         begin: range.getIniHour(),
                                         end: range.getfinHour(),
-                                        editable: StorageKeys.verdadero,
+                                        editable: StorageKeys.falso,
                                         done: StorageKeys.falso,
                                         numRepetition: repetitions.getBoth(),
                                         lastUpdate: Timestamp.fromDate(DateTime.now()),

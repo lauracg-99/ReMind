@@ -51,9 +51,10 @@ class CardItemBossComponent extends ConsumerWidget {
               height: Sizes.vMarginComment(context),
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CardButtonComponent(
+                //btn mod
+                /*CardButtonComponent(
                   title: tr(context).mod,
                   isColored: false,
                   onPressed: () {
@@ -67,37 +68,29 @@ class CardItemBossComponent extends ConsumerWidget {
                     );
 
                   },
-                ),
-
+                ),*/
                 // borrar supervisor
                 CardRedButtonComponent(
                   title: tr(context).delete,
                   isColored: false,
                   onPressed: () {
                     showAlertDialogDelete(context,ref);
-                    },
+                  },
+                ),
+                SizedBox(width: Sizes.hMarginSmall(context)),
+                //está hecha o no
+                  (taskModel.done == StorageKeys.verdadero)
+                    ? CardButtonComponent(
+                  title: 'Deshacer',
+                  isColored: false,
+                  onPressed: () {
+                    showAlertDialogUnCheck(context, ref);
+                  },
                 )
+                    :SizedBox()
               ],
             ),
-          (taskModel.done == StorageKeys.verdadero)
-                ? SizedBox(
-            height: Sizes.vMarginSmallest(context),
-          )
-          : SizedBox(),
-          (taskModel.done == StorageKeys.verdadero)
-          //desmarcar el hecho
-              ? Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  CardButtonComponent(
-                    title: 'Deshacer',
-                    isColored: false,
-                    onPressed: () {
-                      showAlertDialogUnCheck(context, ref);
-                    },
-                  ),
-                  ])
-              : SizedBox()
+
         ]),
       ),
     );

@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lottie/lottie.dart';
 import 'package:remind/presentation/screens/popup_page.dart';
@@ -20,6 +23,9 @@ class SplashScreen extends HookConsumerWidget {
   Widget build(BuildContext context, ref) {
     final fadeController = useFadeInController();
     ref.watch(splashProvider);
+
+    var language = (tr(context).add == "Añadir") ? "ES" : "GL";
+    GetStorage().write("idioma", language);
 
     return PopUpPage(
       body: FadeIn(

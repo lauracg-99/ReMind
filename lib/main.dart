@@ -1,4 +1,8 @@
+import 'dart:developer';
+
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +11,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:remind/firebase_checker.dart';
 import 'package:remind/presentation/providers/app_locale_provider.dart';
 import 'package:remind/presentation/providers/app_theme_provider.dart';
 import 'package:remind/presentation/routes/app_router.dart';
@@ -15,24 +20,30 @@ import 'package:remind/presentation/routes/route_paths.dart';
 import 'package:remind/presentation/styles/app_colors.dart';
 import 'package:remind/presentation/styles/app_themes/dark_theme.dart';
 import 'package:remind/presentation/styles/app_themes/light_theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:workmanager/workmanager.dart';
 
 import 'data/auth/manage_supervised/send_notification.dart';
+import 'data/firebase/repo/firestore_paths.dart';
+import 'domain/services/data_connection_service.dart';
 import 'domain/services/init_services/services_initializer.dart';
+import 'domain/services/localization_service.dart';
 import 'domain/services/theme_service.dart';
+import 'firebase_options.dart';
 import 'l10n/l10n.dart';
 
 
 void main() async {
-  //This let us access providers before runApp (read only)
-  final container = ProviderContainer();
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  ); // Initialize Firebase here
+  FirestoreService();
+  final container = ProviderContainer();
   await ServicesInitializer.instance.init(widgetsBinding, container);
   await GetStorage.init();
-  //final notificationManager = NotificationManager();
-  //notificationManager.iniciarEscuchaNotificaciones();
-// Llamar al método para cerrar el teclado al abrir la aplicación
   SystemChannels.textInput.invokeMethod('TextInput.hide');
-  GetStorage().write('selectUser',false);
+  GetStorage().write('selectUser', false);
   await AwesomeNotifications().initialize(
     null,
     [
@@ -64,6 +75,14 @@ void main() async {
       ),
     ],
   );
+AwesomeNotifications().requestPermissionToSendNotifications();
+  Workmanager().initialize(
+    callbackDispatcher, // The top level function, aka callbackDispatcher
+    isInDebugMode: false, // If enabled it will post a notification whenever the task is running. Handy for debugging tasks
+  );
+
+  registerBackgroundTask();
+
   runApp(
     //All Flutter applications using Riverpod
     UncontrolledProviderScope(
@@ -73,6 +92,7 @@ void main() async {
   );
 }
 
+
 class MyApp extends HookConsumerWidget {
   const MyApp({Key? key}) : super(key: key);
   @override
@@ -81,6 +101,17 @@ class MyApp extends HookConsumerWidget {
     final appLocale = ref.watch(appLocaleProvider);
     final appTheme = ref.watch(appThemeProvider);
 
+    /*Workmanager().registerPeriodicTask(
+      "task1",
+      "OneOffTask",
+      tag: "1",
+      existingWorkPolicy: ExistingWorkPolicy.replace, //ExistingWorkPolicy.append
+      initialDelay: const Duration(seconds: 3),
+      constraints: Constraints(networkType: NetworkType.connected),
+      backoffPolicy: BackoffPolicy.linear,
+      backoffPolicyDelay: const Duration(seconds: 10),
+      inputData: {"data": 1},
+    );*/
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).requestFocus(FocusNode());
@@ -89,7 +120,6 @@ class MyApp extends HookConsumerWidget {
         data: ThemeService.instance.isDarkMode(appTheme, platformBrightness)
             ? DarkTheme.darkTheme
             : LightTheme.lightTheme,
-        //esto nos sirve para tener cosas distintas según la plataforma
         child: PlatformApp(
           navigatorKey: NavigationService.navigationKey,
           debugShowCheckedModeBanner: false,

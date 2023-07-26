@@ -1,5 +1,4 @@
 //Create a Provider
-import 'package:chips_choice_null_safety/chips_choice_null_safety.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 final selectDaysMultiChoice = StateNotifierProvider.autoDispose<MultiChoice,List<String>>((ref) {

@@ -49,7 +49,6 @@ class AuthRepo {
       dependencies.write(StorageKeys.uidUsuario, userCredential.user?.uid);
       dependencies.write(StorageKeys.email, email);
       dependencies.write(StorageKeys.passw, password);
-      dependencies.write(StorageKeys.cron, StorageKeys.falso);
       dependencies.write(StorageKeys.reset, StorageKeys.falso);
 
       UserModel usuario = await _userRepo.getDatosUsuario(dependencies.read(StorageKeys.uidUsuario));
@@ -87,7 +86,6 @@ class AuthRepo {
       log(userCredential.toString());
       dependencies.write(StorageKeys.uidUsuario, userCredential.user?.uid);
       dependencies.write(StorageKeys.email, user?.email);
-      dependencies.write(StorageKeys.cron, StorageKeys.falso);
       dependencies.write(StorageKeys.reset, StorageKeys.falso);
 
       UserModel usuario = await _userRepo.getDatosUsuario(dependencies.read(StorageKeys.uidUsuario));

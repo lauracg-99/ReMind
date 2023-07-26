@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:remind/common/phrases.dart';
 import 'package:remind/data/auth/manage_supervised/solicitud.dart';
 import 'package:remind/presentation/notifications/utils/utilities.dart';
 
@@ -107,7 +108,7 @@ class Notifications {
         id: idNotification,
         channelKey: 'scheduled_channel',
         groupKey: taskId,
-        title: 'Do ${taskName} ',
+        title: '${Phrases().obtenerFraseAleatoria()} ${taskName} ',
         body: 'venga va que toca',
         notificationLayout: NotificationLayout.Default,
         wakeUpScreen: true,
@@ -144,7 +145,7 @@ class Notifications {
       content: NotificationContent(
         id: idNotification,
         channelKey: 'scheduled_channel',
-        title: 'Do ${taskName}',
+        title: '${Phrases().obtenerFraseAleatoria()} ${taskName} ',
         body: 'venga va que toca',
         //'Rango horario ${taskModel.begin} ${taskModel.end}',
         notificationLayout: NotificationLayout.Default,
@@ -179,7 +180,7 @@ class Notifications {
         channelKey: 'scheduled_channel',
         title: 'Do this',
         //title: '${Emojis.wheater_droplet} Add some water to your plant!',
-        body: 'Venga va haz esto que toca',
+        body: '${Phrases().obtenerFraseAleatoria()} ',
         notificationLayout: NotificationLayout.Default,
       ),
       schedule: NotificationCalendar(

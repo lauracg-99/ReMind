@@ -55,7 +55,8 @@ class CardItemComponent extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                //modificar supervisado
+                //btn mod
+                /*//modificar supervisado
                 (taskModel.editable == StorageKeys.verdadero)
                 ? CardButtonComponent(
                   title: tr(context).mod,
@@ -72,78 +73,76 @@ class CardItemComponent extends ConsumerWidget {
 
                   },
                 )
-                : const SizedBox(),
+                : const SizedBox(),*/
 
-                (taskModel.editable == StorageKeys.verdadero)
-                    ?SizedBox(width: Sizes.hMarginSmall(context),)
-                    : SizedBox(),
-
-                //hecho
-                (taskModel.done != StorageKeys.verdadero && taskModel.editable == StorageKeys.verdadero)
-                  ? CardButtonComponent(
-                  title: tr(context).done,
-                  isColored: true,
-                  onPressed: () {
-                    showAlertDialogCheck(context,ref);
-                  },
-                )
-                  : SizedBox(),
-                //hecho supervisor
-                (taskModel.done != StorageKeys.verdadero && taskModel.editable == StorageKeys.falso)
-                    ? CardButtonComponent(
-                  title: tr(context).done,
-                  isColored: true,
-                  onPressed: () {
-
-                    showAlertDialogCheck(context,ref);
-
-                  },
-                )
-                    : SizedBox(),
-
-                //borrar supervisado DONE
-                  (taskModel.editable == StorageKeys.verdadero && taskModel.done == StorageKeys.verdadero)
-                      ? CardRedButtonComponent(
-                    title: tr(context).delete,
-                    isColored: false,
+          (taskModel.editable != StorageKeys.verdadero)
+            //puesto supervisor
+            ? (taskModel.done != StorageKeys.verdadero)
+                // no está hecha (hecho)
+                ?  CardButtonComponent(
+                    title: tr(context).done,
+                    isColored: true,
                     onPressed: () {
-                      showAlertDialogDelete(context,ref);
+
+                      showAlertDialogCheck(context,ref);
+
                     },
                   )
-                      : const SizedBox(),
-              ],
-            ),
-            SizedBox(
-              height: Sizes.vMarginSmallest(context),
-            ),
 
-            //delete
-            Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [(
-                //borrar supervisado
-                    (taskModel.editable == StorageKeys.verdadero && taskModel.done == StorageKeys.falso)
-                      ? CardRedButtonComponent(
+                // está hecha (deshacer)
+                : CardButtonComponent(
+                    title: 'Deshacer', //todo: tr
+                    isColored: false,
+                    onPressed: () {
+                      ref.read(taskProvider.notifier).unCheckTask(context,taskModel);
+                    },
+                  )
+
+            //puesto usuario
+            : (taskModel.done != StorageKeys.verdadero)
+                // no está hecha (borrar) (hecho)
+                ? Row(mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                      CardRedButtonComponent(
                         title: tr(context).delete,
                         isColored: false,
                         onPressed: () {
-                          //TODO
                           showAlertDialogDelete(context,ref);
-                          //ref.watch(notiControlProvider.notifier).deleteNotiControlWT(taskModel: taskModel);
-                          //ref.read(taskProvider.notifier).deleteSingleTask(taskModel: taskModel);
-                       },
-                      )
-                      : const SizedBox()),
+                        },
+                      ),
+                      SizedBox(width: Sizes.hMarginSmall(context)),
+                      CardButtonComponent(
+                        title: tr(context).done,
+                        isColored: true,
+                        onPressed: () {
 
-                      (taskModel.editable == StorageKeys.verdadero && taskModel.done == StorageKeys.verdadero)
-                        ? CardButtonComponent(
-                      title: 'Deshacer', //todo: tr
-                      isColored: false,
-                      onPressed: () {
-                        ref.read(taskProvider.notifier).unCheckTask(context,taskModel);
-                      },
-                    )
-                        : const SizedBox()
+                          showAlertDialogCheck(context,ref);
+
+                        },
+                      )
+
+                      ])
+
+                  // está hecha (borrar) (deshacer)
+                : Row(mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                      CardRedButtonComponent(
+                        title: tr(context).delete,
+                        isColored: false,
+                        onPressed: () {
+                          showAlertDialogDelete(context,ref);
+                        },
+                      ),
+                      SizedBox(width: Sizes.hMarginSmall(context)),
+                      CardButtonComponent(
+                        title: 'Deshacer', //todo: tr
+                        isColored: false,
+                        onPressed: () {
+                          ref.read(taskProvider.notifier).unCheckTask(context,taskModel);
+                        },
+                      )
+
+                      ])
                 ]
             )
           ],

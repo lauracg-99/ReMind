@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -5,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:remind/domain/services/init_services/storage_service.dart';
+import 'package:workmanager/workmanager.dart';
+import '../../../firebase_checker.dart';
 import '../../../firebase_options.dart';
 import '../../../presentation/providers/app_theme_provider.dart';
 import '../../../presentation/routes/navigation_service.dart';
@@ -25,7 +29,7 @@ class ServicesInitializer {
   init(WidgetsBinding widgetsBinding, ProviderContainer container) async {
     this.container = container;
     //Init FirebaseApp instance before runApp
-    await _initFirebase();
+   // await _initFirebase();
     //await _iniNoti();
     //_iniNoti();
     //This Prevent closing splash screen until we finish initializing our services.
@@ -43,6 +47,7 @@ class ServicesInitializer {
       widgetsBinding.allowFirstFrame();
     });
 
+    //registerBackgroundTask();
   }
 
   _iniNoti(){
@@ -69,6 +74,7 @@ class ServicesInitializer {
       ],
     );
   }
+
   _initializeStorage(){
     var storage = GetStorage();
     storage.write('notificarPeticion', false);
@@ -80,7 +86,7 @@ class ServicesInitializer {
   }
 
   _initializeServicesRef() {
-    ThemeService(container.read);
+    final themeService = ThemeService(ProviderContainer());
   }
 
   _initializeCustomSplashImages(BuildContext context) async {
@@ -90,7 +96,7 @@ class ServicesInitializer {
   initializeServices() async {
     await _initStorageService();
     await _initTheme();
-    await _initFirebase();
+    //await _initFirebase();
     await _initConnectivity();
     await _initializeStorage();
     //await _initNotificationSettings();
@@ -106,8 +112,6 @@ class ServicesInitializer {
   _initStorageService() async {
     await container.read(storageService).init();
   }
-
-
   _initTheme() async {
     await container.read(appThemeProvider.notifier).init();
   }
@@ -117,10 +121,8 @@ class ServicesInitializer {
   }
 
   _initNotificationSettings() async {
-    await LocalNotificationService(container).init();
+    //await LocalNotificationService(container).init();
   }
-
-
 
   Future initializeData() async {
     List futures = [

@@ -20,7 +20,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=2.18.6 <3.0.0'
+  sdk: '>=2.18.6 <3.10.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -37,12 +37,12 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
 
-  firebase_storage: ^10.2.15
-  firebase_core: ^1.18.0
-  firebase_auth: ^3.3.20
+  firebase_storage: ^11.2.5
+  firebase_core: ^2.15.0
+  firebase_auth: ^4.7.1
 
   http:
-  file_picker: ^4.5.1
+  file_picker: ^5.3.2
   shared_preferences:
   numberpicker: ^2.1.1
   flutter_datetime_picker:
@@ -53,31 +53,31 @@ dependencies:
   change_app_package_name: ^1.1.0
   convex_bottom_bar: ^3.0.0
   loading_animations: ^2.1.0
-  image_picker: ^0.8.5
+  image_picker: ^1.0.1
   path:
   path_provider:
 
-  cloud_firestore: #https://pub.dev/packages/cloud_firestore
+  cloud_firestore: ^4.8.3
 
   #flutter_material_pickers: ^3.1.4+1
-  jiffy: ^5.0.0
+  jiffy: ^6.2.1
   flutter_animator: ^3.2.1
-  animate_do: ^2.1.0
-  intl: ^0.17.0-nullsafety
+  animate_do: ^3.0.2
+  intl: ^0.18.1
   #progress_dialog: ^1.2.4
   pull_to_refresh: ^2.0.0
-  google_sign_in: ^5.3.3
+  google_sign_in: ^6.1.4
   #circular_check_box: ^1.0.4
 
   flashy_tab_bar2: ^0.0.4
   awesome_notifications: ^0.7.4+1
-  firebase_messaging: ^13.1.0
-  firebase_core_platform_interface: 4.5.1
-  device_info_plus: ^4.0.0
+  firebase_messaging: ^14.6.5
+  firebase_core_platform_interface: ^4.8.0
+  device_info_plus: ^9.0.2
   url_launcher: ^6.1.2
 
-  flutter_local_notifications: ^9.5.3+1
-  timezone: ^0.8.0
+  flutter_local_notifications: ^15.1.0+1
+  timezone: ^0.9.2
   rxdart:
   loading_gifs: #https://pub.dev/packages/loading_gifs
 
@@ -108,18 +108,18 @@ dependencies:
     git:
       url: https://github.com/DPLYR-dev/SplashScreenFlutterPackage.git
       ref: master
-  hooks_riverpod: ^1.0.4
+  hooks_riverpod: ^2.3.7
   dartz: ^0.10.1
   equatable: ^2.0.3
-  dio: ^4.0.6
-  flutter_platform_widgets: ^2.0.0
+  dio: ^5.3.0
+  flutter_platform_widgets: ^3.3.5
   freezed_annotation: any
-  connectivity_plus: ^2.3.5
-  internet_connection_checker: ^0.0.1+4
+  connectivity_plus: ^4.0.1
+  internet_connection_checker: ^1.0.0+1
   flutter_fadein: ^2.0.0
-  lottie: ^1.3.0
+  lottie: ^2.5.0
   fluttertoast: ^8.0.9
-  flutter_hooks: ^0.18.5+1
+  flutter_hooks: ^0.20.0
   geolocator: ^9.0.1
 
   flutter_localizations: # Add this line
@@ -131,7 +131,8 @@ dependencies:
   time_range: ^1.0.3
   day_picker: ^2.1.1
   getwidget: ^3.0.1
-  chips_choice_null_safety: ^2.0.6
+  #chips_choice_null_safety: ^2.0.6
+  chips_choice: ^3.0.0
   #lite_rolling_switch: ^0.1.1
   email_validator:
   toggle_switch: ^2.0.1
@@ -143,7 +144,9 @@ dependencies:
     git:
       url: https://github.com/Davenchy/flutter_launcher_icons.git
       ref: fixMinSdkParseFlutter2.8
-  cloud_functions: ^3.3.9
+  cloud_functions: ^4.3.4
+  workmanager: ^0.5.1
+  intl_translation: ^0.18.2
 
 
 

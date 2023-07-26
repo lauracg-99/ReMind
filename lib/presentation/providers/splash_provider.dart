@@ -27,8 +27,6 @@ class SplashProvider {
       if (value) {
         initializeData().then(
               (_) async {
-                log('**** CRON FALSE');
-                GetStorage().write('CronSet',StorageKeys.falso);
                 GetStorage().write('reset',StorageKeys.falso);
                 await _mainCoreProvider.initUser();
                 NavigationService.pushReplacementAll(

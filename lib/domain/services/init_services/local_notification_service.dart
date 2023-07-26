@@ -1,3 +1,4 @@
+/*
 import 'dart:convert';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
@@ -40,7 +41,7 @@ class LocalNotificationService {
     );
     await flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
-      onSelectNotification: onSelectNotification,
+      //onSelectNotification: onSelectNotification,
     );
   }
 
@@ -57,11 +58,13 @@ class LocalNotificationService {
           //si clickamos en la notificacion nos vamos a la pagina de inicio
           page: RoutePaths.homeBase,
         );
-        /*if (_notificationModel.data?.containsKey('orderId') ?? false) {
+        */
+/*if (_notificationModel.data?.containsKey('orderId') ?? false) {
           _container
               .read(notificationOrderViewModel)
               .navigateToNotificationOrder(_notificationModel.data!['orderId']);
-        }*/
+        }*//*
+
       }
     }
   }
@@ -96,3 +99,4 @@ class LocalNotificationService {
     );
   }
 }
+*/

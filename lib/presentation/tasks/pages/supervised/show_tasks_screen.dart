@@ -10,6 +10,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:remind/data/auth/manage_supervised/solicitud.dart';
 import 'package:remind/data/firebase/repo/firestore_paths.dart';
 import 'package:remind/domain/auth/repo/user_repo.dart';
+import 'package:remind/firebase_checker.dart';
 import 'package:remind/presentation/solicitudes/components/num_solicitudes_component.dart';
 import '../../../../common/storage_keys.dart';
 import '../../../../data/auth/providers/user_list_notifier.dart';
@@ -164,25 +165,13 @@ class ShowTasks extends HookConsumerWidget {
       }, []);
 
     final taskToDoStreamAll = ref.watch(getTasks);
-    if(GetStorage().read('firstTimeLogIn') != null) {
-      log('*** first ${GetStorage().read('firstTimeLogIn')}');
-    }
 
     if (GetStorage().read(StorageKeys.SUPERVISOR) != 'supervisor') {
       setSupervisor(false);
     } else {
       setSupervisor(true);
     }
-    final cron = Cron();
-    //seteamos el crono una vez y si no somos supervisores
 
-    if(!supervisor && GetStorage().read('CronSet') == StorageKeys.falso) {
-      GetStorage().write('CronSet',StorageKeys.verdadero);
-      // a las 00:00h se ejecutará esto todos los días
-      cron.schedule(Schedule.parse('00 00 * * *'), () async {
-        GetStorage().write('reset',StorageKeys.verdadero);
-      });
-    }
 
     return taskToDoStreamAll.when(
       data: (taskToDo) {
@@ -249,8 +238,6 @@ class ShowTasks extends HookConsumerWidget {
       }
 
     }
-    GetStorage().write('reset',StorageKeys.falso);
-    GetStorage().write('CronSet',StorageKeys.falso);
     ref.refresh(taskMultipleAll);
   }
 
