@@ -9,6 +9,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:remind/common/dependencies.dart';
 import 'package:remind/common/storage_keys.dart';
 import 'package:remind/presentation/tasks/providers/name_task_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 import '../../../data/auth/manage_supervised/solicitud.dart';
 import '../../../data/auth/models/supervised.dart';
@@ -35,6 +36,7 @@ class UserRepo {
   Dependencies dependencies = Dependencies();
 
   Future<Either<Failure, UserModel?>> getUserData(String userId) async {
+    final prefs = await SharedPreferences.getInstance();
     return await _firebaseCaller.getData(
       path: FirestorePaths.userDocument(userId),
       builder: (data, docId) {
@@ -56,6 +58,12 @@ class UserRepo {
               dependencies.write(StorageKeys.lastUIDSup, userModel?.lastUIDSup);
             }
           }
+          if(userModel?.rol == StorageKeys.SUPERVISOR){
+            prefs.setBool('is_SUPERVISOR', true);
+          } else {
+            prefs.setBool('is_SUPERVISOR', false);
+          }
+
 
           //Other way to 'extract' the data
           return Right(userModel);

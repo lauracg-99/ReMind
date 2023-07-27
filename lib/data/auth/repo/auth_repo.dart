@@ -14,6 +14,7 @@ import 'package:remind/data/auth/manage_supervised/solicitud.dart';
 import 'package:remind/data/auth/models/supervised.dart';
 import 'package:remind/data/auth/models/user_model.dart';
 import 'package:remind/domain/auth/repo/user_repo.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../error/exceptions.dart';
 import '../../error/failures.dart';
 import '../../firebase/repo/firebase_caller.dart';
@@ -221,6 +222,8 @@ class AuthRepo {
   }
 
   deleteUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.clear();
     await FirebaseAuth.instance.currentUser!.delete();
   }
 
@@ -273,6 +276,8 @@ class AuthRepo {
   //cerrar sesion
   Future signOut() async {
     try {
+      final prefs = await SharedPreferences.getInstance();
+      prefs.clear();
       await FirebaseAuth.instance.signOut();
     } catch (e) {
       log(e.toString());

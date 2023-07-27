@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../domain/services/localization_service.dart';
+import '../../providers/app_theme_provider.dart';
 import '../../styles/app_colors.dart';
 import '../../styles/sizes.dart';
 import '../../widgets/buttons/custom_text_button.dart';
@@ -20,15 +21,49 @@ final timeRangeButtonProvider = StateNotifierProvider.autoDispose<TimeRangeButto
 class TimeRangeButton extends StateNotifier<String> {
   final Ref ref;
 
+  late Picker ps;
+  late Picker pe;
+
   String horaInicial = '00:00';
   String horaFinal = '00:00';
 
   static String hf = '00:00';
   static String hi = '00:00';
 
+  bool isDark = false;
+
   static int sumaRange = 0;
 
   //static bool oneTime = false;
+
+  TimeRangeButton(this.ref) : super('') {
+    // Aquí creamos los pickers dentro del constructor para acceder a la propiedad 'isDark'
+    ps = Picker(
+      hideHeader: true,
+      adapter: DateTimePickerAdapter(
+        type: PickerDateTimeType.kHM,
+        value: DateTime(0, 1, 1, 0, 0),
+      ),
+      backgroundColor: Colors.transparent, //(!isDark) ? AppColors.lightBlack : AppColors.white,
+      onConfirm: (Picker picker, List value) {
+        var ini = (picker.adapter as DateTimePickerAdapter).value;
+        hi = parsearHora(ini!);
+      },
+    );
+
+    pe = Picker(
+      hideHeader: true,
+      adapter: DateTimePickerAdapter(
+        type: PickerDateTimeType.kHM,
+        value: DateTime(0, 1, 1, 0, 0),
+      ),
+      backgroundColor: Colors.transparent, //(!isDark) ? AppColors.lightBlack : AppColors.white,
+      onConfirm: (Picker picker, List value) {
+        var ini = (picker.adapter as DateTimePickerAdapter).value;
+        hf = parsearHora(ini!);
+      },
+    );
+  }
 
   int getSumaRange(){
     var ini = hi.split(':');
@@ -60,10 +95,13 @@ class TimeRangeButton extends StateNotifier<String> {
     hf = '00:00';
   }
 
-  Picker ps = Picker(
+/*  Picker ps = Picker(
       hideHeader: true,
       adapter: DateTimePickerAdapter(
-          type: PickerDateTimeType.kHM_AP),
+          type: PickerDateTimeType.kHM, value: DateTime(0, 1, 1, 0, 0),
+      ),
+      backgroundColor: (!isDark) ? AppColors.lightThemePrimary
+          : AppColors.darkThemePrimary,
       onConfirm: (Picker picker, List value) {
         var ini= (picker.adapter as DateTimePickerAdapter).value;
          hi = parsearHora(ini!);
@@ -71,16 +109,18 @@ class TimeRangeButton extends StateNotifier<String> {
       });
   Picker pe = Picker(
       hideHeader: true,
-      adapter: DateTimePickerAdapter(type: PickerDateTimeType.kHM_AP) ,
+      adapter: DateTimePickerAdapter(type: PickerDateTimeType.kHM, value: DateTime(0, 1, 1, 0, 0),),
+      backgroundColor: (! isDark) ? AppColors.lightThemePrimary
+          : AppColors.darkThemePrimary,
       onConfirm: (Picker picker, List value) {
         var ini= (picker.adapter as DateTimePickerAdapter).value;
         hf = parsearHora(ini!);
         //ini!.hour.toString() +':'+ ini.minute.toString();
-      });
+      });*/
 
   List<Widget> actions = [];
 
-  TimeRangeButton(this.ref) : super('');
+  //TimeRangeButton(this.ref) : super('');
 
   String getHours(){
     return hi +' - ' + hf;
@@ -160,7 +200,7 @@ class TimeRangeButton extends StateNotifier<String> {
      ps = Picker(
         hideHeader: true,
         adapter: DateTimePickerAdapter(
-            type: PickerDateTimeType.kHM_AP),
+            type: PickerDateTimeType.kHM),
         onConfirm: (Picker picker, List value) {
           print((picker.adapter as DateTimePickerAdapter).value);
           var ini= (picker.adapter as DateTimePickerAdapter).value;

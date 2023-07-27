@@ -68,12 +68,6 @@ List<String> saveDays(String days){
   //return days;
 }
 
-Future<int> stablishNoti(int day, String hora, String taskName){
-  var h = hora.split(':');
-  log('**** stablishNoti');
-  return Notifications().createReminderNotification(day,int.parse(h[0]),int.parse(h[1]), taskName);
-
-}
 
 String reformDays(String days){
   var left = days.replaceAll('[','');
@@ -83,49 +77,6 @@ String reformDays(String days){
 
 }
 
-Future<List<int>> setNotiInSupervised(TaskModel taskModel){
-  List<String> listDays = [];
-  taskModel.days?.forEach((element) {
-    listDays.add(element);
-  });
-  log('***** setNOtiInSupervised ${taskModel.taskName}');
-  // devuelve ids
-  return setNotiHours(taskModel.begin!, taskModel.end!,taskModel.numRepetition!, listDays, taskModel.taskName);
-
-}
-
-
-Future<List<int>> setNotiHours(String ini, String fin, int avisar, List<String> day, String taskName) async {
-  List<int> list = [];
-  var splitIni = ini.split(':');
-  //pasamos all a minutos
-  int iniH = int.parse(splitIni[0])*60 + int.parse(splitIni[1]);
-
-  var splitFin = fin.split(':');
-  //pasamos all a minutos
-  int finH = int.parse(splitFin[0])*60 + int.parse(splitFin[1]);
-
-  int cantDias = day.length;
-
-  for(int j = 0; j< cantDias;j++) {
-    int chooseDay = getNumDay(day.elementAt(j));
-    for (int i = iniH; i <= finH; i += avisar) {
-      var duration = Duration(minutes: i);
-      // para evitar que guarde 8 en vez de 08
-      if (duration.inMinutes.remainder(60) < 10) {
-        log('**** list add ${taskName}');
-        list.add(
-            await stablishNoti(chooseDay, '${duration.inHours}:0${duration.inMinutes.remainder(60)}',taskName));
-      } else {
-        log('**** list add ${taskName}');
-        list.add(await stablishNoti(chooseDay,
-            '${duration.inHours}:${duration.inMinutes.remainder(60)}',taskName));
-      }
-
-    }
-  }
-  return list;
-}
 
 
 //calcular las horas a las que hay que avisar

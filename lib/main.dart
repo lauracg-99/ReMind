@@ -101,17 +101,6 @@ class MyApp extends HookConsumerWidget {
     final appLocale = ref.watch(appLocaleProvider);
     final appTheme = ref.watch(appThemeProvider);
 
-    /*Workmanager().registerPeriodicTask(
-      "task1",
-      "OneOffTask",
-      tag: "1",
-      existingWorkPolicy: ExistingWorkPolicy.replace, //ExistingWorkPolicy.append
-      initialDelay: const Duration(seconds: 3),
-      constraints: Constraints(networkType: NetworkType.connected),
-      backoffPolicy: BackoffPolicy.linear,
-      backoffPolicyDelay: const Duration(seconds: 10),
-      inputData: {"data": 1},
-    );*/
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).requestFocus(FocusNode());

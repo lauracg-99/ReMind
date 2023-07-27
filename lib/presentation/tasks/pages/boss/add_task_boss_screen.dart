@@ -69,6 +69,11 @@ class AddTaskScreenBoss extends HookConsumerWidget {
         : AppColors.darkThemePrimary;
         //Theme.of(context).inputDecorationTheme.focusColor ?? Colors.blue;
 
+    if(Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor){
+      range.isDark = false;
+    } else {
+      range.isDark = true;
+    }
     if(GetStorage().read('listaDias') == null){
       GetStorage().write('listaDias',[]);
     }
@@ -93,7 +98,7 @@ class AddTaskScreenBoss extends HookConsumerWidget {
                               children: <Widget>[
                                 SizedBox(height: MediaQuery.of(context).size.height * 0.35,),
                                 CustomText.h4(
-                                context,
+                                context, //TODO: tr
                                 'Necesita añadir supervisados' + '\n' + 'para poder usar esta cuenta',
                                 color: AppColors.grey,
                                 alignment: Alignment.center,
@@ -408,7 +413,7 @@ class AddTaskScreenBoss extends HookConsumerWidget {
                                             message: failure.message);
                                       }, (success) {
                                         log('*** add ok');
-                                        AppDialogs.addTaskOK(context);
+                                        AppDialogs.addTaskOKBoss(context);
                                         nameController.clear();
                                         cleanField(ref);
                                       }));
@@ -418,7 +423,7 @@ class AddTaskScreenBoss extends HookConsumerWidget {
                                     }
                                   } else {
                                     AppDialogs.showErrorNeutral(context,
-                                        message: 'Rellena todos los campos');
+                                        message: 'Rellena todos los campos'); //TODO: tr
                                   }
                                 },
                               );
@@ -574,7 +579,7 @@ class AddTaskScreenBoss extends HookConsumerWidget {
     AlertDialog alert = AlertDialog(
       content: Column(mainAxisSize: MainAxisSize.min, children: [
         CustomTileComponent(
-          title: 'Cada cuanto repetir', //tr(context).repeat_noti,
+          title: 'Cada cuanto repetir', //TODO: tr(context).repeat_noti,
           leadingIcon: Icons.access_time_outlined,
         ),
         GestureDetector(

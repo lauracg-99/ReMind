@@ -21,13 +21,12 @@ class ChooseDaySectionComponent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
-    //final switchValue = ref.watch(switchButtonProviderAdd);
     final multiChoiceValue = ref.watch(selectDaysMultiChoice);
+    final allDaysSelected = multiChoiceValue.contains('Todos los días');
 
-    if (selectChoices.isNotEmpty) {
-      //log('switch ' + getDiasString(sortDay(selectChoices)).toString());
+    if (selectChoices.isNotEmpty && !allDaysSelected) {
       ref.watch(selectDaysMultiChoice.notifier)
-         .setChoice(getDiasString(sortDay(selectChoices)));
+          .setChoice(getDiasString(sortDay(selectChoices)));
     }
 
     return Container(
@@ -36,36 +35,40 @@ class ChooseDaySectionComponent extends ConsumerWidget {
           /*(!switchValue)
             ?*/
           Card(
-                  elevation: 6,
-                  margin: EdgeInsets.zero,
-                  shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(Sizes.cardRadius(context)),
-                  ),
-                  child: ChipsChoice<String>.multiple(
-                    value: multiChoiceValue,
-                    onChanged: (value) {
+            elevation: 6,
+            margin: EdgeInsets.zero,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(Sizes.cardRadius(context)),
+            ),
+            child: ChipsChoice<String>.multiple(
+              value: allDaysSelected ? ['Todos los días'] : multiChoiceValue,
+              onChanged: (value) {
+                if (value.contains('Todos los días')) {
+                  // If "Todos los días" is selected, clear all other selections
+                  value = ['Todos los días'];
+                } else {
+                  // Remove "Todos los días" if other days are selected
+                  value.remove('Todos los días');
+                }
 
-                      ref
-                          .watch(selectDaysMultiChoice.notifier)
-                          .changeChoice(val: value, mix: multiChoiceValue);
-                      GetStorage().write('listaDias', ordenarDias(value));
-                      //con esto pillo los dias
-                      //print(ref.read(selectDaysMultiChoice.notifier).tags);
-                    },
-                    choiceItems: C2Choice.listFrom<String, String>(
-                      source: daysList,
-                      value: (i, v) => v,
-                      label: (i, v) => v,
-                    ),
-                    wrapped: true,
-                    choiceStyle: C2ChipStyle(iconColor:
-                     Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
-                        ? AppColors.accentColorLight
-                        : AppColors.darkThemePrimary,
-                      ),
-                    ),
-                  ),
+                ref
+                    .watch(selectDaysMultiChoice.notifier)
+                    .changeChoice(val: value, mix: multiChoiceValue);
+                GetStorage().write('listaDias', ordenarDias(value));
+              },
+              choiceItems: C2Choice.listFrom<String, String>(
+                source: daysList,
+                value: (i, v) => v,
+                label: (i, v) => v,
+              ),
+              wrapped: true,
+              choiceStyle: C2ChipStyle(
+                iconColor: Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
+                    ? AppColors.accentColorLight
+                    : AppColors.darkThemePrimary,
+              ),
+            ),
+          ),
           SizedBox(
             height: Sizes.vMarginMedium(context),
           ),

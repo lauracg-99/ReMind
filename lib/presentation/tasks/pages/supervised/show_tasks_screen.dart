@@ -18,6 +18,7 @@ import '../../../../data/firebase/repo/firebase_caller.dart';
 import '../../../../data/tasks/models/task_model.dart';
 import '../../../../data/tasks/providers/task_provider.dart';
 import '../../../../domain/services/localization_service.dart';
+import '../../../notifications/utils/notification_utils.dart';
 import '../../../notifications/utils/notifications.dart';
 import '../../../routes/navigation_service.dart';
 import '../../../styles/app_colors.dart';
@@ -53,6 +54,22 @@ class ShowTasks extends HookConsumerWidget {
           .collection(FirestorePaths.taskPath(uidUser))
           .snapshots()
           .listen((querySnapshot) { querySnapshot.docChanges.forEach((change) {
+
+        if (change.type == DocumentChangeType.added) {
+          final modifiedDocument = change.doc;
+          final modifiedDocumentId = modifiedDocument.id;
+          final modifiedDocumentData = modifiedDocument.data();
+
+          log('UID del documento añadido: $modifiedDocumentId');
+          var task = TaskModel.fromMap(modifiedDocumentData!, modifiedDocumentId);
+          if (task.done == StorageKeys.falso) {
+            Notifications().setNotification(task);
+          } else {
+            AwesomeNotifications().cancelNotificationsByGroupKey(task.taskId);
+            NotificationUtils.removeNotificationDetailsByTaskId(task.taskId);
+          }
+        }
+
           if (change.type == DocumentChangeType.modified) {
             final modifiedDocument = change.doc;
             final modifiedDocumentId = modifiedDocument.id;
@@ -65,12 +82,9 @@ class ShowTasks extends HookConsumerWidget {
             //la tarea se ha marcado como hecha => no necesitamos las notis de ese día
             if (task.done == StorageKeys.verdadero) {
               AwesomeNotifications().cancelNotificationsByGroupKey(task.taskId);
+              NotificationUtils.removeNotificationDetailsByTaskId(task.taskId);
             }
-            //la tarea se ha modificado y aún no está hecha => establecemos las notificaciones
             if (task.done == StorageKeys.falso) {
-              //borramos notificación
-              AwesomeNotifications().cancelNotificationsByGroupKey(task.taskId);
-              //ponemos el grupo
               Notifications().setNotification(task);
             }
           }
@@ -82,7 +96,7 @@ class ShowTasks extends HookConsumerWidget {
             final modifiedDocumentData = modifiedDocument.data();
             var task = TaskModel.fromMap(modifiedDocumentData!, modifiedDocumentId);
             AwesomeNotifications().cancelNotificationsByGroupKey(task.taskId);
-
+            NotificationUtils.removeNotificationDetailsByTaskId(task.taskId);
           }
               });
       });
@@ -295,7 +309,9 @@ class ShowTasks extends HookConsumerWidget {
   setNotificationsFirstTime(List<TaskModel> listTasks){
     log('*** primera vez');
     listTasks.forEach((task) {
-      Notifications().setNotification(task);
+      if (task.done == StorageKeys.falso) {
+        Notifications().setNotification(task);
+      }
     });
 
     GetStorage().write('firstTimeLogIn', false);

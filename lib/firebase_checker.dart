@@ -4,8 +4,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:remind/presentation/notifications/utils/notification_utils.dart';
 import 'package:remind/presentation/notifications/utils/notifications.dart';
+import 'package:remind/presentation/styles/app_colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
 import 'common/storage_keys.dart';
@@ -18,19 +21,48 @@ import 'firebase_options.dart';
 
 @pragma('vm:entry-point') // Mandatory if the App is obfuscated or using Flutter 3.1+
 void callbackDispatcher() async {
-
   log('*** callbackDispatcher');
   WidgetsFlutterBinding.ensureInitialized();
-
+  await DataConnectionChecker().hasConnection;
   Workmanager().executeTask((task, inputData) async {
     log('*** exc task $task ${DateTime.now().toString()}');
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+    await AwesomeNotifications().initialize(
+      null,
+      [
+        NotificationChannel(
+          channelKey: 'basic_channel',
+          channelName: 'Basic Notifications',
+          defaultColor: AppColors.blue,
+          importance: NotificationImportance.High,
+          channelShowBadge: true,
+          channelDescription: 'Basic Notifications',
+        ),
+        NotificationChannel(
+          channelKey: 'scheduled_channel',
+          channelName: 'Scheduled Notifications',
+          defaultColor: AppColors.blue,
+          locked: true,
+          importance: NotificationImportance.High,
+          soundSource: 'resource://raw/res_custom_notification',
+          channelDescription: 'Scheduled Notifications',
+        ),
+        NotificationChannel(
+          channelKey: 'petitions',
+          channelName: 'Solicitudes',
+          channelDescription: 'Canal para solicitudes de supervisor',
+          defaultColor: Colors.blue,
+          ledColor: Colors.blue,
+          importance: NotificationImportance.High,
+          channelShowBadge: true,
+        ),
+      ],
+    );
     switch (task) {
       case 'resetTask':
         await FirestoreService().updateFirebaseData();
-
         final now = DateTime.now();
         final nextMidnight = DateTime(now.year, now.month, now.day + 1, 0, 0, 0, 0);
         final initialDelay = nextMidnight.difference(now);
@@ -50,40 +82,40 @@ void callbackDispatcher() async {
   });
 }
 
-final FirebaseFirestore _database = FirebaseFirestore.instance;
-
-
 void registerBackgroundTask() async {
   final prefs = await SharedPreferences.getInstance();
   final isDailyTaskScheduled = prefs.getBool('daily_task_scheduled') ?? false;
   final isCheckDBTaskScheduled = prefs.getBool('check_DB_scheduled') ?? false;
+  final isSUPERVISOR = prefs.getBool('is_SUPERVISOR') ?? false;
+  log('${isDailyTaskScheduled} ${isCheckDBTaskScheduled} $isSUPERVISOR');
 
-  log('${isDailyTaskScheduled} ${isCheckDBTaskScheduled}');
+  if(!isSUPERVISOR) {
+    if (!isDailyTaskScheduled) {
+      // run at midnight
+      final now = DateTime.now();
+      final nextMidnight =
+          DateTime(now.year, now.month, now.day + 1, 0, 0, 0, 0);
+      final initialDelay = nextMidnight.difference(now);
 
-  if (!isDailyTaskScheduled) {
-    // run at midnight
-    final now = DateTime.now();
-    final nextMidnight = DateTime(now.year, now.month, now.day + 1, 0, 0, 0, 0);
-    final initialDelay = nextMidnight.difference(now);
-
-    Workmanager().registerOneOffTask(
+      Workmanager().registerOneOffTask(
         'reset_task',
         'resetTask',
         initialDelay: initialDelay,
-    );
+      );
 
-    // Mark the "daily_task" as scheduled for today
-    prefs.setBool('daily_task_scheduled', true);
-  }
+      // Mark the "daily_task" as scheduled for today
+      prefs.setBool('daily_task_scheduled', true);
+    }
 
-  if (!isCheckDBTaskScheduled) {
-    Workmanager().registerPeriodicTask(
-      'check_DB',
-      'checkDB',
-      frequency: Duration(minutes: 15),
-    );
+    if (!isCheckDBTaskScheduled) {
+      Workmanager().registerPeriodicTask(
+        'check_DB',
+        'checkDB',
+        frequency: Duration(minutes: 15),
+      );
 
-    prefs.setBool('check_DB_scheduled', true);
+      prefs.setBool('check_DB_scheduled', true);
+    }
   }
 }
 
@@ -104,6 +136,7 @@ class FirestoreService {
   FirebaseFirestore get firestoreInstance => FirebaseFirestore.instance;
 
   Future<void> updateFirebaseData() async {
+    await DataConnectionChecker().hasConnection;
     try {
       var uid = await FirebaseAuth.instance.currentUser;
       log('*** con uid ${uid?.uid}');
@@ -112,11 +145,11 @@ class FirestoreService {
           .get()
           .then((querySnapshot) {
         if (querySnapshot.docs.isNotEmpty) {
-          querySnapshot.docs.forEach((taskDocument) {
+          for (var taskDocument in querySnapshot.docs) {
             Map<String, dynamic> taskData = taskDocument.data();
             taskData['done'] = 'false';
             taskDocument.reference.update(taskData);
-          });
+          }
         } else {
           log('*** oh');
         }
@@ -128,51 +161,71 @@ class FirestoreService {
 
   Future<void> startMonitoringChanges() async {
     log('*** startMonitoringChanges');
+    await DataConnectionChecker().hasConnection;
     var uid = await FirebaseAuth.instance.currentUser;
     log('*** con uid ${uid?.uid}');
     var noSupervisor = GetStorage().read(StorageKeys.rol) != StorageKeys.SUPERVISOR;
-    if(noSupervisor) {
-      DataConnectionChecker().hasConnection;
-      _database.collection(FirestorePaths.taskPath(uid!.uid))
-          .snapshots()
-          .listen((querySnapshot) {
-        querySnapshot.docChanges.forEach((change) {
-          if (change.type == DocumentChangeType.modified) {
-            final modifiedDocument = change.doc;
-            final modifiedDocumentId = modifiedDocument.id;
-            final modifiedDocumentData = modifiedDocument.data();
-            // Aquí puedes usar modifiedDocumentId para obtener el UID del documento que ha cambiado
-            log('UID del documento modificado: $modifiedDocumentId');
-            var task = TaskModel.fromMap(
-                modifiedDocumentData!, modifiedDocumentId);
+    log('no sup $noSupervisor');
 
-            //la tarea se ha marcado como hecha => no necesitamos las notis de ese día
-            if (task.done == StorageKeys.verdadero) {
-              AwesomeNotifications().cancelNotificationsByGroupKey(task.taskId);
-            }
-            //la tarea se ha modificado y aún no está hecha => establecemos las notificaciones
-            if (task.done == StorageKeys.falso) {
-              //borramos notificación
-              AwesomeNotifications().cancelNotificationsByGroupKey(task.taskId);
-              //ponemos el grupo
-              Notifications().setNotification(task);
-            }
+    await FirestoreService().firestoreInstance.collection(FirestorePaths.taskPath(uid!.uid))
+        .get()
+        .then((querySnapshot) {
+      if (querySnapshot.docs.isNotEmpty) {
+        log('nour empty');
+      }
+      querySnapshot.docChanges.forEach((change) async {
+        log('*** change.type ${change.type}');
+        if (change.type == DocumentChangeType.added) {
+          final modifiedDocument = change.doc;
+          final modifiedDocumentId = modifiedDocument.id;
+          final modifiedDocumentData = modifiedDocument.data();
+
+          log('UID del documento añadido: $modifiedDocumentId');
+          var task = TaskModel.fromMap(modifiedDocumentData!, modifiedDocumentId);
+          if (task.done == StorageKeys.falso) {
+            await Notifications().setNotification(task);
           }
+        }
 
-          //si se borra por lo que sea cancelamos notis
-          if (change.type == DocumentChangeType.removed) {
-            final modifiedDocument = change.doc;
-            final modifiedDocumentId = modifiedDocument.id;
-            final modifiedDocumentData = modifiedDocument.data();
-            var task = TaskModel.fromMap(
-                modifiedDocumentData!, modifiedDocumentId);
+        if (change.type == DocumentChangeType.modified) {
+          final modifiedDocument = change.doc;
+          final modifiedDocumentId = modifiedDocument.id;
+          final modifiedDocumentData = modifiedDocument.data();
+          // Aquí puedes usar modifiedDocumentId para obtener el UID del documento que ha cambiado
+          log('UID del documento modificado: $modifiedDocumentId');
+          var task = TaskModel.fromMap(
+              modifiedDocumentData!, modifiedDocumentId);
+
+          //la tarea se ha marcado como hecha => no necesitamos las notis de ese día
+          if (task.done == StorageKeys.verdadero) {
             AwesomeNotifications().cancelNotificationsByGroupKey(task.taskId);
+            NotificationUtils.removeNotificationDetailsByTaskId(task.taskId);
           }
-        });
-      });
-    }
+          //la tarea se ha modificado y aún no está hecha => establecemos las notificaciones
+          if (task.done == StorageKeys.falso) {
+            //borramos notificación
+            AwesomeNotifications().cancelNotificationsByGroupKey(task.taskId);
+            NotificationUtils.removeNotificationDetailsByTaskId(task.taskId);
+            //ponemos el grupo
+            await Notifications().setNotification(task);
+          }
+        }
 
+        //si se borra por lo que sea cancelamos notis
+        if (change.type == DocumentChangeType.removed) {
+          final modifiedDocument = change.doc;
+          final modifiedDocumentId = modifiedDocument.id;
+          final modifiedDocumentData = modifiedDocument.data();
+          var task = TaskModel.fromMap(
+              modifiedDocumentData!, modifiedDocumentId);
+          AwesomeNotifications().cancelNotificationsByGroupKey(task.taskId);
+          NotificationUtils.removeNotificationDetailsByTaskId(task.taskId);
+        }
+      });
+    });
   }
+
+
 }
 
 

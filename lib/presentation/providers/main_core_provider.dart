@@ -158,7 +158,8 @@ class MainCoreProvider {
     String uID = getCurrentUserAuthUid() ?? '';
 
     if(uID != ''){
-      await _userRepo.getUserData(uID);
+      var user = await _userRepo.getUserData(uID);
+
     }
   }
 

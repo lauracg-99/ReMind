@@ -11,10 +11,10 @@ class Phrases {
     "¡Oye haz esto!",
     "Va tocando hacer esto:",
     "Que no se te olvide esto:",
-    "* Sonido de una corneta * Haz esto por fa:"
+    "* Sonido de una corneta * "
     "Es hora de hacer esto:",
     "Te recuerdo que tienes que hacer esto:",
-    "Acuérdate que esto no se hace solo:"
+    "Acuérdate que esto no se hace solo:",
     "Porfa esto:",
     "Parece que quedó buen día para hacer esto:",
     "Como alguien dijo alguna vez, es hora de:",
@@ -25,7 +25,7 @@ class Phrases {
     "Ei, fai isto!",
     "Toca facer isto:",
     "Que non se che esqueza isto:",
-    "* Son de corneta * Fai isto por favor:",
+    "* Son de corneta *",
     "É hora de facer isto:",
     "Lémbrache que tes que facer isto:",
     "Non te esquezas de que isto non se fai soa:",

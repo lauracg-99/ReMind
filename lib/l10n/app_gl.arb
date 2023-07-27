@@ -133,6 +133,8 @@
   "adv_undo": "Vai desmarcar a tarefa como feita, continuamos?",
   "adv_delete" : "Vai eliminar a tarefa, continuamos?",
   "select_days": "Selecciona cada canto queres que se repita",
+
+  "warn_add_task": "Aviso: Puede exitir un cierto margen de error si la tarea se repite cada poco tiempo y el supervisado no ha abierto la app después",
   "@_ROL": {
   },
   "askYourDates": "Introduza o seu usuario e contrasinal",

@@ -47,9 +47,27 @@ class AddTaskScreen extends HookConsumerWidget {
     final nameController = useTextEditingController(text: '');
 
     final w = (MediaQuery.of(context).size.width)/ 3;
-    Color red = Theme.of(context).inputDecorationTheme.errorBorder?.borderSide.color ?? Colors.redAccent;
-    Color blue = Theme.of(context).inputDecorationTheme.focusColor ?? Colors.blue;
+    var containerColor = Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
+        ? AppColors.white
+        : AppColors.lightBlack;
 
+    var shadow = Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
+        ? AppColors.white
+        : AppColors.lightBlack;
+
+    Color red = Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
+        ? Theme.of(context).inputDecorationTheme.errorBorder?.borderSide.color ?? Colors.redAccent
+        : Color(0xFF9B1C1C);
+
+    Color blue = Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
+        ? AppColors.lightThemePrimary
+        : AppColors.darkThemePrimary;
+    //Theme.of(context).inputDecorationTheme.focusColor ?? Colors.blue;
+if(Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor){
+  range.isDark = false;
+} else {
+  range.isDark = true;
+}
     if(GetStorage().read('listaDias') == null){
       GetStorage().write('listaDias',[]);
     }
@@ -112,12 +130,12 @@ class AddTaskScreen extends HookConsumerWidget {
                                         decoration: BoxDecoration(
                                           boxShadow: [
                                             BoxShadow(
-                                              color: Colors.blue.withOpacity(0.35),
+                                              color: shadow.withOpacity(0.35),
                                               offset: const Offset(0, 3),
                                               blurRadius: 10,
                                             ),
                                           ],
-                                          color: Colors.white,
+                                          color: containerColor,
                                           borderRadius: BorderRadius.circular(10.0),
                                           border: (repetitions.getBt() == '')
                                               ? Border.all(
@@ -183,12 +201,12 @@ class AddTaskScreen extends HookConsumerWidget {
                                         decoration: BoxDecoration(
                                           boxShadow: [
                                             BoxShadow(
-                                              color: Colors.blue.withOpacity(0.35),
+                                              color: shadow.withOpacity(0.35),
                                               offset: const Offset(0, 3),
                                               blurRadius: 10,
                                             ),
                                           ],
-                                          color: Colors.white,
+                                          color: containerColor,
                                           borderRadius: BorderRadius.circular(10.0),
                                           border: ('${range.getIniHour()} - ${range.getfinHour()}' == '00:00 - 00:00')
                                               ? Border.all(
@@ -263,12 +281,12 @@ class AddTaskScreen extends HookConsumerWidget {
                                         decoration: BoxDecoration(
                                             boxShadow: [
                                               BoxShadow(
-                                                color: Colors.blue.withOpacity(0.35),
+                                                color: shadow.withOpacity(0.35),
                                                 offset: const Offset(0, 3),
                                                 blurRadius: 10,
                                               ),
                                             ],
-                                            color: Colors.white,
+                                            color: containerColor,
                                             borderRadius: BorderRadius.circular(10.0),
                                             border:
                                             (GetStorage().read('listaDias').toString() == '[]')
@@ -344,7 +362,7 @@ class AddTaskScreen extends HookConsumerWidget {
                             height: Sizes.loadingAnimationButton(context),
                           )
                         : CustomButton(
-                            text: 'Añadir', //todo: lbl
+                            text: tr(context).add,
                             onPressed: () async {
                               if (days.tags.toString() == '[]') {
                                 days.tags
@@ -388,7 +406,7 @@ class AddTaskScreen extends HookConsumerWidget {
                               }
                                } else {
                                 AppDialogs.showErrorNeutral(context,
-                                    message: 'Rellena todos los campos');
+                                    message: 'Rellena todos los campos'); //TODO: tr
                               }
                       },
                           );
@@ -403,7 +421,7 @@ class AddTaskScreen extends HookConsumerWidget {
                       cleanField(ref);
                       nameController.clear();
                       AppDialogs.showInfo(context,
-                          message: 'Se han limpiado todos los campos');
+                          message: tr(context).delete_fields_info);
                     },
                   ),
 
@@ -545,7 +563,7 @@ class AddTaskScreen extends HookConsumerWidget {
     AlertDialog alert = AlertDialog(
       content: Column(mainAxisSize: MainAxisSize.min, children: [
         CustomTileComponent(
-          title: 'Cada cuanto repetir', //tr(context).repeat_noti,
+          title: 'Cada cuanto repetir', //TODO: tr(context).repeat_noti,
           leadingIcon: Icons.access_time_outlined,
         ),
         GestureDetector(

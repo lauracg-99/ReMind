@@ -85,6 +85,19 @@ class AppDialogs {
     );
   }
 
+  static Future addTaskOKBoss(BuildContext context, {String? message}) async {
+    await DialogWidget.showCustomDialog(
+      context: context,
+      dialogWidgetState: DialogWidgetState.correct,
+      title: tr(context).addTaskDone,
+      description: tr(context).warn_add_task,
+      textButton: tr(context).oK,
+      onPressed: () {
+        NavigationService.goBack(context,rootNavigator: true);
+      },
+    );
+  }
+
   static Future signOutOk(BuildContext context, {String? message}) async {
     await DialogWidget.showCustomDialog(
       context: context,
