@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:get_storage/get_storage.dart';
 
 import '../domain/services/localization_service.dart';
@@ -11,7 +12,7 @@ class Phrases {
     "¡Oye haz esto!",
     "Va tocando hacer esto:",
     "Que no se te olvide esto:",
-    "* Sonido de una corneta * "
+    "${Emojis.music_trumpet}${Emojis.music_trumpet}${Emojis.music_trumpet}"
     "Es hora de hacer esto:",
     "Te recuerdo que tienes que hacer esto:",
     "Acuérdate que esto no se hace solo:",
@@ -25,7 +26,7 @@ class Phrases {
     "Ei, fai isto!",
     "Toca facer isto:",
     "Que non se che esqueza isto:",
-    "* Son de corneta *",
+    "${Emojis.music_trumpet}${Emojis.music_trumpet}${Emojis.music_trumpet}",
     "É hora de facer isto:",
     "Lémbrache que tes que facer isto:",
     "Non te esquezas de que isto non se fai soa:",

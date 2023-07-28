@@ -8,6 +8,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:remind/common/phrases.dart';
 import 'package:remind/data/auth/manage_supervised/solicitud.dart';
 import 'package:remind/presentation/notifications/utils/utilities.dart';
+import 'package:remind/presentation/styles/app_images.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../data/tasks/models/task_model.dart';
@@ -121,6 +122,29 @@ class Notifications {
 
 
   }
+  String randomCat() {
+    var urlCat = 'assets/images/cats/';
+    List<String> cats = [
+      '${urlCat}cat1.JPEG',
+      '${urlCat}cat2.JPEG',
+      '${urlCat}cat3.JPG',
+      '${urlCat}cat4.JPG',
+      '${urlCat}cat5.JPG',
+      '${urlCat}cat6.JPG',
+      '${urlCat}cat7.JPG',
+      '${urlCat}cat8.JPG',
+      '${urlCat}cat9.JPG',
+      '${urlCat}cat10.JPG'
+    ];
+
+    // Generar un índice aleatorio dentro del rango de la lista
+    Random random = Random();
+    int randomIndex = random.nextInt(cats.length);
+
+    // Obtener el elemento aleatorio de la lista y retornarlo
+    String cat = cats[randomIndex];
+    return cat;
+  }
 
   Future<void> makeNotiAwesome(int idNotification, String taskName,
       String taskId, int day, int hour, int minute) async {
@@ -136,15 +160,19 @@ class Notifications {
 
     // Guarda los detalles de la notificación en SharedPreferences
     await NotificationUtils.saveNotificationDetails(idNotification, day, hour, minute, taskId);
-
+    var gatito = 'asset://${randomCat()}';
+    if (kDebugMode) {
+      print(gatito);
+    }
     await AwesomeNotifications().createNotification(
       content: NotificationContent(
         id: idNotification,
         channelKey: 'scheduled_channel',
         groupKey: taskId,
-        title: "ReMind",
+        title: "${Emojis.body_eyes} ${Emojis.transport_police_car_light} ReMind",
         body: '${Phrases().obtenerFraseAleatoria()} $taskName ',
-        notificationLayout: NotificationLayout.Default,
+        bigPicture: gatito,
+        notificationLayout: NotificationLayout.BigPicture,
         wakeUpScreen: true,
       ),
       schedule: NotificationCalendar(
