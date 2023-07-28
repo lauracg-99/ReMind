@@ -148,6 +148,7 @@ class FirestoreService {
           for (var taskDocument in querySnapshot.docs) {
             Map<String, dynamic> taskData = taskDocument.data();
             taskData['done'] = 'false';
+            taskData['isNotiSet'] = 'false';
             taskDocument.reference.update(taskData);
           }
         } else {
