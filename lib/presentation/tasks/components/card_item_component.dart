@@ -1,11 +1,14 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get_storage/get_storage.dart';
 
 import '../../../common/storage_keys.dart';
 import '../../../data/tasks/models/task_model.dart';
 import '../../../data/tasks/providers/task_provider.dart';
 import '../../../domain/services/localization_service.dart';
+import '../../notifications/utils/notification_utils.dart';
 import '../../routes/navigation_service.dart';
 import '../../routes/route_paths.dart';
 import '../../styles/app_colors.dart';
@@ -27,6 +30,7 @@ class CardItemComponent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
+    var uidUser = GetStorage().read('uidUsuario');
     //var taskProvider = ref.watch(tasksRepoProvider);
     return Card(
       elevation: 6,
@@ -94,7 +98,12 @@ class CardItemComponent extends ConsumerWidget {
                     title: 'Deshacer', //todo: tr
                     isColored: false,
                     onPressed: () {
-                      ref.read(taskProvider.notifier).unCheckTask(context,taskModel);
+                      ref.read(taskProvider.notifier).unCheckTask(context,taskModel).then((value) {
+                        AwesomeNotifications().cancelNotificationsByGroupKey(taskModel.taskId);
+                        NotificationUtils.removeNotificationDetailsByTaskId(taskModel.taskId).then((value) async {
+                          await NotificationUtils.setNotiStateFB(uidUser, taskModel.taskId, 'false');
+                        });
+                      });
                     },
                   )
 
@@ -138,7 +147,12 @@ class CardItemComponent extends ConsumerWidget {
                         title: 'Deshacer', //todo: tr
                         isColored: false,
                         onPressed: () {
-                          ref.read(taskProvider.notifier).unCheckTask(context,taskModel);
+                          ref.read(taskProvider.notifier).unCheckTask(context,taskModel).then((value) {
+                            AwesomeNotifications().cancelNotificationsByGroupKey(taskModel.taskId);
+                            NotificationUtils.removeNotificationDetailsByTaskId(taskModel.taskId).then((value) async {
+                              await NotificationUtils.setNotiStateFB(uidUser, taskModel.taskId, 'false');
+                            });
+                          });
                         },
                       )
 
@@ -152,7 +166,7 @@ class CardItemComponent extends ConsumerWidget {
   }
 
   showAlertDialogCheck(BuildContext context, WidgetRef ref) {
-
+    var uidUser = GetStorage().read('uidUsuario');
     // set up the buttons
     Widget okButton = CustomTextButton(
       child: CustomText.h4(
@@ -161,7 +175,12 @@ class CardItemComponent extends ConsumerWidget {
           color: AppColors.blue
       ),
       onPressed:  () {
-        ref.read(taskProvider.notifier).checkTask(context, taskModel);
+        ref.read(taskProvider.notifier).checkTask(context, taskModel).then((value) {
+          AwesomeNotifications().cancelNotificationsByGroupKey(taskModel.taskId);
+          NotificationUtils.removeNotificationDetailsByTaskId(taskModel.taskId).then((value) async {
+            await NotificationUtils.setNotiStateFB(uidUser, taskModel.taskId, 'false');
+          });
+        });
         /*if (taskModel.editable == StorageKeys.verdadero){
           ref.read(taskProvider.notifier).checkTask(context, taskModel);
         }else{

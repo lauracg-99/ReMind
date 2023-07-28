@@ -1,10 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:remind/data/tasks/providers/task_provider.dart';
 import '../../../common/storage_keys.dart';
 import '../../../data/tasks/models/task_model.dart';
 import '../../../domain/services/localization_service.dart';
+import '../../notifications/utils/notification_utils.dart';
 import '../../routes/navigation_service.dart';
 import '../../routes/route_paths.dart';
 import '../../styles/app_colors.dart';
@@ -106,7 +108,9 @@ class CardItemBossComponent extends ConsumerWidget {
           color: AppColors.blue
       ),
       onPressed:  () {
-        ref.read(taskProvider.notifier).unCheckTaskBoss(context, taskModel);
+        ref.read(taskProvider.notifier).unCheckTaskBoss(context, taskModel).then((value) async {
+          await NotificationUtils.setNotiStateFB(GetStorage().read(StorageKeys.lastUIDSup), taskModel.taskId, 'false');
+        });
         NavigationService.goBack(context,rootNavigator: true);
       },
     );
