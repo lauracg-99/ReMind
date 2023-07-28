@@ -115,6 +115,7 @@ class ToggleChoiceComponent extends ConsumerWidget {
                                       authorUID: taskModel.authorUID,
                                       days: saveDays(days.tags.toString()),
                                       notiHours: taskModel.notiHours,
+                                      isNotiSet: taskModel.isNotiSet
                                     );
 
                                     if(GetStorage().read('rol') == 'supervisor'){
@@ -198,6 +199,7 @@ class ToggleChoiceComponent extends ConsumerWidget {
                                     days: taskModel.days,
                                     notiHours: notiHours(range.getIniHour(),
                                         range.getfinHour(), taskModel.numRepetition.toString()),
+                                      isNotiSet: taskModel.isNotiSet
                                   );
 
                                   if(GetStorage().read('rol') == 'supervisor'){
@@ -284,6 +286,7 @@ class ToggleChoiceComponent extends ConsumerWidget {
                                             days: taskModel.days,
                                             notiHours: notiHours(taskModel.begin!,
                                               taskModel.end!, repetitions.getBoth().toString()),
+                                              isNotiSet: taskModel.isNotiSet
                                           );
 
                                           ref.watch(taskProvider.notifier).updateTaskBoss(context, updateTask);
@@ -306,6 +309,7 @@ class ToggleChoiceComponent extends ConsumerWidget {
                                             days: taskModel.days,
                                             notiHours: notiHours(taskModel.begin!,
                                                 taskModel.end!, repetitions.getBoth().toString()),
+                                              isNotiSet: taskModel.isNotiSet
                                           );
 
                                           ref.watch(taskProvider.notifier).updateTask(context, updateTask);

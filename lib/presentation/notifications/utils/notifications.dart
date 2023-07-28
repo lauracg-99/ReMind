@@ -119,20 +119,17 @@ class Notifications {
       }
     }
 
+
   }
 
   Future<void> makeNotiAwesome(int idNotification, String taskName,
       String taskId, int day, int hour, int minute) async {
 
-    if (kDebugMode) {
-      print('*** make taskName day ${day} hour ${hour} min ${minute}');
-    }
-
     // Verifica si una notificación con los mismos detalles ya existe
-    if (await NotificationUtils.doesNotificationExist(idNotification, day, hour, minute)) {
+    if (await NotificationUtils.doesNotificationExist(taskId, day, hour, minute)) {
       // Si la notificación ya existe, no se crea una nueva
       if (kDebugMode) {
-        print('existe asi que noup $taskId ${day} hour ${hour} min ${minute}');
+        print('@@@ existe asi que noup $day:$hour:$minute:$taskId');
       }
       return;
     }

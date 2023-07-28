@@ -1,3 +1,4 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -14,6 +15,7 @@ import 'package:remind/data/auth/manage_supervised/solicitud.dart';
 import 'package:remind/data/auth/models/supervised.dart';
 import 'package:remind/data/auth/models/user_model.dart';
 import 'package:remind/domain/auth/repo/user_repo.dart';
+import 'package:remind/presentation/notifications/utils/notification_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../error/exceptions.dart';
 import '../../error/failures.dart';
@@ -277,6 +279,10 @@ class AuthRepo {
   Future signOut() async {
     try {
       final prefs = await SharedPreferences.getInstance();
+      var boss = prefs.getBool('is_SUPERVISOR') ?? false;
+      if(!boss){
+        await NotificationUtils.cancelNotiStateFBAll();
+      }
       prefs.clear();
       await FirebaseAuth.instance.signOut();
     } catch (e) {

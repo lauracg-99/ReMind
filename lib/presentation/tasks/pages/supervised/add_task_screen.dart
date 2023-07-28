@@ -386,6 +386,7 @@ if(Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor){
                               lastUpdate: Timestamp.fromDate(DateTime.now()),
                               taskId: '',
                               authorUID: GetStorage().read('uidUsuario'),
+                                isNotiSet: 'false'
                             );
 
                             ref

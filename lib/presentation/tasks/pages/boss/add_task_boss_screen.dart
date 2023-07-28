@@ -403,6 +403,7 @@ class AddTaskScreenBoss extends HookConsumerWidget {
                                         lastUpdate: Timestamp.fromDate(DateTime.now()),
                                         taskId: '',
                                         authorUID: GetStorage().read('uidUsuario'),
+                                          isNotiSet: 'false'
                                       );
 
                                       ref

@@ -182,8 +182,10 @@ class FirestoreService {
 
           log('UID del documento añadido: $modifiedDocumentId');
           var task = TaskModel.fromMap(modifiedDocumentData!, modifiedDocumentId);
-          if (task.done == StorageKeys.falso) {
-            await Notifications().setNotification(task);
+          if (task.done == StorageKeys.falso && task.isNotiSet == StorageKeys.falso) {
+            await Notifications().setNotification(task).then((value) async {
+              await NotificationUtils.setNotiStateFB(uid.uid, task.taskId, 'true');
+            });
           }
         }
 
@@ -200,14 +202,17 @@ class FirestoreService {
           if (task.done == StorageKeys.verdadero) {
             AwesomeNotifications().cancelNotificationsByGroupKey(task.taskId);
             NotificationUtils.removeNotificationDetailsByTaskId(task.taskId);
+            await NotificationUtils.setNotiStateFB(uid.uid, task.taskId, 'false');
           }
           //la tarea se ha modificado y aún no está hecha => establecemos las notificaciones
-          if (task.done == StorageKeys.falso) {
+          if (task.done == StorageKeys.falso && task.isNotiSet == StorageKeys.falso) {
             //borramos notificación
             AwesomeNotifications().cancelNotificationsByGroupKey(task.taskId);
             NotificationUtils.removeNotificationDetailsByTaskId(task.taskId);
             //ponemos el grupo
-            await Notifications().setNotification(task);
+            await Notifications().setNotification(task).then((value) async {
+              await NotificationUtils.setNotiStateFB(uid.uid, task.taskId, 'true');
+            });
           }
         }
 
@@ -219,11 +224,14 @@ class FirestoreService {
           var task = TaskModel.fromMap(
               modifiedDocumentData!, modifiedDocumentId);
           AwesomeNotifications().cancelNotificationsByGroupKey(task.taskId);
-          NotificationUtils.removeNotificationDetailsByTaskId(task.taskId);
+          NotificationUtils.removeNotificationDetailsByTaskId(task.taskId).then((value) async {
+            await NotificationUtils.setNotiStateFB(uid.uid, task.taskId, 'false');
+          });
         }
       });
     });
   }
+
 
 
 }

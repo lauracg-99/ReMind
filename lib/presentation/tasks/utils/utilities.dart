@@ -56,7 +56,7 @@ String getStrDay(int day){
 //hago esto para gestionar de forma más fácil la base de datos
 List<String> saveDays(String days){
   if(days == '[Todos los días]'){
-    days = '[Lunes, Martes, Miércoles, Jueves, Sábado, Domingo]';
+    days = '[Lunes, Martes, Miércoles, Jueves, Viernes, Sábado, Domingo]';
   }
 
   days = reformDays(days);

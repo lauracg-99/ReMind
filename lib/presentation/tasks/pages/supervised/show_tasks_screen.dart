@@ -60,13 +60,19 @@ class ShowTasks extends HookConsumerWidget {
           final modifiedDocumentId = modifiedDocument.id;
           final modifiedDocumentData = modifiedDocument.data();
 
-          log('UID del documento añadido: $modifiedDocumentId');
           var task = TaskModel.fromMap(modifiedDocumentData!, modifiedDocumentId);
-          if (task.done == StorageKeys.falso) {
-            Notifications().setNotification(task);
-          } else {
+          log('DOC añadido: $modifiedDocumentId ${task.done} ${task.isNotiSet} ${task.taskName}');
+
+          if (task.done == StorageKeys.falso && task.isNotiSet == StorageKeys.falso) {
+            Notifications().setNotification(task).then((value) async {
+              await NotificationUtils.setNotiStateFB(uidUser, task.taskId, 'true');
+            });
+          }
+          if (task.done == StorageKeys.verdadero && task.isNotiSet == StorageKeys.falso) {
             AwesomeNotifications().cancelNotificationsByGroupKey(task.taskId);
-            NotificationUtils.removeNotificationDetailsByTaskId(task.taskId);
+            NotificationUtils.removeNotificationDetailsByTaskId(task.taskId).then((value) async {
+              await NotificationUtils.setNotiStateFB(uidUser, task.taskId, 'false');
+            });
           }
         }
 
@@ -75,17 +81,21 @@ class ShowTasks extends HookConsumerWidget {
             final modifiedDocumentId = modifiedDocument.id;
             final modifiedDocumentData = modifiedDocument.data();
             // Aquí puedes usar modifiedDocumentId para obtener el UID del documento que ha cambiado
-            log('UID del documento modificado: $modifiedDocumentId');
+
             var task = TaskModel.fromMap(
                 modifiedDocumentData!, modifiedDocumentId);
-
+            log('UID del documento modificado: $modifiedDocumentId ${task.done} ${task.isNotiSet} ${task.taskName}');
             //la tarea se ha marcado como hecha => no necesitamos las notis de ese día
-            if (task.done == StorageKeys.verdadero) {
+            if (task.done == StorageKeys.verdadero && task.isNotiSet == StorageKeys.falso) {
               AwesomeNotifications().cancelNotificationsByGroupKey(task.taskId);
-              NotificationUtils.removeNotificationDetailsByTaskId(task.taskId);
+              NotificationUtils.removeNotificationDetailsByTaskId(task.taskId).then((value) async {
+                await NotificationUtils.setNotiStateFB(uidUser, task.taskId, 'false');
+              });
             }
-            if (task.done == StorageKeys.falso) {
-              Notifications().setNotification(task);
+            if (task.done == StorageKeys.falso && task.isNotiSet == StorageKeys.falso) {
+              Notifications().setNotification(task).then((value) async {
+                await NotificationUtils.setNotiStateFB(uidUser, task.taskId, 'true');
+              });
             }
           }
 
@@ -96,7 +106,9 @@ class ShowTasks extends HookConsumerWidget {
             final modifiedDocumentData = modifiedDocument.data();
             var task = TaskModel.fromMap(modifiedDocumentData!, modifiedDocumentId);
             AwesomeNotifications().cancelNotificationsByGroupKey(task.taskId);
-            NotificationUtils.removeNotificationDetailsByTaskId(task.taskId);
+            NotificationUtils.removeNotificationDetailsByTaskId(task.taskId).then((value) async {
+              await NotificationUtils.setNotiStateFB(uidUser, task.taskId, 'false');
+            });
           }
               });
       });
@@ -309,7 +321,7 @@ class ShowTasks extends HookConsumerWidget {
   setNotificationsFirstTime(List<TaskModel> listTasks){
     log('*** primera vez');
     listTasks.forEach((task) {
-      if (task.done == StorageKeys.falso) {
+      if (task.done == StorageKeys.falso && task.isNotiSet == StorageKeys.falso) {
         Notifications().setNotification(task);
       }
     });
