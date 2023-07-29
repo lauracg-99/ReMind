@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:remind/data/auth/models/supervised.dart';
+import 'package:remind/domain/services/localization_service.dart';
 
 import '../styles/app_images.dart';
 import '../styles/sizes.dart';
@@ -45,14 +46,14 @@ class CardSupervisedDetailsComponent extends StatelessWidget {
               children: [
                 CustomText.h6(
                   context,
-                  'Nombre: ${supervised.name}', //TODO: tr
+                  '${tr(context).name}: ${supervised.name}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
                 SizedBox(height: 2,),
                 CustomText.h6(
                   context,
-                  'email: ${supervised.email}', //TODO: tr
+                  '${tr(context).email}: ${supervised.email}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),

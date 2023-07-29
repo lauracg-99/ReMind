@@ -27,7 +27,7 @@ class AddSupervisedScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
-    var bs = 'Buscar usuarios'; //TODO: tr
+    var bs = tr(context).search_users;
     var emailController = useTextEditingController(text: '');
     final userList = ref.watch(userListProvider);
     var selectUser = GetStorage().read('selectUser');
@@ -100,7 +100,7 @@ class AddSupervisedScreen extends HookConsumerWidget {
                               AppColors.lightThemeIconColor
                           ? AppColors.lightThemePrimary
                           : AppColors.darkThemePrimary,
-                      hintText: 'Ingrese su texto', //TODO: tr
+                      hintText: tr(context).put_text,
                       labelText: bs,
                     ),
                     controller: emailController,
@@ -140,7 +140,7 @@ class AddSupervisedScreen extends HookConsumerWidget {
                         // Verificar si no hay usuarios filtrados y si el campo de búsqueda no está vacío
                         if (filteredUsers.isEmpty && emailController.text.isNotEmpty) {
                           return CustomTileComponent(
-                            title: 'No se han encontrado usuarios', //TODO: tr
+                            title: tr(context).no_users_found,
                             leadingIcon: Icons.info,
                             onTap: () {},
                           );
@@ -231,17 +231,17 @@ class AddSupervisedScreen extends HookConsumerWidget {
                                           AppDialogs.showWarningPersonalice(
                                               context,
                                               message:
-                                                  'ya le has enviado una petición a este usuario'); //TODO: tr
+                                                  tr(context).already_sent);
                                           GetStorage()
                                               .write('userSelected', false);
                                         },
                                         (success) {
                                           AppDialogs.showInfo(context,
-                                                  message: 'Petición enviada')
+                                                  message: tr(context).peti_send_to)
                                               .then(
                                             (value) => NavigationService.goBack(
                                                 context),
-                                          ); //TODO: tr
+                                          );
                                         },
                                       ),
                                     );

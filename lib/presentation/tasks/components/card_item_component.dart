@@ -68,7 +68,7 @@ class CardItemComponent extends ConsumerWidget {
 
                       // está hecha (deshacer)
                       : CardButtonComponent(
-                          title: 'Deshacer', //todo: tr
+                          title: tr(context).undone,
                           isColored: false,
                           onPressed: () {
                             ref
@@ -125,7 +125,7 @@ class CardItemComponent extends ConsumerWidget {
                               ),
                               SizedBox(width: Sizes.hMarginSmall(context)),
                               CardButtonComponent(
-                                title: 'Deshacer', //todo: tr
+                                title: tr(context).undone,
                                 isColored: false,
                                 onPressed: () {
                                   ref

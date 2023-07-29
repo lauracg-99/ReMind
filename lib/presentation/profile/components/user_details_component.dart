@@ -113,14 +113,6 @@ class UserDetailsComponent extends ConsumerWidget {
               );
             }).toList(),
           ),
-        /*CustomText.h4(
-          context,
-          '${userModel.emailSup}', //todo: poner aqui la lista de supervisados a su cargo
-          alignment: Alignment.center,
-          color: Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
-              ? AppColors.lightGray
-              : AppColors.whiteGray,
-        ),*/
         ])
       ],
     );

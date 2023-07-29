@@ -128,15 +128,13 @@ class TimeRepetitionButton extends StateNotifier<String> {
               child: const Text('Minutos'),//Icon(Icons.more_vert),
             ))
       ],
-      //todo: tr
+
       hideHeader: true,
-      title: const Text("Selecciona días repetición"),
+      title: const Text("Selecciona días repetición"), // TODO: tr
       selectedTextStyle: const TextStyle(color: Colors.blue),
       onConfirm: (Picker picker, List value) {
-        log('value.toString() ${value.toString()}');
         var split = value.toString().replaceAll('[', '');
         split = split.replaceAll(']', '');
-        log('esto ${split}');
         hr = split;
       }
   );
@@ -146,7 +144,7 @@ class TimeRepetitionButton extends StateNotifier<String> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text("Cada cuantos minutos repetir"),
+            title:  Text(tr(context).choose_rep),
             actions: actions,
             content: Container(
               child: Column(

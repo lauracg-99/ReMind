@@ -36,7 +36,7 @@ class DeleteSupComponent extends HookConsumerWidget {
                     height: Sizes.vMarginHigh(context),
                   ),
                   CustomButton(
-                    text: 'Volver', // TODO: tr
+                    text: tr(context).goBack,
                     onPressed: () {
 
                       GetStorage().write('emailSup', '');

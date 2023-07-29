@@ -177,6 +177,29 @@
   "user_wants" : " quere ser o teu supervisor",
   "acept_pre_peti": "A túa petición para supervisar a",
   "your_petition": "a tu petición",
-  "acept_peti": "foi aceptada"
+  "acept_peti": "foi aceptada",
+
+  "search_users": "Buscar usuarios",
+  "put_text": "Ingrese su texto",
+  "no_users_found": "Non se encontraron usuarios",
+  "already_sent": "xa enviaches unha petición a este usuario",
+  "goBack": "Volver",
+  "superviseds": "Supervisados",
+  "fail_change_user": "Erro ao cambiar de usuario",
+  "see_tasks_of": "Usuario cambiado agora verá as tarefas de ",
+  "done_supervision": "Xa non supervisa a este usuario",
+  "delete_supervised": "Supervisado borrado",
+  "reject": "Rechazar",
+  "pendingPeti": "Peticions pendentes",
+  "no_pending_peti": "Sen notificacións pendentes",
+  "peti_send_to": "Petición enviada",
+  "wants_super": "O usuario co email %emailBoss quere ser o seu supervisor",
+  "state": "Estado",
+  "undone": "Desfacer",
+  "warn_add_sup": "Necesita engadir supervisados\npara poder usar esta conta",
+  "choose_rep": "Escolle cada canto repetir",
+  "select_days_short": "Selecciona días repetición",
+  "and": "e",
+  "choose_days": "Elixe días"
 
 }

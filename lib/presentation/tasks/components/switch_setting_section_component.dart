@@ -95,7 +95,7 @@ class ChooseDaySectionComponent extends ConsumerWidget {
 
   List<String> getDiasString(List<dynamic> numeros) {
     List<String> tags = [];
-    numeros.forEach((element) {
+    for (var element in numeros) {
       //print(element.toString());
       if (element < 8) {
         //va de 0..7 no de 1..8
@@ -103,7 +103,7 @@ class ChooseDaySectionComponent extends ConsumerWidget {
       } else {
         tags.add("Todos los días"); // TODO: tr
       }
-    });
+    }
     return tags;
   }
 

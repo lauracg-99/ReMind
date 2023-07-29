@@ -285,7 +285,7 @@ class ShowTasks extends HookConsumerWidget {
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
       title: CustomText.h2(context, tr(context).adv),
-      content: CustomText.h3(context,'Quiere ser tu supervisor '), // todo: tr
+      content: CustomText.h3(context,tr(context).user_wants),
       actions: [
         cancelButton,
         okButton,

@@ -97,7 +97,7 @@ class AddTaskScreenBoss extends HookConsumerWidget {
                                 SizedBox(height: MediaQuery.of(context).size.height * 0.35,),
                                 CustomText.h4(
                                 context,
-                                'Necesita añadir supervisados\npara poder usar esta cuenta', // TODO: tr
+                                  tr(context).warn_add_sup,
                                 color: AppColors.grey,
                                 alignment: Alignment.center,
                                 textAlign: TextAlign.center,)
@@ -172,7 +172,7 @@ class AddTaskScreenBoss extends HookConsumerWidget {
                                                         builder: (context, constraints) {
                                                           final text = (repetitions.getBt() != '')
                                                               ? tiempo(repetitions.getBt())
-                                                              : 'Elige cada cuanto repetir'; // TODO: tr
+                                                              : tr(context).choose_rep;
                                                           final textStyle = TextStyle(
                                                             color: Theme.of(context).textTheme.headline1?.color,
                                                             fontSize: Sizes.fontSizes(context)['h3'],
@@ -241,7 +241,7 @@ class AddTaskScreenBoss extends HookConsumerWidget {
                                                       child: LayoutBuilder(
                                                         builder: (context, constraints) {
                                                           final text = ('${range.getIniHour()} - ${range.getfinHour()}' == '00:00 - 00:00')
-                                                              ? 'Elige rango horario' // TODO: tr
+                                                              ? tr(context).choose_range
                                                               : 'Rango: \n ${range.getIniHour()} - ${range.getfinHour()}';
 
                                                           final textStyle = TextStyle(
@@ -319,7 +319,7 @@ class AddTaskScreenBoss extends HookConsumerWidget {
                                                         builder: (context, constraints) {
                                                           final text = (GetStorage().read('listaDias').toString() != '[]')
                                                               ? GetStorage().read('listaDias').toString().replaceAll('[', '').replaceAll(']', '')
-                                                              : 'Elige días'; // TODO: tr
+                                                              : tr(context).choose_days;
 
                                                           final textStyle = TextStyle(
                                                             color: Theme.of(context).textTheme.headline1?.color,
@@ -421,7 +421,7 @@ class AddTaskScreenBoss extends HookConsumerWidget {
                                     }
                                   } else {
                                     AppDialogs.showErrorNeutral(context,
-                                        message: 'Rellena todos los campos'); //TODO: tr
+                                        message: tr(context).fill_core);
                                   }
                                 },
                               );
@@ -577,7 +577,7 @@ class AddTaskScreenBoss extends HookConsumerWidget {
     AlertDialog alert = AlertDialog(
       content: Column(mainAxisSize: MainAxisSize.min, children: [
         CustomTileComponent(
-          title: 'Cada cuanto repetir', //TODO: tr(context).repeat_noti,
+          title:  tr(context).choose_rep,
           leadingIcon: Icons.access_time_outlined,
         ),
         GestureDetector(

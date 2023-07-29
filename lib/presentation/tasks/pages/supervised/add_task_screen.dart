@@ -152,7 +152,7 @@ if(Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor){
                                             builder: (context, constraints) {
                                               final text = (repetitions.getBt() != '')
                                                   ? tiempo(repetitions.getBt())
-                                                  : 'Elige cada cuanto repetir';
+                                                  : tr(context).choose_rep;
                                               final textStyle = TextStyle(
                                                 color: Theme.of(context).textTheme.headline1?.color,
                                                 fontSize: Sizes.fontSizes(context)['h3'],
@@ -406,7 +406,7 @@ if(Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor){
                               }
                                } else {
                                 AppDialogs.showErrorNeutral(context,
-                                    message: 'Rellena todos los campos'); //TODO: tr
+                                    message: tr(context).fill_core);
                               }
                       },
                           );
@@ -415,7 +415,7 @@ if(Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor){
                   SizedBox(height: Sizes.vMarginHigh(context),),
 
                   CustomButton(
-                    text: 'Borrar campos', //todo: lbl
+                    text: tr(context).delete_fields,
                     buttonColor: Colors.red,
                     onPressed: ()  {
                       cleanField(ref);
@@ -563,7 +563,7 @@ if(Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor){
     AlertDialog alert = AlertDialog(
       content: Column(mainAxisSize: MainAxisSize.min, children: [
         CustomTileComponent(
-          title: 'Cada cuanto repetir', //TODO: tr(context).repeat_noti,
+          title: tr(context).choose_rep,
           leadingIcon: Icons.access_time_outlined,
         ),
         GestureDetector(

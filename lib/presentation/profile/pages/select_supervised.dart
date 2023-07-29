@@ -149,7 +149,7 @@ class SelectSupervised extends HookConsumerWidget {
                                                                 children: [
                                                                   CustomText.h4(
                                                                     context,
-                                                                    'Nombre: ${supervisado.supervisados![index].name}', //TODO: tr
+                                                                    '${tr(context).name}: ${supervisado.supervisados![index].name}',
                                                                     maxLines: 1,
                                                                     overflow:
                                                                         TextOverflow
@@ -165,7 +165,7 @@ class SelectSupervised extends HookConsumerWidget {
                                                                   ),
                                                                   CustomText.h4(
                                                                     context,
-                                                                    'email: ${supervisado.supervisados![index].email}', //TODO: tr
+                                                                    '${tr(context).email}: ${supervisado.supervisados![index].email}',
                                                                     maxLines: 1,
                                                                     overflow:
                                                                         TextOverflow
@@ -216,13 +216,11 @@ class SelectSupervised extends HookConsumerWidget {
                                                                             'true')
                                                                         .then((value) =>
                                                                             value.fold((failure) {
-                                                                              AppDialogs.showWarningPersonalice(context, message: 'Error al cambiar de usuario'); //TODO: tr
+                                                                              AppDialogs.showWarningPersonalice(context, message: tr(context).fail_change_user);
                                                                             }, (success) {
                                                                               ref.refresh(getTasksSup);
                                                                               AppDialogs.showInfo(context,
-                                                                                  message: 'Usuario cambiado '
-                                                                                      'ahora verá las tareas de '
-                                                                                      '${supervisado.supervisados![index].name}'); //TODO: tr
+                                                                                  message: '${tr(context).see_tasks_of} ${supervisado.supervisados![index].name}');
                                                                             }));
                                                                   },
                                                                 ))
@@ -286,7 +284,7 @@ class SelectSupervised extends HookConsumerWidget {
                                                           .infoDark,
                                                   title: tr(context).info,
                                                   description:
-                                                      'Ya no supervisa a este usuario', //TODO: tr
+                                                      tr(context).done_supervision,
                                                   backgroundColor: AppColors
                                                       .lightThemePrimaryColor,
                                                   textButton: tr(context).oK,
@@ -352,9 +350,9 @@ class SelectSupervised extends HookConsumerWidget {
             .deleteSupervisedByUID(uidSup)
             .then((value) => value.fold((failure) {
                   AppDialogs.showWarningPersonalice(context,
-                      message: 'Error al cambiar de usuario'); //TODO: tr
+                      message: tr(context).fail_change_user);
                 }, (success) {
-                  AppDialogs.showInfo(context, message: 'Supervisado borrado'); //TODO: tr
+                  AppDialogs.showInfo(context, message: tr(context).delete_supervised);
                 }));
         NavigationService.goBack(context, rootNavigator: true);
       },

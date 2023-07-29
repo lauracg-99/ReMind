@@ -32,7 +32,7 @@ class CompletedBossTasks extends HookConsumerWidget {
           return (listaUsuarios.isEmpty)
               ? CustomText.h4(
                   context,
-                  'Necesita añadir supervisados\npara poder usar esta cuenta', // TODO: tr
+                  tr(context).warn_add_sup,
                   color: AppColors.grey,
                   alignment: Alignment.center,
                   textAlign: TextAlign.center,
@@ -65,7 +65,7 @@ class CompletedBossTasks extends HookConsumerWidget {
             (listaUsuarios.isEmpty)
                 ? [CustomText.h4(
               context,
-              'Necesita añadir supervisados\npara poder usar esta cuenta', // TODO: tr
+              tr(context).warn_add_sup,
               color: AppColors.grey,
               alignment: Alignment.center,
               textAlign: TextAlign.center,

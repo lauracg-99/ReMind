@@ -65,7 +65,7 @@ class CardItemBossComponent extends ConsumerWidget {
                 //está hecha o no
                   (taskModel.done == StorageKeys.verdadero)
                     ? CardButtonComponent(
-                  title: 'Deshacer', // TODO: tr
+                  title: tr(context).undone,
                   isColored: false,
                   onPressed: () {
                     showAlertDialogUnCheck(context, ref);

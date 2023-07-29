@@ -52,7 +52,7 @@ class PetitionCardItemComponent extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CardButtonComponent(
-                  title: 'Rechazar', //TODO: tr
+                  title: tr(context).reject,
                   onPressed: (){
                     solicitud.estado = 'rechazada';
                     ref.watch(userRepoProvider).updatePetition(solicitud);
@@ -74,7 +74,7 @@ class PetitionCardItemComponent extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CardRedButtonComponent(
-                  title: 'Borrar', //TODO: tr
+                  title: tr(context).delete,
                   onPressed: (){
                     ref.watch(userRepoProvider).deletePetition(solicitud);
                     NavigationService.goBack(context,rootNavigator: true);

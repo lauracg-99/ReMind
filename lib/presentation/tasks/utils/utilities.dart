@@ -248,7 +248,7 @@ String getRepetitionText(int repetition, BuildContext context) {
     if (minutes == 0) {
       return '${tr(context).repTime} $hours hora${hours > 1 ? 's' : ''}';
     } else {
-      return '${tr(context).repTime} $hours hora${hours > 1 ? 's' : ''} y $minutes minuto${minutes > 1 ? 's' : ''}'; //TODO: tr
+      return '${tr(context).repTime} $hours hora${hours > 1 ? 's' : ''} ${tr(context).and} $minutes minuto${minutes > 1 ? 's' : ''}'; //TODO: tr
     }
   } else {
     return '${tr(context).repTime} $repetition minuto${repetition > 1 ? 's' : ''}';

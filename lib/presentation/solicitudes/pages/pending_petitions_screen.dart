@@ -23,7 +23,7 @@ class PendingPetitions extends HookConsumerWidget {
     final String rol = GetStorage().read('rol') ?? '';
     return Scaffold(
       appBar: AppBarSolicitudes(
-        title: 'Peticiones pendientes', //TODO: tr
+        title: tr(context).pendingPeti,
         toolbarHeight: Sizes.appBarDefaultHeight(context),
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         scaffoldKey: _scaffoldKey,
@@ -35,7 +35,7 @@ class PendingPetitions extends HookConsumerWidget {
           return (petitionsToDo.isEmpty)
               ? CustomText.h4(
                   context,
-                  'Sin notificaciones pendientes', //TODO: tr
+                  tr(context).no_pending_peti,
                   color: AppColors.grey,
                   alignment: Alignment.center,
                 )
@@ -67,7 +67,7 @@ class PendingPetitions extends HookConsumerWidget {
                     return (count == 0)
                         ? Column(children: [CustomText.h4(
                             context,
-                            'Sin notificaciones pendientes', //TODO: tr
+                            tr(context).no_pending_peti,
                             color: AppColors.grey,
                             alignment: Alignment.center,
                           )])

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:remind/data/auth/manage_supervised/solicitud.dart';
+import 'package:remind/domain/services/localization_service.dart';
 
 import '../../styles/app_colors.dart';
 import '../../styles/app_images.dart';
@@ -45,20 +46,20 @@ class CardPetitionDetailsComponent extends StatelessWidget {
               (rol == 'supervisor')
               ? CustomText.h3(
                 context,
-                'Petición enviada a ${solicitud.emailSup} ', //TODO: tr
+                '${tr(context).peti_send_to} a ${solicitud.emailSup} ',
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               )
              : CustomText.h3(
                 context,
-                'El usuario con el email ${solicitud.emailBoss} quiere ser su supervisor', //TODO: tr
+                tr(context).wants_super.replaceAll("%emailBoss", solicitud.emailBoss),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
               SizedBox(height: 2,),
               CustomText.h3(
                 context,
-                'Estado: ${solicitud.estado}', //TODO: tr
+                '${tr(context).state}: ${solicitud.estado}',
                 color: (solicitud.estado == 'rechazada')
                     ? AppColors.red
                     :null,
