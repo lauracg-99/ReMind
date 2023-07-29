@@ -1,13 +1,7 @@
-
 import 'package:chips_choice/chips_choice.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_storage/get_storage.dart';
-import '../../../data/tasks/models/task_model.dart';
-import '../../../domain/services/localization_service.dart';
-import '../../routes/navigation_service.dart';
-import '../../routes/route_paths.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../styles/app_colors.dart';
 import '../../styles/sizes.dart';
 import '../providers/multi_choice_provider.dart';
@@ -41,14 +35,14 @@ class ChooseDaySectionComponent extends ConsumerWidget {
               borderRadius: BorderRadius.circular(Sizes.cardRadius(context)),
             ),
             child: ChipsChoice<String>.multiple(
-              value: allDaysSelected ? ['Todos los días'] : multiChoiceValue,
+              value: allDaysSelected ? ['Todos los días'] : multiChoiceValue, // TODO: tr
               onChanged: (value) {
                 if (value.contains('Todos los días')) {
                   // If "Todos los días" is selected, clear all other selections
-                  value = ['Todos los días'];
+                  value = ['Todos los días']; // TODO: tr
                 } else {
                   // Remove "Todos los días" if other days are selected
-                  value.remove('Todos los días');
+                  value.remove('Todos los días'); // TODO: tr
                 }
 
                 ref
@@ -74,7 +68,7 @@ class ChooseDaySectionComponent extends ConsumerWidget {
           ),
         ]));
   }
-
+  // TODO: tr
   static List<String> daysList = [
     'Lunes',
     'Martes',
@@ -107,13 +101,13 @@ class ChooseDaySectionComponent extends ConsumerWidget {
         //va de 0..7 no de 1..8
         tags.add(daysList.elementAt(element - 1));
       } else {
-        tags.add("Todos los días");
+        tags.add("Todos los días"); // TODO: tr
       }
     });
     return tags;
   }
 
-  static Map<String, dynamic> mapDays = {
+  static Map<String, dynamic> mapDays = { // TODO: tr
     "Lunes": 1,
     "Martes": 2,
     "Miércoles": 3,
@@ -122,6 +116,5 @@ class ChooseDaySectionComponent extends ConsumerWidget {
     "Sábado": 6,
     "Domingo": 7,
     "Todos los días": 8
-    //"Todos los días"
   };
 }

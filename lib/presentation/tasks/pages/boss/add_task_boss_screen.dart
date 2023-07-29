@@ -40,8 +40,6 @@ class AddTaskScreenBoss extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
     GetStorage().write('screen','add');
-    //empezaría en true
-   // var switchValue = !ref.watch(switchButtonProvider);
 
     var nameProvider = ref.read(nameTaskProvider.notifier);
     var days = ref.read(selectDaysMultiChoice.notifier);
@@ -98,8 +96,8 @@ class AddTaskScreenBoss extends HookConsumerWidget {
                               children: <Widget>[
                                 SizedBox(height: MediaQuery.of(context).size.height * 0.35,),
                                 CustomText.h4(
-                                context, //TODO: tr
-                                'Necesita añadir supervisados' + '\n' + 'para poder usar esta cuenta',
+                                context,
+                                'Necesita añadir supervisados\npara poder usar esta cuenta', // TODO: tr
                                 color: AppColors.grey,
                                 alignment: Alignment.center,
                                 textAlign: TextAlign.center,)
@@ -174,7 +172,7 @@ class AddTaskScreenBoss extends HookConsumerWidget {
                                                         builder: (context, constraints) {
                                                           final text = (repetitions.getBt() != '')
                                                               ? tiempo(repetitions.getBt())
-                                                              : 'Elige cada cuanto repetir';
+                                                              : 'Elige cada cuanto repetir'; // TODO: tr
                                                           final textStyle = TextStyle(
                                                             color: Theme.of(context).textTheme.headline1?.color,
                                                             fontSize: Sizes.fontSizes(context)['h3'],
@@ -243,7 +241,7 @@ class AddTaskScreenBoss extends HookConsumerWidget {
                                                       child: LayoutBuilder(
                                                         builder: (context, constraints) {
                                                           final text = ('${range.getIniHour()} - ${range.getfinHour()}' == '00:00 - 00:00')
-                                                              ? 'Elige rango horario'
+                                                              ? 'Elige rango horario' // TODO: tr
                                                               : 'Rango: \n ${range.getIniHour()} - ${range.getfinHour()}';
 
                                                           final textStyle = TextStyle(
@@ -321,7 +319,7 @@ class AddTaskScreenBoss extends HookConsumerWidget {
                                                         builder: (context, constraints) {
                                                           final text = (GetStorage().read('listaDias').toString() != '[]')
                                                               ? GetStorage().read('listaDias').toString().replaceAll('[', '').replaceAll(']', '')
-                                                              : 'Elige días';
+                                                              : 'Elige días'; // TODO: tr
 
                                                           final textStyle = TextStyle(
                                                             color: Theme.of(context).textTheme.headline1?.color,
@@ -385,7 +383,6 @@ class AddTaskScreenBoss extends HookConsumerWidget {
                                     days.tags
                                         .add(getStrDay(DateTime.now().weekday));
                                   }
-                                  log('*** rango ${repetitions.getBoth()}');
                                   if(GetStorage().read('listaDias').isNotEmpty && repetitions.getBoth() != 0
                                       && nameController.text.isNotEmpty && range.getHours() != "00:00 - 00:00") {
                                     if (repetitions.getBoth() != 0) {
@@ -587,9 +584,7 @@ class AddTaskScreenBoss extends HookConsumerWidget {
             onTap: () {
               FocusManager.instance.primaryFocus?.unfocus();
             },
-            child: RepeNotiComponent(
-              modo: 'add',
-            )
+            child: const RepeNotiComponent()
         )
       ]),
       actions: [

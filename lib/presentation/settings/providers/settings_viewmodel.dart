@@ -34,19 +34,14 @@ class SettingsViewModel {
     final prefs = await SharedPreferences.getInstance();
     var boss = prefs.getBool('is_SUPERVISOR') ?? false;
     if(!boss){
-      log('*** set not out fb');
       await NotificationUtils.cancelNotiStateFBAll();
     }
 
     //Delay until NavigationFadeTransition is done
     await Future.delayed(const Duration(seconds: 1));
 
-
-
     await _mainCoreProvider.logoutUser();
 
-
-    log('**** signOut cool');
   }
 
   deleteAccount() async {
@@ -63,8 +58,6 @@ class SettingsViewModel {
 
     await _mainCoreProvider.deleteAccount();
 
-
-    log('**** delete cool');
   }
 
 }

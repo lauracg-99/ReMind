@@ -1,8 +1,7 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../common/storage_keys.dart';
 import '../../../data/tasks/models/task_model.dart';
@@ -10,7 +9,6 @@ import '../../../data/tasks/providers/task_provider.dart';
 import '../../../domain/services/localization_service.dart';
 import '../../notifications/utils/notification_utils.dart';
 import '../../routes/navigation_service.dart';
-import '../../routes/route_paths.dart';
 import '../../styles/app_colors.dart';
 import '../../styles/sizes.dart';
 import '../../widgets/buttons/custom_text_button.dart';
@@ -20,7 +18,6 @@ import '../../widgets/custom_text.dart';
 import 'card_red_button_component.dart';
 
 class CardItemComponent extends ConsumerWidget {
-
   const CardItemComponent({
     required this.taskModel,
     Key? key,
@@ -56,109 +53,100 @@ class CardItemComponent extends ConsumerWidget {
               height: Sizes.vMarginComment(context),
             ),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                //btn mod
-                /*//modificar supervisado
-                (taskModel.editable == StorageKeys.verdadero)
-                ? CardButtonComponent(
-                  title: tr(context).mod,
-                  isColored: false,
-                  onPressed: () {
-                    //IR A PANTALLA DE MODIFICACION DE LA TAREA
-                    //TODO
-                    NavigationService.push(
-                      context,
-                      isNamed: true,
-                      page: RoutePaths.modScreen,
-                      arguments: taskModel
-                    );
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              (taskModel.editable != StorageKeys.verdadero)
+                  //puesto supervisor
+                  ? (taskModel.done != StorageKeys.verdadero)
+                      // no está hecha (hecho)
+                      ? CardButtonComponent(
+                          title: tr(context).done,
+                          isColored: true,
+                          onPressed: () {
+                            showAlertDialogCheck(context, ref);
+                          },
+                        )
 
-                  },
-                )
-                : const SizedBox(),*/
-
-          (taskModel.editable != StorageKeys.verdadero)
-            //puesto supervisor
-            ? (taskModel.done != StorageKeys.verdadero)
-                // no está hecha (hecho)
-                ?  CardButtonComponent(
-                    title: tr(context).done,
-                    isColored: true,
-                    onPressed: () {
-
-                      showAlertDialogCheck(context,ref);
-
-                    },
-                  )
-
-                // está hecha (deshacer)
-                : CardButtonComponent(
-                    title: 'Deshacer', //todo: tr
-                    isColored: false,
-                    onPressed: () {
-                      ref.read(taskProvider.notifier).unCheckTask(context,taskModel).then((value) {
-                        AwesomeNotifications().cancelNotificationsByGroupKey(taskModel.taskId);
-                        NotificationUtils.removeNotificationDetailsByTaskId(taskModel.taskId).then((value) async {
-                          await NotificationUtils.setNotiStateFB(uidUser, taskModel.taskId, 'false');
-                        });
-                      });
-                    },
-                  )
-
-            //puesto usuario
-            : (taskModel.done != StorageKeys.verdadero)
-                // no está hecha (borrar) (hecho)
-                ? Row(mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                      CardRedButtonComponent(
-                        title: tr(context).delete,
-                        isColored: false,
-                        onPressed: () {
-                          showAlertDialogDelete(context,ref);
-                        },
-                      ),
-                      SizedBox(width: Sizes.hMarginSmall(context)),
-                      CardButtonComponent(
-                        title: tr(context).done,
-                        isColored: true,
-                        onPressed: () {
-
-                          showAlertDialogCheck(context,ref);
-
-                        },
-                      )
-
-                      ])
-
-                  // está hecha (borrar) (deshacer)
-                : Row(mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                      CardRedButtonComponent(
-                        title: tr(context).delete,
-                        isColored: false,
-                        onPressed: () {
-                          showAlertDialogDelete(context,ref);
-                        },
-                      ),
-                      SizedBox(width: Sizes.hMarginSmall(context)),
-                      CardButtonComponent(
-                        title: 'Deshacer', //todo: tr
-                        isColored: false,
-                        onPressed: () {
-                          ref.read(taskProvider.notifier).unCheckTask(context,taskModel).then((value) {
-                            AwesomeNotifications().cancelNotificationsByGroupKey(taskModel.taskId);
-                            NotificationUtils.removeNotificationDetailsByTaskId(taskModel.taskId).then((value) async {
-                              await NotificationUtils.setNotiStateFB(uidUser, taskModel.taskId, 'false');
+                      // está hecha (deshacer)
+                      : CardButtonComponent(
+                          title: 'Deshacer', //todo: tr
+                          isColored: false,
+                          onPressed: () {
+                            ref
+                                .read(taskProvider.notifier)
+                                .unCheckTask(context, taskModel)
+                                .then((value) {
+                              AwesomeNotifications()
+                                  .cancelNotificationsByGroupKey(
+                                      taskModel.taskId);
+                              NotificationUtils
+                                      .removeNotificationDetailsByTaskId(
+                                          taskModel.taskId)
+                                  .then((value) async {
+                                await NotificationUtils.setNotiStateFB(
+                                    uidUser, taskModel.taskId, 'false');
+                              });
                             });
-                          });
-                        },
-                      )
+                          },
+                        )
 
-                      ])
-                ]
-            )
+                  //puesto usuario
+                  : (taskModel.done != StorageKeys.verdadero)
+                      // no está hecha (borrar) (hecho)
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                              CardRedButtonComponent(
+                                title: tr(context).delete,
+                                isColored: false,
+                                onPressed: () {
+                                  showAlertDialogDelete(context, ref);
+                                },
+                              ),
+                              SizedBox(width: Sizes.hMarginSmall(context)),
+                              CardButtonComponent(
+                                title: tr(context).done,
+                                isColored: true,
+                                onPressed: () {
+                                  showAlertDialogCheck(context, ref);
+                                },
+                              )
+                            ])
+
+                      // está hecha (borrar) (deshacer)
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                              CardRedButtonComponent(
+                                title: tr(context).delete,
+                                isColored: false,
+                                onPressed: () {
+                                  showAlertDialogDelete(context, ref);
+                                },
+                              ),
+                              SizedBox(width: Sizes.hMarginSmall(context)),
+                              CardButtonComponent(
+                                title: 'Deshacer', //todo: tr
+                                isColored: false,
+                                onPressed: () {
+                                  ref
+                                      .read(taskProvider.notifier)
+                                      .unCheckTask(context, taskModel)
+                                      .then((value) {
+                                    AwesomeNotifications()
+                                        .cancelNotificationsByGroupKey(
+                                            taskModel.taskId);
+                                    NotificationUtils
+                                            .removeNotificationDetailsByTaskId(
+                                                taskModel.taskId)
+                                        .then((value) async {
+                                      await NotificationUtils.setNotiStateFB(
+                                          uidUser, taskModel.taskId, 'false');
+                                    });
+                                  });
+                                },
+                              )
+                            ])
+            ])
           ],
         ),
       ),
@@ -169,49 +157,40 @@ class CardItemComponent extends ConsumerWidget {
     var uidUser = GetStorage().read('uidUsuario');
     // set up the buttons
     Widget okButton = CustomTextButton(
-      child: CustomText.h4(
-          context,
-          tr(context).oK,
-          color: AppColors.blue
-      ),
-      onPressed:  () {
-        ref.read(taskProvider.notifier).checkTask(context, taskModel).then((value) {
-          AwesomeNotifications().cancelNotificationsByGroupKey(taskModel.taskId);
-          NotificationUtils.removeNotificationDetailsByTaskId(taskModel.taskId).then((value) async {
-            await NotificationUtils.setNotiStateFB(uidUser, taskModel.taskId, 'false');
+      child: CustomText.h4(context, tr(context).oK, color: AppColors.blue),
+      onPressed: () {
+        ref
+            .read(taskProvider.notifier)
+            .checkTask(context, taskModel)
+            .then((value) {
+          AwesomeNotifications()
+              .cancelNotificationsByGroupKey(taskModel.taskId);
+          NotificationUtils.removeNotificationDetailsByTaskId(taskModel.taskId)
+              .then((value) async {
+            await NotificationUtils.setNotiStateFB(
+                uidUser, taskModel.taskId, 'false');
           });
         });
-        /*if (taskModel.editable == StorageKeys.verdadero){
-          ref.read(taskProvider.notifier).checkTask(context, taskModel);
-        }else{
-          ref.read(taskProvider.notifier).checkTaskBoss(context, taskModel);
-        }*/
-
-        NavigationService.goBack(context,rootNavigator: true);
+        NavigationService.goBack(context, rootNavigator: true);
       },
     );
 
     Widget cancelButton = CustomTextButton(
-      child: CustomText.h4(
-          context,
-          tr(context).cancel,
-          color: AppColors.red
-      ),
-      onPressed:  () {
-        NavigationService.goBack(context,rootNavigator: true);
+      child: CustomText.h4(context, tr(context).cancel, color: AppColors.red),
+      onPressed: () {
+        NavigationService.goBack(context, rootNavigator: true);
       },
     );
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
       title: CustomText.h2(context, tr(context).adv),
-      content: CustomText.h3(context,tr(context).adv_done), // todo: tr
+      content: CustomText.h3(context, tr(context).adv_done),
       actions: [
         cancelButton,
         okButton,
       ],
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(20.0))
-      ),
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(20.0))),
     );
 
     // show the dialog
@@ -226,38 +205,29 @@ class CardItemComponent extends ConsumerWidget {
   showAlertDialogDelete(BuildContext context, WidgetRef ref) {
     // set up the buttons
     Widget okButton = CustomTextButton(
-      child: CustomText.h4(
-          context,
-          tr(context).delete,
-          color: AppColors.blue
-      ),
-      onPressed:  () {
+      child: CustomText.h4(context, tr(context).delete, color: AppColors.blue),
+      onPressed: () {
         ref.read(taskProvider.notifier).deleteTask(context, taskModel);
-        NavigationService.goBack(context,rootNavigator: true);
+        NavigationService.goBack(context, rootNavigator: true);
       },
     );
 
     Widget cancelButton = CustomTextButton(
-      child: CustomText.h4(
-          context,
-          tr(context).cancel,
-          color: AppColors.red
-      ),
-      onPressed:  () {
-        NavigationService.goBack(context,rootNavigator: true);
+      child: CustomText.h4(context, tr(context).cancel, color: AppColors.red),
+      onPressed: () {
+        NavigationService.goBack(context, rootNavigator: true);
       },
     );
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
       title: CustomText.h2(context, tr(context).adv),
-      content: CustomText.h3(context,tr(context).adv_delete), // todo: tr
+      content: CustomText.h3(context, tr(context).adv_delete),
       actions: [
         cancelButton,
         okButton,
       ],
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(20.0))
-      ),
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(20.0))),
     );
 
     // show the dialog

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../domain/auth/repo/user_repo.dart';
 import '../../../domain/services/localization_service.dart';
 import '../../styles/app_colors.dart';

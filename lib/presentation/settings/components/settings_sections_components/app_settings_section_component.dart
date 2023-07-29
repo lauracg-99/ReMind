@@ -96,9 +96,3 @@ class AppSettingsSectionComponent extends ConsumerWidget {
     );
   }
 }
-
-/*
-SizedBox(
-height: Sizes.vMarginHigh(context),
-),
-const ProfileFormComponent(),*/

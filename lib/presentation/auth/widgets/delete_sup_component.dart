@@ -36,10 +36,8 @@ class DeleteSupComponent extends HookConsumerWidget {
                     height: Sizes.vMarginHigh(context),
                   ),
                   CustomButton(
-                    text: 'Volver',
+                    text: 'Volver', // TODO: tr
                     onPressed: () {
-
-                      //ref.watch(userRepoProvider).deleteSupUid(GetStorage().read('uidSup'));
 
                       GetStorage().write('emailSup', '');
                       GetStorage().write('passwSup', '');

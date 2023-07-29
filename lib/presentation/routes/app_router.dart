@@ -4,13 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:remind/presentation/auth/pages/choose_rol_screen.dart';
 import 'package:remind/presentation/routes/route_paths.dart';
-import '../../data/tasks/models/task_model.dart';
 import '../auth/pages/add_supervised_screen.dart';
-import '../auth/pages/delete_sup_screen.dart';
 import '../auth/pages/login_screen.dart';
 import '../auth/pages/register_screen.dart';
 import '../auth/pages/reset_screen.dart';
-import '../auth/pages/verify_email_screen.dart';
 import '../profile/pages/profile_screen.dart';
 import '../profile/pages/select_supervised.dart';
 import '../screens/home_base_screen.dart';
@@ -21,7 +18,6 @@ import '../settings/screens/edit_name_screen.dart';
 import '../settings/screens/language_screen.dart';
 import '../settings/screens/settings_screen.dart';
 import '../solicitudes/pages/pending_petitions_screen.dart';
-import '../tasks/pages/mod_task_screen.dart';
 import '../utils/home_base_nav_utils.dart';
 import 'navigation_service.dart';
 import 'navigation_transitions.dart';
@@ -74,12 +70,6 @@ class AppRouter {
           transitionDuration: const Duration(microseconds: 700),
         );
 
-      case RoutePaths.verifyEmail:
-        return NavigationSlideFromSide(
-          const VerifyEmailScreen(),
-          settings: settings,
-          transitionDuration: const Duration(microseconds: 700),
-        );
 
       case RoutePaths.addSup:
         return NavigationSlideFromSide(
@@ -92,13 +82,6 @@ class AppRouter {
         return NavigationFadeTransition(
           const PendingPetitions(),
           settings: settings,
-        );
-
-      case RoutePaths.deleteSup:
-        return NavigationSlideFromSide(
-          const DeleteSupScreen(),
-          settings: settings,
-          transitionDuration: const Duration(microseconds: 700),
         );
 
       case RoutePaths.authReset:
@@ -116,14 +99,6 @@ class AppRouter {
           settings: settings,
         );
 
-    //todo
-      case RoutePaths.modScreen:
-        final args = settings.arguments as TaskModel?;
-        return NavigationFadeTransition(
-          ModTaskComponent(taskModel: args!,),
-          settings: settings,
-          transitionDuration: const Duration(microseconds: 700),
-        );
 
     //por default estamos en la pantalla de carga
       default:
@@ -141,21 +116,13 @@ class AppRouter {
     //Home
       case RoutePaths.home:
         return NavigationFadeTransition(
-          HomeScreen(),
+          const HomeScreen(),
           settings: settings,
-        );
-
-      case RoutePaths.modScreen:
-        final args = settings.arguments as TaskModel?;
-        return NavigationFadeTransition(
-          ModTaskComponent(taskModel: args!,),
-          settings: settings,
-          transitionDuration: const Duration(microseconds: 700),
         );
 
       default:
         return NavigationFadeTransition(
-          HomeScreen(),
+          const HomeScreen(),
           settings: settings,
         );
     }

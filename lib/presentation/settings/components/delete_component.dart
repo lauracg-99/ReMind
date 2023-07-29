@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../../domain/services/localization_service.dart';
 import '../../routes/navigation_service.dart';
 import '../../styles/app_colors.dart';
@@ -73,7 +72,7 @@ class DeleteComponent extends ConsumerWidget {
         okButton,
 
       ],
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(20.0))
       ),
     );

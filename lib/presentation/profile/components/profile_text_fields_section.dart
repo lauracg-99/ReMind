@@ -52,14 +52,6 @@ class ProfileTextFieldsSection extends StatelessWidget {
         validator: Validators.instance.validateName(context),
         keyboardType: TextInputType.name,
       ),
-      /*TitledTextFieldItem(
-        title: tr(context).mobileNumber,
-        hint: tr(context).enterYourNumber,
-        controller: mobileController,
-        validator: Validators.instance.validateMobileNumber(context),
-        keyboardType: TextInputType.phone,
-        isLastTextField: true,
-      ),*/
     ];
   }
 }

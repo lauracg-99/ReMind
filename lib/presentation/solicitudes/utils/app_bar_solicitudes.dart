@@ -6,7 +6,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:remind/presentation/widgets/custom_text.dart';
 
 import '../../../domain/services/localization_service.dart';
-import '../../styles/app_colors.dart';
 import '../../styles/sizes.dart';
 import '../../utils/dialogs.dart';
 import '../../widgets/custom_app_bar_widget.dart';

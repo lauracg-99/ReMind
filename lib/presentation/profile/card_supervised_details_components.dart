@@ -1,22 +1,11 @@
 
-import 'dart:developer';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get_storage/get_storage.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:remind/common/storage_keys.dart';
 import 'package:remind/data/auth/models/supervised.dart';
-import 'package:remind/data/auth/models/user_model.dart';
 
-import '../../data/auth/manage_supervised/solicitud.dart';
-import '../../domain/auth/repo/user_repo.dart';
-import '../styles/app_colors.dart';
 import '../styles/app_images.dart';
 import '../styles/sizes.dart';
 import '../widgets/cached_network_image_circular.dart';
 import '../widgets/custom_text.dart';
-import 'components/select_supervised_component.dart';
 
 class CardSupervisedDetailsComponent extends StatelessWidget {
 
@@ -56,14 +45,14 @@ class CardSupervisedDetailsComponent extends StatelessWidget {
               children: [
                 CustomText.h6(
                   context,
-                  'Nombre: ${supervised.name}',
+                  'Nombre: ${supervised.name}', //TODO: tr
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
                 SizedBox(height: 2,),
                 CustomText.h6(
                   context,
-                  'email: ${supervised.email}',
+                  'email: ${supervised.email}', //TODO: tr
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),

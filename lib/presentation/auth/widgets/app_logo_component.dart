@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
+
 import '../../../domain/services/localization_service.dart';
 import '../../styles/app_colors.dart';
-import '../../styles/app_images.dart';
 import '../../styles/sizes.dart';
 import '../../utils/dialogs.dart';
-import '../../widgets/custom_image.dart';
 import '../../widgets/custom_text.dart';
 
 class AppLogoComponent extends StatelessWidget {

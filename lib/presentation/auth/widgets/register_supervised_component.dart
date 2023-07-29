@@ -1,10 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:remind/presentation/auth/widgets/register_supervised_text_fields.dart';
-import '../../../data/auth/providers/checkbox_provider.dart';
 import '../../../domain/services/localization_service.dart';
 import '../../providers/main_core_provider.dart';
 import '../../routes/navigation_service.dart';
@@ -123,7 +121,7 @@ class RegisterSupervisedFormComponent extends HookConsumerWidget {
         cancelButton,
         okButton,
       ],
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(20.0))
       ),
     );

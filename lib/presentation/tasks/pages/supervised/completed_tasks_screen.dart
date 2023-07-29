@@ -53,7 +53,7 @@ class CompletedTasks extends HookConsumerWidget {
             children: [
               CustomText.h4(
                 context,
-                tr(context).somethingWentWrong + '\n' + tr(context).pleaseTryAgainLater,
+                '${tr(context).somethingWentWrong}\n${tr(context).pleaseTryAgainLater}',
                 color: AppColors.grey,
                 alignment: Alignment.center,
                 textAlign: TextAlign.center,
@@ -62,8 +62,7 @@ class CompletedTasks extends HookConsumerWidget {
               CustomButton(
                   text: tr(context).recharge,
                   onPressed: (){
-                    ref.refresh(taskMultipleToDoStreamProviderNOTDONE);
-                    ref.refresh(taskMultipleToDoStreamProviderDONE);
+                    ref.refresh(getTasksDone);
                   })
             ]),
         loading: () =>

@@ -3,6 +3,7 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cron/cron.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:get_storage/get_storage.dart';
@@ -34,26 +35,19 @@ import '../../providers/task_to_do.dart';
 
 class ShowTasks extends HookConsumerWidget {
   const ShowTasks({Key? key}) : super(key: key);
-  static bool supervisor = false;
 
-
-  setSupervisor(bool set){
-    supervisor = set;
-  }
   @override
   Widget build(BuildContext context, ref) {
 
     GetStorage().write('screen','show');
     var uidUser = GetStorage().read('uidUsuario');
-    var email = GetStorage().read('email');
     var numElementos = 0;
-    var numNotis = 0;
     final firestore = ref.watch(firebaseProvider);
     useEffect(() {
       firestore
           .collection(FirestorePaths.taskPath(uidUser))
           .snapshots()
-          .listen((querySnapshot) { querySnapshot.docChanges.forEach((change) {
+          .listen((querySnapshot) { for (var change in querySnapshot.docChanges) {
 
         if (change.type == DocumentChangeType.added) {
           final modifiedDocument = change.doc;
@@ -84,7 +78,9 @@ class ShowTasks extends HookConsumerWidget {
 
             var task = TaskModel.fromMap(
                 modifiedDocumentData!, modifiedDocumentId);
-            log('UID del documento modificado: $modifiedDocumentId ${task.done} ${task.isNotiSet} ${task.taskName}');
+            if (kDebugMode) {
+              print('UID del documento modificado: $modifiedDocumentId ${task.done} ${task.isNotiSet} ${task.taskName}');
+            }
             //la tarea se ha marcado como hecha => no necesitamos las notis de ese día
             if (task.done == StorageKeys.verdadero && task.isNotiSet == StorageKeys.falso) {
               AwesomeNotifications().cancelNotificationsByGroupKey(task.taskId);
@@ -110,19 +106,15 @@ class ShowTasks extends HookConsumerWidget {
               await NotificationUtils.setNotiStateFB(uidUser, task.taskId, 'false');
             });
           }
-              });
+              }
       });
-
-      /*return () {
-        subscription.cancel(); // Cancelar la suscripción al salir del widget
-      };*/
     }, []);
 
     useEffect(() {
       //si estado es pendiente saca la modal
       firestore.collection(FirestorePaths.userPetitionCollection(uidUser)).snapshots().listen((querySnapshot) {
         numElementos = querySnapshot.docs.length;
-        querySnapshot.docs.forEach((element) {
+        for (var element in querySnapshot.docs) {
           if (querySnapshot.docs.isNotEmpty) {
             Solicitud solicitud = Solicitud.fromMap(element.data());
             solicitud.id = element.id;
@@ -137,7 +129,7 @@ class ShowTasks extends HookConsumerWidget {
             }
 
           }
-        });
+        }
 
         querySnapshot.docChanges.forEach((change) {
           if (querySnapshot.docs.isNotEmpty) {
@@ -191,14 +183,6 @@ class ShowTasks extends HookConsumerWidget {
       }, []);
 
     final taskToDoStreamAll = ref.watch(getTasks);
-
-    if (GetStorage().read(StorageKeys.SUPERVISOR) != 'supervisor') {
-      setSupervisor(false);
-    } else {
-      setSupervisor(true);
-    }
-
-
     return taskToDoStreamAll.when(
       data: (taskToDo) {
         if(GetStorage().read('reset') == StorageKeys.verdadero){
@@ -264,7 +248,7 @@ class ShowTasks extends HookConsumerWidget {
       }
 
     }
-    ref.refresh(taskMultipleAll);
+    ref.watch(getTasks);
   }
 
 

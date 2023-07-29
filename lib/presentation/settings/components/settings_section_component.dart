@@ -42,19 +42,6 @@ class SettingsSectionComponent extends StatelessWidget {
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         children: <Widget>[
-          /*Material(
-            child: ListTile(
-              horizontalTitleGap: 0,
-              //leading: Icon(headerIcon,),
-              *//*title: CustomText.h4(
-                context,
-                headerTitle,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),*//*
-              trailing: headerTrailing,
-            ),
-          ),*/
           ...tileList,
         ],
       ),

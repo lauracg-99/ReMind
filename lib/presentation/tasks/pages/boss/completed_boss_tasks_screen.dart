@@ -24,16 +24,13 @@ class CompletedBossTasks extends HookConsumerWidget {
   Widget build(BuildContext context, ref) {
     GetStorage().write('screen','completeBoss');
     final taskToDoStreamAllCompleted = ref.watch(getTasksSupDone);
-    log('upv ${GetStorage().read(StorageKeys.uidUsuario)}');
-    log('dow ${GetStorage().read(StorageKeys.lastUIDSup)}');
     List<Supervised> listaUsuarios = ref.watch(userRepoProvider).userModel?.supervisados ?? [];
     return taskToDoStreamAllCompleted.when(
         data: (taskToDo) {
-          log('length ${taskToDo.length}');
           return (listaUsuarios.isEmpty)
               ? CustomText.h4(
                   context,
-                  'Necesita añadir supervisados' + '\n' + 'para poder usar esta cuenta',
+                  'Necesita añadir supervisados\npara poder usar esta cuenta', // TODO: tr
                   color: AppColors.grey,
                   alignment: Alignment.center,
                   textAlign: TextAlign.center,
@@ -54,7 +51,6 @@ class CompletedBossTasks extends HookConsumerWidget {
                       itemCount: taskToDo.length,
                       itemBuilder: (context, index) {
                         List<Widget> list = [];
-                        log('task ${taskToDo[index].taskName}');
                         list.add(CardItemBossComponent(taskModel: taskToDo[index],));
                         return Column(children: list);
                       },
@@ -67,7 +63,7 @@ class CompletedBossTasks extends HookConsumerWidget {
             (listaUsuarios.isEmpty)
                 ? [CustomText.h4(
               context,
-              'Necesita añadir supervisados' + '\n' + 'para poder usar esta cuenta',
+              'Necesita añadir supervisados\npara poder usar esta cuenta', // TODO: tr
               color: AppColors.grey,
               alignment: Alignment.center,
               textAlign: TextAlign.center,
@@ -75,7 +71,7 @@ class CompletedBossTasks extends HookConsumerWidget {
                 : [
               CustomText.h4(
                 context,
-                tr(context).somethingWentWrong + '\n' + tr(context).pleaseTryAgainLater,
+                '${tr(context).somethingWentWrong}\n${tr(context).pleaseTryAgainLater}',
                 color: AppColors.grey,
                 alignment: Alignment.center,
                 textAlign: TextAlign.center,

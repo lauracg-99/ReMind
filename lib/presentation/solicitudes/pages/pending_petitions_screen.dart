@@ -1,18 +1,12 @@
 import 'dart:developer';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:remind/presentation/widgets/custom_app_bar_widget.dart';
-
 import '../../../data/auth/providers/user_list_notifier.dart';
 import '../../../domain/services/localization_service.dart';
-import '../../providers/home_base_nav_providers.dart';
 import '../../styles/app_colors.dart';
 import '../../styles/sizes.dart';
-import '../../utils/home_base_nav_appbar.dart';
 import '../../widgets/buttons/custom_button.dart';
 import '../../widgets/custom_text.dart';
 import '../../widgets/loading_indicators.dart';
@@ -29,7 +23,7 @@ class PendingPetitions extends HookConsumerWidget {
     final String rol = GetStorage().read('rol') ?? '';
     return Scaffold(
       appBar: AppBarSolicitudes(
-        title: 'Peticiones pendientes',
+        title: 'Peticiones pendientes', //TODO: tr
         toolbarHeight: Sizes.appBarDefaultHeight(context),
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         scaffoldKey: _scaffoldKey,
@@ -41,7 +35,7 @@ class PendingPetitions extends HookConsumerWidget {
           return (petitionsToDo.isEmpty)
               ? CustomText.h4(
                   context,
-                  'Sin notificaciones pendientes',
+                  'Sin notificaciones pendientes', //TODO: tr
                   color: AppColors.grey,
                   alignment: Alignment.center,
                 )
@@ -73,7 +67,7 @@ class PendingPetitions extends HookConsumerWidget {
                     return (count == 0)
                         ? Column(children: [CustomText.h4(
                             context,
-                            'Sin notificaciones pendientes',
+                            'Sin notificaciones pendientes', //TODO: tr
                             color: AppColors.grey,
                             alignment: Alignment.center,
                           )])
@@ -85,9 +79,7 @@ class PendingPetitions extends HookConsumerWidget {
             Column(mainAxisAlignment: MainAxisAlignment.center, children: [
               CustomText.h4(
                 context,
-                tr(context).somethingWentWrong +
-                    '\n' +
-                    tr(context).pleaseTryAgainLater,
+                '${tr(context).somethingWentWrong}\n${tr(context).pleaseTryAgainLater}',
                 color: AppColors.grey,
                 alignment: Alignment.center,
                 textAlign: TextAlign.center,

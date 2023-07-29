@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/auth/repo/user_repo.dart';
@@ -21,16 +20,17 @@ class MainDrawerUserInfoComponent extends ConsumerWidget {
         //foto de perfil
         (userModel.image == '')
             ? CircleAvatar(
-          backgroundColor: Colors.transparent,
-          radius: Sizes.userImageMediumRadius(context),
-          child:  Image.asset(
-            AppImages.profileCat,
-            fit: BoxFit.cover, ),
-        )
+                backgroundColor: Colors.transparent,
+                radius: Sizes.userImageMediumRadius(context),
+                child: Image.asset(
+                  AppImages.profileCat,
+                  fit: BoxFit.cover,
+                ),
+              )
             : CachedNetworkImageCircular(
-          imageUrl: userModel.image,
-          radius: Sizes.userImageMediumRadius(context),
-        ),
+                imageUrl: userModel.image,
+                radius: Sizes.userImageMediumRadius(context),
+              ),
         SizedBox(
           height: Sizes.vMarginComment(context),
         ),

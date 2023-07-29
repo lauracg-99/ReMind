@@ -1,14 +1,12 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:remind/data/tasks/providers/task_provider.dart';
 import '../../../common/storage_keys.dart';
 import '../../../data/tasks/models/task_model.dart';
 import '../../../domain/services/localization_service.dart';
 import '../../notifications/utils/notification_utils.dart';
 import '../../routes/navigation_service.dart';
-import '../../routes/route_paths.dart';
 import '../../styles/app_colors.dart';
 import '../../styles/sizes.dart';
 import '../../widgets/buttons/custom_text_button.dart';
@@ -55,22 +53,6 @@ class CardItemBossComponent extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                //btn mod
-                /*CardButtonComponent(
-                  title: tr(context).mod,
-                  isColored: false,
-                  onPressed: () {
-                    //IR A PANTALLA DE MODIFICACION DE LA TAREA
-                    //TODO
-                    NavigationService.push(
-                      context,
-                      isNamed: true,
-                      page: RoutePaths.modScreen,
-                      arguments: taskModel
-                    );
-
-                  },
-                ),*/
                 // borrar supervisor
                 CardRedButtonComponent(
                   title: tr(context).delete,
@@ -83,13 +65,13 @@ class CardItemBossComponent extends ConsumerWidget {
                 //está hecha o no
                   (taskModel.done == StorageKeys.verdadero)
                     ? CardButtonComponent(
-                  title: 'Deshacer',
+                  title: 'Deshacer', // TODO: tr
                   isColored: false,
                   onPressed: () {
                     showAlertDialogUnCheck(context, ref);
                   },
                 )
-                    :SizedBox()
+                    :const SizedBox()
               ],
             ),
 
@@ -133,7 +115,7 @@ class CardItemBossComponent extends ConsumerWidget {
         cancelButton,
         okButton,
       ],
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(20.0))
       ),
     );
@@ -179,7 +161,7 @@ class CardItemBossComponent extends ConsumerWidget {
         okButton,
 
       ],
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(20.0))
       ),
     );

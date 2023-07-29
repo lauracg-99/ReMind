@@ -53,7 +53,7 @@ class LightButtonComponent extends StatelessWidget {
                       ? AppColors.lightThemeIconColor
                       : AppColors.darkThemePrimary,
                 )
-          : SizedBox(),
+          : const SizedBox(),
           SizedBox(
             width: Sizes.hMarginSmall(context),
           ),

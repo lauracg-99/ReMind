@@ -95,32 +95,8 @@ class TimeRangeButton extends StateNotifier<String> {
     hf = '00:00';
   }
 
-/*  Picker ps = Picker(
-      hideHeader: true,
-      adapter: DateTimePickerAdapter(
-          type: PickerDateTimeType.kHM, value: DateTime(0, 1, 1, 0, 0),
-      ),
-      backgroundColor: (!isDark) ? AppColors.lightThemePrimary
-          : AppColors.darkThemePrimary,
-      onConfirm: (Picker picker, List value) {
-        var ini= (picker.adapter as DateTimePickerAdapter).value;
-         hi = parsearHora(ini!);
-        //valorINICIAL = ini!.hour.toString() +':'+ ini.minute.toString();
-      });
-  Picker pe = Picker(
-      hideHeader: true,
-      adapter: DateTimePickerAdapter(type: PickerDateTimeType.kHM, value: DateTime(0, 1, 1, 0, 0),),
-      backgroundColor: (! isDark) ? AppColors.lightThemePrimary
-          : AppColors.darkThemePrimary,
-      onConfirm: (Picker picker, List value) {
-        var ini= (picker.adapter as DateTimePickerAdapter).value;
-        hf = parsearHora(ini!);
-        //ini!.hour.toString() +':'+ ini.minute.toString();
-      });*/
 
   List<Widget> actions = [];
-
-  //TimeRangeButton(this.ref) : super('');
 
   String getHours(){
     return hi +' - ' + hf;
@@ -144,7 +120,6 @@ class TimeRangeButton extends StateNotifier<String> {
     Widget okButton = CustomTextButton(
       child: CustomText.h4(context, tr(context).oK, color: AppColors.blue),
         onPressed: (){
-          //log('okey');
 
           ps.onConfirm!(ps, ps.selecteds);
           pe.onConfirm!(pe, pe.selecteds);
@@ -153,12 +128,8 @@ class TimeRangeButton extends StateNotifier<String> {
           horaInicial = hi;
           horaFinal = hf;
 
-          var inputFormat = DateFormat.Hm();
-          var inputDateInicio = inputFormat.parse(hi);
-          var inputDateFin = inputFormat.parse(hf);
-
           ref.refresh(timeRangeButtonProvider);
-          navigationPop(context);
+          Navigator.pop(context);
 
         }
     );
@@ -167,7 +138,7 @@ class TimeRangeButton extends StateNotifier<String> {
       child: CustomText.h4(context, tr(context).cancel, color: AppColors.red),
       onPressed: () {
         ref.refresh(timeRangeButtonProvider);
-        navigationPop(context);
+        Navigator.pop(context);
       },
     );
     showDialog(
@@ -176,40 +147,18 @@ class TimeRangeButton extends StateNotifier<String> {
           return AlertDialog(
             title: Text(tr(context).choose_range),
             actions: [cancelButton, okButton],
-            content: Container(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                   Text(tr(context).ini_range),
-                  ps.makePicker(),
-                   Text(tr(context).fin_range),
-                  pe.makePicker(),
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                 Text(tr(context).ini_range),
+                ps.makePicker(),
+                 Text(tr(context).fin_range),
+                pe.makePicker(),
             ],
-              ),
             ),
           );
         });
   }
-
-  navigationPop(BuildContext context) {
-    Navigator.pop(context);
-  }
-
-  firstPicker(Picker ps){
-     ps = Picker(
-        hideHeader: true,
-        adapter: DateTimePickerAdapter(
-            type: PickerDateTimeType.kHM),
-        onConfirm: (Picker picker, List value) {
-          print((picker.adapter as DateTimePickerAdapter).value);
-          var ini= (picker.adapter as DateTimePickerAdapter).value;
-          horaInicial = parsearHora(ini!);
-          //valorINICIAL = ini!.hour.toString() +':'+ ini.minute.toString();
-        });
-    ps.makePicker();
-  }
-
-
 
 }

@@ -1,12 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import '../../../data/auth/providers/checkbox_provider.dart';
+
 import '../../../domain/services/localization_service.dart';
-import '../../styles/app_colors.dart';
 import '../../styles/sizes.dart';
 import '../../utils/validators.dart';
-import '../../widgets/custom_text.dart';
 import '../../widgets/custom_text_field.dart';
 
 class ResetTextFieldsSection extends StatelessWidget {

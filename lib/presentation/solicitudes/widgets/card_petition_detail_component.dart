@@ -1,11 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:remind/data/auth/manage_supervised/solicitud.dart';
 
 import '../../styles/app_colors.dart';
 import '../../styles/app_images.dart';
-import '../../styles/font_styles.dart';
 import '../../styles/sizes.dart';
 import '../../widgets/custom_text.dart';
 
@@ -30,8 +28,8 @@ class CardPetitionDetailsComponent extends StatelessWidget {
             size: Size.fromRadius(28), // Image radius
             child: Image.asset(
                 Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
-                    ? '${AppImages.petition}'
-                    : '${AppImages.petition}',
+                    ? AppImages.petition
+                    : AppImages.petition,
                 fit: BoxFit.cover
             ),
           ),
@@ -47,20 +45,20 @@ class CardPetitionDetailsComponent extends StatelessWidget {
               (rol == 'supervisor')
               ? CustomText.h3(
                 context,
-                'Petición enviada a ${solicitud.emailSup} ',
+                'Petición enviada a ${solicitud.emailSup} ', //TODO: tr
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               )
              : CustomText.h3(
                 context,
-                'El usuario con el email ${solicitud.emailBoss} quiere ser su supervisor',
+                'El usuario con el email ${solicitud.emailBoss} quiere ser su supervisor', //TODO: tr
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
               SizedBox(height: 2,),
               CustomText.h3(
                 context,
-                'Estado: ${solicitud.estado}',
+                'Estado: ${solicitud.estado}', //TODO: tr
                 color: (solicitud.estado == 'rechazada')
                     ? AppColors.red
                     :null,

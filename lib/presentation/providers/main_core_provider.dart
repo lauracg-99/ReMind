@@ -1,11 +1,9 @@
 import 'dart:async';
 import 'dart:developer';
-import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../data/auth/models/user_model.dart';
 import '../../data/auth/providers/auth_provider.dart';

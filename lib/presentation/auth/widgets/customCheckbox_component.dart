@@ -1,9 +1,6 @@
 import 'dart:developer';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-
 import '../../../data/auth/providers/checkbox_provider.dart';
 import '../../../domain/services/localization_service.dart';
 import '../../styles/app_colors.dart';
@@ -11,7 +8,7 @@ import '../../styles/sizes.dart';
 import '../../widgets/custom_text.dart';
 
 class CustomCheckBoxComponent extends ConsumerWidget {
-  CustomCheckBoxComponent({Key? key}) : super(key: key);
+  const CustomCheckBoxComponent({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, ref) {
@@ -27,14 +24,14 @@ class CustomCheckBoxComponent extends ConsumerWidget {
       ),
       Row(
         children: [
-          SizedBox(
+          const SizedBox(
             width: 65,
           ),
           Checkbox(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30.0),
               // CHANGE BORDER RADIUS HERE
-              side: BorderSide(width: 30, color: AppColors.red),
+              side: const BorderSide(width: 30, color: AppColors.red),
             ),
             activeColor: Theme.of(context).iconTheme.color,// Rounded Checkbox
             value: checkBoxValue,
@@ -46,14 +43,14 @@ class CustomCheckBoxComponent extends ConsumerWidget {
             },
           ),
           CustomText.h4(context, tr(context).yes),
-          SizedBox(
+          const SizedBox(
             width: 50,
           ),
           Checkbox(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30.0),
               // CHANGE BORDER RADIUS HERE
-              side: BorderSide(width: 30, color: AppColors.red),
+              side: const BorderSide(width: 30, color: AppColors.red),
             ),
             activeColor: Theme.of(context).iconTheme.color,// Rounded Checkbox
             value: !checkBoxValue,
@@ -61,7 +58,6 @@ class CustomCheckBoxComponent extends ConsumerWidget {
               ref
                   .watch(checkBoxProvider.notifier)
                   .changeState(change: !checkBoxValue);
-              log('${checkBoxValue.toString()}');
             },
           ),
           CustomText.h4(context, tr(context).no),

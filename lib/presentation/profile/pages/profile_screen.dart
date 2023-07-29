@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../screens/popup_page_nested.dart';
 import '../../styles/sizes.dart';
 import '../../widgets/loading_indicators.dart';

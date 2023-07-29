@@ -1,16 +1,15 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:remind/common/dependencies.dart';
 import 'package:remind/common/storage_keys.dart';
-import 'package:remind/presentation/tasks/providers/name_task_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:io';
+
 import '../../../data/auth/manage_supervised/solicitud.dart';
 import '../../../data/auth/models/supervised.dart';
 import '../../../data/auth/models/user_model.dart';
@@ -19,7 +18,6 @@ import '../../../data/firebase/repo/firebase_caller.dart';
 import '../../../data/firebase/repo/firestore_paths.dart';
 import '../../../data/firebase/repo/i_firebase_caller.dart';
 import '../../../presentation/profile/components/name_supervised_component.dart';
-import '../../../presentation/utils/dialogs.dart';
 
 final userRepoProvider = Provider<UserRepo>((ref) => UserRepo(ref));
 
@@ -32,6 +30,7 @@ class UserRepo {
   final Ref ref;
   late IFirebaseCaller _firebaseCaller;
   UserModel? userModel;
+  List<Supervised> usersSupervised = [];
   var user = FirebaseAuth.instance.currentUser?.uid;
   Dependencies dependencies = Dependencies();
 
@@ -50,12 +49,25 @@ class UserRepo {
           if(userModel?.rol == StorageKeys.SUPERVISOR){
             //dependencies.writeListUsers(StorageKeys.supervisados, userModel?.supervisados);
             var lista = userModel?.supervisados?.isNotEmpty;
+            if(lista != null){
+              usersSupervised = userModel!.supervisados!;
+            }
             if(userModel?.lastEmailSup == '' && lista!){
               dependencies.write(StorageKeys.lastEmailSup, userModel?.supervisados?.first.uId);
               dependencies.write(StorageKeys.lastUIDSup, userModel?.supervisados?.first.email);
+              ref.watch(nameSupervisedProvider.notifier).changeState(change:
+              userModel?.supervisados?.first.name ?? "");
             } else {
               dependencies.write(StorageKeys.lastEmailSup, userModel?.lastEmailSup);
               dependencies.write(StorageKeys.lastUIDSup, userModel?.lastUIDSup);
+              Supervised? supervisadoEncontrado =
+              userModel?.supervisados?.firstWhere(
+                      (supervisado) => supervisado.uId == userModel?.lastUIDSup,
+              );
+              if (supervisadoEncontrado != null) {
+                ref.watch(nameSupervisedProvider.notifier).changeState(change:
+                supervisadoEncontrado.name ?? "");
+              }
             }
           }
           if(userModel?.rol == StorageKeys.SUPERVISOR){

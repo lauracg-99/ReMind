@@ -34,7 +34,6 @@ class ShowSupervisorTasks extends HookConsumerWidget {
   Widget build(BuildContext context, ref) {
     GetStorage().write('screen','showBoss');
     var uidUser = GetStorage().read('uidUsuario');
-    var email = GetStorage().read('email');
     final firestore = ref.watch(firebaseProvider);
     final userProvider = ref.watch(userRepoProvider);
 
@@ -46,7 +45,7 @@ class ShowSupervisorTasks extends HookConsumerWidget {
       //si estado es pendiente saca la modal
       firestore.collection(FirestorePaths.userPetitionCollection(uidUser)).snapshots().listen((querySnapshot) {
 
-        querySnapshot.docChanges.forEach((change) {
+        for (var change in querySnapshot.docChanges) {
           if (querySnapshot.docs.isNotEmpty) {
             //pasamos de pendiente a aceptada o rechazada
             if (change.type == DocumentChangeType.modified) {
@@ -83,7 +82,7 @@ class ShowSupervisorTasks extends HookConsumerWidget {
               }
             }
           }
-        });
+        }
       });
     }, []);
 
@@ -92,7 +91,7 @@ class ShowSupervisorTasks extends HookConsumerWidget {
           return (listaUsuarios.isEmpty)
                 ? CustomText.h4(
                   context,
-                  'Necesita añadir supervisados' + '\n' + 'para poder usar esta cuenta',
+                  'Necesita añadir supervisados\npara poder usar esta cuenta', //TODO: tr
                   color: AppColors.grey,
                   alignment: Alignment.center,
                   textAlign: TextAlign.center,
@@ -129,7 +128,7 @@ class ShowSupervisorTasks extends HookConsumerWidget {
             (listaUsuarios.isEmpty)
                 ? [CustomText.h4(
                     context,
-                    'Necesita añadir supervisados' + '\n' + 'para poder usar esta cuenta',
+                    'Necesita añadir supervisados\npara poder usar esta cuenta', //TODO: tr
                     color: AppColors.grey,
                     alignment: Alignment.center,
                     textAlign: TextAlign.center,
@@ -137,7 +136,7 @@ class ShowSupervisorTasks extends HookConsumerWidget {
                 : [
               CustomText.h4(
               context,
-              tr(context).somethingWentWrong + '\n' + tr(context).pleaseTryAgainLater,
+              '${tr(context).somethingWentWrong}\n${tr(context).pleaseTryAgainLater}',
               color: AppColors.grey,
               alignment: Alignment.center,
               textAlign: TextAlign.center,

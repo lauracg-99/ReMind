@@ -49,18 +49,6 @@ class LanguageScreen extends StatelessWidget {
                   );
                 },
               ),
-              /*CustomButton(
-                text: 'Select',
-                onPressed: (){
-                    *//*NavigationService.push(
-                      context,
-                      isNamed: true,
-                      page: RoutePaths.settings,
-                    );*//*
-                  NavigationService.goBack(context);
-                },
-
-              )*/
               SizedBox(
                 height: Sizes.vMarginMedium(context),
               ),

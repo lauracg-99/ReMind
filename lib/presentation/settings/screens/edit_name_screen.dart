@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../profile/components/profile_form_component.dart';
 import '../../screens/popup_page_nested.dart';
 import '../../styles/app_colors.dart';
 import '../../styles/app_images.dart';
 import '../../styles/sizes.dart';
-import '../../widgets/loading_indicators.dart';
 
 
 class EditNameScreen extends StatelessWidget {

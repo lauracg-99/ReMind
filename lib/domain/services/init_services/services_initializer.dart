@@ -1,21 +1,16 @@
-import 'dart:developer';
-
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:remind/domain/services/init_services/storage_service.dart';
-import 'package:workmanager/workmanager.dart';
-import '../../../firebase_checker.dart';
+
 import '../../../firebase_options.dart';
 import '../../../presentation/providers/app_theme_provider.dart';
 import '../../../presentation/routes/navigation_service.dart';
 import '../../../presentation/styles/app_colors.dart';
 import '../../../presentation/styles/app_images.dart';
 import '../theme_service.dart';
-import 'local_notification_service.dart';
 import 'connectivity_service.dart';
 
 

@@ -1,19 +1,10 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../data/tasks/models/task_model.dart';
-import '../../../domain/services/localization_service.dart';
-import '../../routes/navigation_service.dart';
-import '../../routes/route_paths.dart';
+
 import '../../styles/app_colors.dart';
 import '../../styles/font_styles.dart';
 import '../../styles/sizes.dart';
 import '../../widgets/buttons/custom_outlined_button.dart';
-import '../../widgets/buttons/custom_text_button.dart';
-import '../../widgets/card_button_component.dart';
-import '../../widgets/card_user_details_component.dart';
 import '../../widgets/custom_text.dart';
-import 'card_red_button_component.dart';
 
 
 class CardRedButtonComponent extends StatelessWidget {

@@ -36,8 +36,7 @@ class AddTaskScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     GetStorage().write('screen', 'add');
-    //empezaría en true
-    //var switchValue = !ref.watch(switchButtonProvider);
+
     var nameProvider = ref.read(nameTaskProvider.notifier);
     var days = ref.read(selectDaysMultiChoice.notifier);
     var range = ref.read(timeRangeButtonProvider.notifier);
@@ -571,9 +570,7 @@ if(Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor){
             onTap: () {
               FocusManager.instance.primaryFocus?.unfocus();
             },
-            child: RepeNotiComponent(
-              modo: 'add',
-            )
+            child: const RepeNotiComponent()
         )
       ]),
       actions: [

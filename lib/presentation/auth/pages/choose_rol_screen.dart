@@ -7,7 +7,7 @@ import '../../screens/popup_page.dart';
 import '../../styles/app_images.dart';
 import '../../styles/sizes.dart';
 import '../../utils/dialogs.dart';
-import '../widgets/customCheckbox_component.dart';
+
 
 class ChooseRolScreen extends StatelessWidget {
   const ChooseRolScreen({Key? key}) : super(key: key);

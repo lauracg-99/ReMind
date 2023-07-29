@@ -1,7 +1,5 @@
-import 'dart:developer';
-import 'package:cron/cron.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../common/storage_keys.dart';
 import '../../domain/services/init_services/services_initializer.dart';
@@ -34,9 +32,6 @@ class SplashProvider {
                   isNamed: true,
                   page: secondPage,
                 );
-            if (secondPage == RoutePaths.homeBase) {
-              //FirebaseMessagingService.instance.getInitialMessage();
-            }
           },
         );
       } else {
@@ -62,35 +57,9 @@ class SplashProvider {
 
   Future checkForCachedUser() async {
     bool hasValidAuth = await _mainCoreProvider.checkValidAuth();
-    bool? hasVerify =  _mainCoreProvider.getCurrentStateAccount();
 
-//    log('hasValidAuth $hasValidAuth');
     if (hasValidAuth) {
-      //cancelamos los cron hechos para volver a ponerlos
       secondPage = RoutePaths.homeBase;
-      //si el email ha sido verificado si es supervisor
-/*
-
-      bool isBoss = await _mainCoreProvider.isBoss();
-//      log('isBoss $isBoss');
-//      log('hasVerify $hasVerify');
-      //es supervisor
-      if(isBoss){
-        if(hasVerify!) {
-          secondPage = RoutePaths.homeBase;
-        }else{
-          secondPage = RoutePaths.verifyEmail;
-        }
-      }else{
-        log('**** RESET CRON');
-        Cron().close();
-        GetStorage().write('CronSet', StorageKeys.falso);
-
-        //no es supervisor
-        secondPage = RoutePaths.homeBase;
-      }
-*/
-
     } else {
       //recheck notification
       secondPage = RoutePaths.authLogin;

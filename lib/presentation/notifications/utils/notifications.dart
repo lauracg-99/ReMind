@@ -7,16 +7,17 @@ import 'package:flutter/foundation.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:remind/common/phrases.dart';
 import 'package:remind/data/auth/manage_supervised/solicitud.dart';
-import 'package:remind/presentation/notifications/utils/utilities.dart';
-import 'package:remind/presentation/styles/app_images.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../../data/tasks/models/task_model.dart';
 import '../../../domain/services/localization_service.dart';
 import '../../tasks/utils/utilities.dart';
 import 'notification_utils.dart';
 
 class Notifications {
+
+  int createUniqueId() {
+    return DateTime.now().millisecondsSinceEpoch.remainder(100000);
+  }
+
   Future<void> acceptPetitionNoti(BuildContext context, Solicitud solicitud) async {
     int idNotification = createUniqueId();
     GetStorage().write('notificarPeticion', true);

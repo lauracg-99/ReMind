@@ -58,14 +58,14 @@ class MainDrawer extends ConsumerWidget {
                 ),
                 (GetStorage().read(StorageKeys.rol) == StorageKeys.SUPERVISOR)
                 ? DrawerItem(
-                  title: 'Supervisados',
+                  title: 'Supervisados', // TODO: tr
                   icon: AppImages.name,
                   onTap: () {
                     scaffoldKey.currentState!.openEndDrawer();
                     indexNotifier.state = 3;
                   },
                 )
-                : SizedBox(),
+                : const SizedBox(),
 
 
                 SizedBox(

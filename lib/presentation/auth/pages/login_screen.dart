@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../../domain/services/localization_service.dart';
-import '../../routes/navigation_service.dart';
-import '../../routes/route_paths.dart';
+
 import '../../screens/popup_page.dart';
 import '../../styles/app_images.dart';
 import '../../styles/sizes.dart';
-import '../../utils/dialogs.dart';
-import '../../widgets/buttons/custom_button.dart';
 import '../widgets/app_logo_component.dart';
 import '../widgets/login_form_component.dart';
 

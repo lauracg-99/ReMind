@@ -1,12 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:remind/data/auth/models/supervised.dart';
-
-import '../../../data/auth/manage_supervised/solicitud.dart';
-import '../../../data/auth/models/user_model.dart';
-import '../../../domain/auth/repo/user_repo.dart';
 import '../../styles/sizes.dart';
 import '../card_supervised_details_components.dart';
 
