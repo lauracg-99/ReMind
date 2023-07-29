@@ -63,6 +63,7 @@ class ShowSupervisorTasks extends HookConsumerWidget {
                 GetStorage().write('notificarPeticion', true);
                 Notifications().statusPetitionNoti(context,solicitud, 'aceptado');
                 userProvider.addNewSupervisedByUID(solicitud.uidSup);
+                userProvider.getUserData(solicitud.uidBoss);
                 managePetition(context, ref, solicitud: solicitud);
               }
 
@@ -72,6 +73,7 @@ class ShowSupervisorTasks extends HookConsumerWidget {
                     .emailSup} ${solicitud.estado} ${solicitud
                     .emailBoss} ${documentId}');
                 ref.watch(userRepoProvider).deletePetition(solicitud);
+                userProvider.getUserData(solicitud.uidBoss);
 
               }
 

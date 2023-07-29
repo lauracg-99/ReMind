@@ -16,7 +16,9 @@ class UserDetailsComponent extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
     final userModel = ref.watch(userRepoProvider).userModel!;
-
+    var listSuper = ref.watch(userRepoProvider).usersSupervised;
+    final userProvider = ref.watch(userRepoProvider);
+    userProvider.getUserData(userModel.uId);
     return Column(
       children: [
         CustomText.h2(
@@ -51,7 +53,7 @@ class UserDetailsComponent extends ConsumerWidget {
               : AppColors.whiteGray,
         ),
         (userModel.rol != 'supervisor')
-        ? SizedBox()
+        ? const SizedBox()
         : Column(
             children:
         [SizedBox(
@@ -71,7 +73,7 @@ class UserDetailsComponent extends ConsumerWidget {
         ),
         CustomText.h4(
           context,
-          '${userModel.rol}',
+          '${userModel.rol?.toUpperCase()}',
           alignment: Alignment.center,
           color: Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
               ? AppColors.lightGray
@@ -92,6 +94,25 @@ class UserDetailsComponent extends ConsumerWidget {
         SizedBox(
           height: Sizes.vMarginSmall(context),
         ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: listSuper.map((supervised) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomText.h4(
+                    context,
+                    supervised.email,
+                    alignment: Alignment.center,
+                    color: Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
+                        ? AppColors.lightGray
+                        : AppColors.whiteGray,
+                  ),
+                  SizedBox(height: Sizes.vMarginSmall(context)),
+                ],
+              );
+            }).toList(),
+          ),
         /*CustomText.h4(
           context,
           '${userModel.emailSup}', //todo: poner aqui la lista de supervisados a su cargo
