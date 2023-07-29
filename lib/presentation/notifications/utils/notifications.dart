@@ -160,11 +160,13 @@ class Notifications {
     }
 
     // Guarda los detalles de la notificación en SharedPreferences
+
     await NotificationUtils.saveNotificationDetails(idNotification, day, hour, minute, taskId);
     var gatito = 'asset://${randomCat()}';
     if (kDebugMode) {
       print(gatito);
     }
+    var gato = await fetchRandomCatImage() ?? gatito;
     await AwesomeNotifications().createNotification(
       content: NotificationContent(
         id: idNotification,
@@ -172,7 +174,7 @@ class Notifications {
         groupKey: taskId,
         title: "${Emojis.body_eyes} ${Emojis.transport_police_car_light} ReMind",
         body: '${Phrases().obtenerFraseAleatoria()} $taskName ',
-        bigPicture: gatito,
+        bigPicture: gato,
         notificationLayout: NotificationLayout.BigPicture,
         wakeUpScreen: true,
       ),

@@ -1,11 +1,13 @@
+import 'dart:convert';
 import 'dart:developer';
+import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 
 import '../../../data/tasks/models/task_model.dart';
 import '../../../domain/services/localization_service.dart';
 import '../../notifications/utils/notifications.dart';
-
+import 'package:http/http.dart' as http;
 
 bool checkRange(String ini, String fin, String avisar){
 
@@ -17,7 +19,6 @@ bool checkRange(String ini, String fin, String avisar){
   //pasamos all a minutos
   int finH = int.parse(splitFin[0])*60 + int.parse(splitFin[1]);
 
-  log('AVISAR ${avisar}');
   if(finH - iniH  < int.parse(avisar)) {
     return false;
   }
@@ -145,16 +146,15 @@ String getTranslateDay(){
 String tiempo(String hr){
   String t = "";
   //print(hr);
-  log('hr ${hr}');
+
   if(hr != '00:00 - 00:00' && hr.isNotEmpty){
     int minutos = int.parse(hr);
     int hora = 0;
     if (minutos > 60) {
-      log('pre m ${minutos}');
+
       hora = (minutos / 60).truncate();
       minutos = minutos - hora * 60;
-      log('h ${hora}');
-      log('m ${minutos}');
+
       if(minutos != 0){
         t = 'Repetir cada ${hora} horas ${minutos} minutos';
       } else {
@@ -217,7 +217,7 @@ List<String> getDiasString(List<dynamic> numeros) {
       //va de 0..7 no de 1..8
       tags.add(daysList.elementAt(element - 1));
     } else {
-      tags.add("Todos los días");
+      tags.add("Todos los días"); //TODO: tr
     }
   });
   return tags;
@@ -254,6 +254,47 @@ String getRepetitionText(int repetition, BuildContext context) {
     return '${tr(context).repTime} $repetition minuto${repetition > 1 ? 's' : ''}';
   }
 }
+
+Future<String?> fetchRandomCatImage() async {
+  final response = await http.get(Uri.parse('https://api.thecatapi.com/api/images/get?format=json&type=jpg'));
+  if (response.statusCode == 200) {
+    try {
+      final jsonData = json.decode(response.body);
+      if (jsonData is List && jsonData.isNotEmpty) {
+        final imageUrl = jsonData[0]['url'].toString();
+        return imageUrl;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Error decoding JSON: $e');
+      return null;
+    }
+  } else {
+    print('API request failed with status code: ${response.statusCode}');
+    return null;
+  }
+}
+
+
+/*// Función para obtener un ID de pokémon aleatorio
+int getRandomPokemonId() {
+  // Genera un ID de pokémon aleatorio entre 1 y 898 (número total de pokémon en la Pokédex hasta la fecha de corte de mi conocimiento en septiembre de 2021).
+  return Random().nextInt(898) + 1;
+}
+
+// Función para obtener una URL de imagen de pokémon aleatorio
+Future<String?> fetchRandomPokemonImage() async {
+  final randomPokemonId = getRandomPokemonId();
+  final response = await http.get(Uri.parse('https://pokeapi.co/api/v2/pokemon-form/$randomPokemonId/'));
+  if (response.statusCode == 200) {
+    final jsonData = json.decode(response.body);
+    return jsonData['sprites']['front_default'];
+  } else {
+    return null;
+  }
+}*/
+
 
 
 
