@@ -1,6 +1,9 @@
 import 'dart:developer';
 
+import 'package:flutter/cupertino.dart';
+
 import '../../../data/tasks/models/task_model.dart';
+import '../../../domain/services/localization_service.dart';
 import '../../notifications/utils/notifications.dart';
 
 
@@ -219,3 +222,38 @@ List<String> getDiasString(List<dynamic> numeros) {
   });
   return tags;
 }
+
+// Función para convertir el formato de hora "HH:mm" a minutos desde la medianoche
+int convertToMinutes(String time) {
+  List<String> parts = time.split(":");
+  int hours = int.parse(parts[0]);
+  int minutes = int.parse(parts[1]);
+  return hours * 60 + minutes;
+}
+
+List<TaskModel> sortTasksByBegin(List<TaskModel> tasks) {
+  tasks.sort((a, b) {
+    // Convierte las horas a minutos para compararlas
+    int timeA = a.begin != null ? convertToMinutes(a.begin!) : 0;
+    int timeB = b.begin != null ? convertToMinutes(b.begin!) : 0;
+    return timeA.compareTo(timeB);
+  });
+  return tasks;
+}
+
+String getRepetitionText(int repetition, BuildContext context) {
+  if (repetition >= 60) {
+    int hours = repetition ~/ 60;
+    int minutes = repetition % 60;
+    if (minutes == 0) {
+      return '${tr(context).repTime} $hours hora${hours > 1 ? 's' : ''}';
+    } else {
+      return '${tr(context).repTime} $hours hora${hours > 1 ? 's' : ''} y $minutes minuto${minutes > 1 ? 's' : ''}'; //TODO: tr
+    }
+  } else {
+    return '${tr(context).repTime} $repetition minuto${repetition > 1 ? 's' : ''}';
+  }
+}
+
+
+

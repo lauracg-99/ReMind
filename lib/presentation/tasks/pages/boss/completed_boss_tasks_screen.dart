@@ -15,6 +15,7 @@ import '../../../widgets/custom_text.dart';
 import '../../../widgets/loading_indicators.dart';
 import '../../components/card_item_boss_component.dart';
 import '../../providers/task_to_do.dart';
+import '../../utils/utilities.dart';
 
 
 class CompletedBossTasks extends HookConsumerWidget {
@@ -27,6 +28,7 @@ class CompletedBossTasks extends HookConsumerWidget {
     List<Supervised> listaUsuarios = ref.watch(userRepoProvider).userModel?.supervisados ?? [];
     return taskToDoStreamAllCompleted.when(
         data: (taskToDo) {
+          taskToDo = sortTasksByBegin(taskToDo);
           return (listaUsuarios.isEmpty)
               ? CustomText.h4(
                   context,

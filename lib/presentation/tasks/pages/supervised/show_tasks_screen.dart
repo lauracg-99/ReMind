@@ -32,6 +32,7 @@ import '../../../widgets/dialog_widget.dart';
 import '../../../widgets/loading_indicators.dart';
 import '../../components/card_item_component.dart';
 import '../../providers/task_to_do.dart';
+import '../../utils/utilities.dart';
 
 class ShowTasks extends HookConsumerWidget {
   const ShowTasks({Key? key}) : super(key: key);
@@ -185,6 +186,7 @@ class ShowTasks extends HookConsumerWidget {
     final taskToDoStreamAll = ref.watch(getTasks);
     return taskToDoStreamAll.when(
       data: (taskToDo) {
+        taskToDo = sortTasksByBegin(taskToDo);
         if(GetStorage().read('reset') == StorageKeys.verdadero){
           _resetTasks(ref, taskToDo);
         }

@@ -6,6 +6,7 @@ import '../styles/app_colors.dart';
 import '../styles/app_images.dart';
 import '../styles/font_styles.dart';
 import '../styles/sizes.dart';
+import '../tasks/utils/utilities.dart';
 import 'custom_text.dart';
 
 class CardUserDetailsComponent extends StatelessWidget {
@@ -72,7 +73,7 @@ class CardUserDetailsComponent extends StatelessWidget {
 
               CustomText.h6(
                 context,
-                '${tr(context).repTime} ${taskModel.numRepetition!} minutos',
+                getRepetitionText(taskModel.numRepetition!, context),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),

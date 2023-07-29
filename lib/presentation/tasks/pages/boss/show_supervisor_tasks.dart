@@ -25,6 +25,7 @@ import '../../../widgets/custom_text.dart';
 import '../../../widgets/loading_indicators.dart';
 import '../../components/card_item_boss_component.dart';
 import '../../providers/task_to_do.dart';
+import '../../utils/utilities.dart';
 
 
 class ShowSupervisorTasks extends HookConsumerWidget {
@@ -90,6 +91,7 @@ class ShowSupervisorTasks extends HookConsumerWidget {
 
     return taskToDoStreamBoss.when(
         data: (taskToDo) {
+          taskToDo = sortTasksByBegin(taskToDo);
           return (listaUsuarios.isEmpty)
                 ? CustomText.h4(
                   context,

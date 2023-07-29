@@ -12,6 +12,7 @@ import '../../../widgets/custom_text.dart';
 import '../../../widgets/loading_indicators.dart';
 import '../../components/card_item_component.dart';
 import '../../providers/task_to_do.dart';
+import '../../utils/utilities.dart';
 
 class CompletedTasks extends HookConsumerWidget {
   const CompletedTasks({Key? key}) : super(key: key);
@@ -22,6 +23,7 @@ class CompletedTasks extends HookConsumerWidget {
     final taskToDoStreamAll = ref.watch(getTasksDone);
     return taskToDoStreamAll.when(
         data: (taskDone) {
+          taskDone = sortTasksByBegin(taskDone);
           return (taskDone.isEmpty)
               ? CustomText.h4(
                   context,
