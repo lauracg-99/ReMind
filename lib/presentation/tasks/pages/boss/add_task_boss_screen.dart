@@ -380,8 +380,9 @@ class AddTaskScreenBoss extends HookConsumerWidget {
                                 text: tr(context).add,
                                 onPressed: () async {
                                   if (days.tags.toString() == '[]') {
-                                    days.tags
-                                        .add(getStrDay(DateTime.now().weekday));
+                                    (LocalizationService.instance.isGl(context))
+                                        ? days.tags.add(getStrDayGL(DateTime.now().weekday))
+                                        : days.tags.add(getStrDay(DateTime.now().weekday));
                                   }
                                   if(GetStorage().read('listaDias').isNotEmpty && repetitions.getBoth() != 0
                                       && nameController.text.isNotEmpty && range.getHours() != "00:00 - 00:00") {

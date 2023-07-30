@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../../data/tasks/models/task_model.dart';
 import '../../../domain/services/localization_service.dart';
@@ -41,6 +42,21 @@ int getNumDay(String day){
   return num;
 }
 
+int getNumDayGL(String day){
+  int num = 0;
+  switch(day){
+    case 'Luns': num = 1; break;
+    case 'Martes': num = 2; break;
+    case 'Mércores': num = 3; break;
+    case 'Xoves': num = 4; break;
+    case 'Venres': num = 5; break;
+    case 'Sábado': num = 6; break;
+    case 'Domingo': num = 7; break;
+  }
+
+  return num;
+}
+
 String getStrDay(int day){
   String d = '';
   switch(day){
@@ -57,14 +73,39 @@ String getStrDay(int day){
 
 }
 
+String getStrDayGL(int day){
+  String d = '';
+  switch(day){
+    case 1: d = 'Luns'; break;
+    case 2: d = 'Martes'; break;
+    case 3: d = 'Mércores'; break;
+    case 4: d = 'Xoves'; break;
+    case 5: d = 'Venres'; break;
+    case 6: d = 'Sábado'; break;
+    case 7: d = 'Domingo'; break;
+  }
+
+  return d;
+
+}
+
 //hago esto para gestionar de forma más fácil la base de datos
 List<String> saveDays(String days){
   if(days == '[Todos los días]'){
     days = '[Lunes, Martes, Miércoles, Jueves, Viernes, Sábado, Domingo]';
   }
 
-  days = reformDays(days);
+  if(days == '[Todos os días]'){
+    days = '[Lunes, Martes, Miércoles, Jueves, Viernes, Sábado, Domingo]';
+  }
+  print('*** days $days');
+  days = days.replaceAll('Luns', 'Lunes');
+  days = days.replaceAll('Mércores', 'Miércoles');
+  days = days.replaceAll('Xoves', 'Jueves');
+  days = days.replaceAll('Venres', 'Viernes');
 
+  days = reformDays(days);
+  print('*** days $days');
   var amountOfDays = days.split(' ');
 
   return amountOfDays;
@@ -80,8 +121,6 @@ String reformDays(String days){
   return center;
 
 }
-
-
 
 //calcular las horas a las que hay que avisar
 
@@ -113,36 +152,6 @@ List<String> notiHours(String ini, String fin, String avisar){
   return horas;
 }
 
-
-String getTranslateDay(){
-  var actualDay = DateTime.now().weekday;
-  String day = '';
-  switch(actualDay){
-    case 1:
-      day = 'Lunes';
-      break;
-    case 2:
-      day = 'Martes';
-      break;
-    case 3:
-      day ='Miércoles';
-      break;
-    case 4:
-      day = 'Jueves';
-      break;
-    case 5:
-      day = 'Viernes';
-      break;
-    case 6:
-      day = 'Sábado';
-      break;
-    case 7:
-      day = 'Domingo';
-      break;
-  }
-  return day;
-}
-
 String tiempo(String hr){
   String t = "";
   //print(hr);
@@ -172,11 +181,12 @@ String tiempo(String hr){
   return t;
 }
 
-List<String> ordenarDias(List<String> dias){
-  return getDiasString(sortDay(dias));
+List<String> ordenarDias(List<String> dias, String todosLosDias,
+Map<String, dynamic> mapDays, List<String> daysList){
+  return getDiasString(sortDay(dias, mapDays), todosLosDias, daysList);
 }
 
-List<dynamic> sortDay(List<String> selectedDia) {
+List<dynamic> sortDay(List<String> selectedDia, Map<String, dynamic> mapDays) {
   List<dynamic> numbers = [];
 
   for (var element in selectedDia) {
@@ -186,40 +196,18 @@ List<dynamic> sortDay(List<String> selectedDia) {
   return numbers;
 }
 
-Map<String, dynamic> mapDays = {
-  "Lunes": 1,
-  "Martes": 2,
-  "Miércoles": 3,
-  "Jueves": 4,
-  "Viernes": 5,
-  "Sábado": 6,
-  "Domingo": 7,
-  "Todos los días": 8
-  //"Todos los días"
-};
 
-List<String> daysList = [
-  'Lunes',
-  'Martes',
-  'Miércoles',
-  'Jueves',
-  'Viernes',
-  'Sábado',
-  'Domingo',
-  'Todos los días'
-];
-
-List<String> getDiasString(List<dynamic> numeros) {
+List<String> getDiasString(List<dynamic> numeros, String todosLosDias, List<String> daysList) {
   List<String> tags = [];
-  numeros.forEach((element) {
+  for (var element in numeros) {
     //print(element.toString());
     if (element < 8) {
       //va de 0..7 no de 1..8
       tags.add(daysList.elementAt(element - 1));
     } else {
-      tags.add("Todos los días"); //TODO: tr
+      tags.add(todosLosDias);
     }
-  });
+  }
   return tags;
 }
 

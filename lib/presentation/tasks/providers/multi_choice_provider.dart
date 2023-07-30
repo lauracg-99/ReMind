@@ -17,17 +17,7 @@ class MultiChoice extends StateNotifier<List<String>> {
     tags = selectedChoices;
   }
 
-   List<String> semana = [
-    "Lunes",
-    "Martes",
-    "Miércoles",
-    "Jueves",
-    "Viernes",
-    "Sábado",
-    "Domingo",
-  ];
-
-  changeChoice({required List<String> val,required List<String> mix }){
+  void changeChoice({required List<String> val,required List<String> mix }){
     if (val.contains("Todos los días")) {
       if (val.last != "Todos los días") {
         val.remove("Todos los días");
@@ -47,10 +37,29 @@ class MultiChoice extends StateNotifier<List<String>> {
     state = mix;
   }
 
+  void changeChoiceGal({required List<String> val,required List<String> mix }){
+    if (val.contains("Todos os días")) {
+      if (val.last != "Todos os días") {
+        val.remove("Todos os días");
+      } else {
+        val = ["Todos os días"];
+      }
+    } else {
+      if(val.contains("Luns") && val.contains("Martes") && val.contains("Mércores")
+          && val.contains("Xoves") && val.contains("Venres")
+          && val.contains("Sábado") &&  val.contains("Domingo")){
+        val = ["Todos os días"];
+      }
+    }
+
+    mix=val;
+    tags = mix;
+    state = mix;
+  }
+
   clean(){
     tags.clear();
   }
-
 
 
 }

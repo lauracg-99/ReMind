@@ -221,7 +221,7 @@ if(Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor){
                                           child: LayoutBuilder(
                                             builder: (context, constraints) {
                                               final text = ('${range.getIniHour()} - ${range.getfinHour()}' == '00:00 - 00:00')
-                                                  ? 'Elige rango horario'
+                                                  ? tr(context).choose_range
                                                   : 'Rango: \n ${range.getIniHour()} - ${range.getfinHour()}';
 
                                               final textStyle = TextStyle(
@@ -303,7 +303,7 @@ if(Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor){
                                             builder: (context, constraints) {
                                               final text = (GetStorage().read('listaDias').toString() != '[]')
                                                   ? GetStorage().read('listaDias').toString().replaceAll('[', '').replaceAll(']', '')
-                                                  : 'Elige días';
+                                                  : tr(context).choose_days;
 
                                               final textStyle = TextStyle(
                                                 color: Theme.of(context).textTheme.headline1?.color,
@@ -364,8 +364,9 @@ if(Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor){
                             text: tr(context).add,
                             onPressed: () async {
                               if (days.tags.toString() == '[]') {
-                                days.tags
-                                    .add(getStrDay(DateTime.now().weekday));
+                                (LocalizationService.instance.isGl(context))
+                                    ? days.tags.add(getStrDayGL(DateTime.now().weekday))
+                                    : days.tags.add(getStrDay(DateTime.now().weekday));
                               }
                               log('*** rango ${repetitions.getBoth()}');
                               if(GetStorage().read('listaDias').isNotEmpty && repetitions.getBoth() != 0

@@ -19,6 +19,7 @@ class CardUserDetailsComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var gl = LocalizationService.instance.isGl(context);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -57,7 +58,7 @@ class CardUserDetailsComponent extends StatelessWidget {
               CustomText.h6(
                 context,
                 //'${reformDays(taskModel.days.toString())}',
-                reformDays(getDiasString(sortDay(taskModel.days!)).toString()),
+                reformDays(getDiasString(sortDay(taskModel.days!), gl).toString()),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -103,15 +104,15 @@ class CardUserDetailsComponent extends StatelessWidget {
     return numbers;
   }
 
-  List<String> getDiasString(List<dynamic> numeros) {
+  List<String> getDiasString(List<dynamic> numeros, bool gl) {
     List<String> tags = [];
     numeros.forEach((element) {
       //print(element.toString());
       if (element < 8) {
         //va de 0..7 no de 1..8
-        tags.add(daysList.elementAt(element - 1));
+        (gl) ? tags.add(daysListGL.elementAt(element - 1)) :tags.add(daysList.elementAt(element - 1));
       } else {
-        tags.add("Todos los días");
+        (gl) ? tags.add("Todos os días") : tags.add("Todos los días");
       }
     });
     return tags;
@@ -138,6 +139,17 @@ class CardUserDetailsComponent extends StatelessWidget {
     "Sábado",
     "Domingo",
     "Todos los días"
+  ];
+
+  static List<String> daysListGL = [
+    'Luns',
+    'Martes',
+    'Mércores',
+    'Xoves',
+    'Venres',
+    'Sábado',
+    'Domingo',
+    'Todos os días'
   ];
 
 

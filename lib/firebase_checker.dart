@@ -73,6 +73,7 @@ void callbackDispatcher() async {
         initialDelay: initialDelay,
         );
         break ;
+
       case 'checkDB':
         await FirestoreService().startMonitoringChanges();
         break;
@@ -87,22 +88,21 @@ void registerBackgroundTask() async {
   final isDailyTaskScheduled = prefs.getBool('daily_task_scheduled') ?? false;
   final isCheckDBTaskScheduled = prefs.getBool('check_DB_scheduled') ?? false;
   final isSUPERVISOR = prefs.getBool('is_SUPERVISOR') ?? false;
-  log('${isDailyTaskScheduled} ${isCheckDBTaskScheduled} $isSUPERVISOR');
 
   if(!isSUPERVISOR) {
     if (!isDailyTaskScheduled) {
-      // run at midnight
+      // Calcular el tiempo restante hasta la medianoche
       final now = DateTime.now();
-      final nextMidnight =
-          DateTime(now.year, now.month, now.day + 1, 0, 0, 0, 0);
+      final nextMidnight = DateTime(now.year, now.month, now.day + 1, 0, 0, 0, 0);
       final initialDelay = nextMidnight.difference(now);
 
-      Workmanager().registerOneOffTask(
-        'reset_task',
-        'resetTask',
-        initialDelay: initialDelay,
+      // Registrar una tarea periódica con una frecuencia de 24 horas (1 día)
+      Workmanager().registerPeriodicTask(
+        'reset_task', // ID único para la tarea
+        'resetTask', // Nombre de la función de callback
+        frequency: Duration(days: 1), // Frecuencia de repetición (1 día)
+        initialDelay: initialDelay, // Retraso inicial hasta la medianoche
       );
-
       // Mark the "daily_task" as scheduled for today
       prefs.setBool('daily_task_scheduled', true);
     }
@@ -139,8 +139,7 @@ class FirestoreService {
     await DataConnectionChecker().hasConnection;
     try {
       var uid = await FirebaseAuth.instance.currentUser;
-      log('*** con uid ${uid?.uid}');
-      //FXlCiIL5Una5vScaijO15D4ZUdY2
+
       await FirestoreService().firestoreInstance.collection(FirestorePaths.taskPath(uid!.uid))
           .get()
           .then((querySnapshot) {
@@ -164,10 +163,6 @@ class FirestoreService {
     log('*** startMonitoringChanges');
     await DataConnectionChecker().hasConnection;
     var uid = await FirebaseAuth.instance.currentUser;
-    log('*** con uid ${uid?.uid}');
-    var noSupervisor = GetStorage().read(StorageKeys.rol) != StorageKeys.SUPERVISOR;
-    log('no sup $noSupervisor');
-
     await FirestoreService().firestoreInstance.collection(FirestorePaths.taskPath(uid!.uid))
         .get()
         .then((querySnapshot) {
@@ -181,7 +176,6 @@ class FirestoreService {
           final modifiedDocumentId = modifiedDocument.id;
           final modifiedDocumentData = modifiedDocument.data();
 
-          log('UID del documento añadido: $modifiedDocumentId');
           var task = TaskModel.fromMap(modifiedDocumentData!, modifiedDocumentId);
           if (task.done == StorageKeys.falso && task.isNotiSet == StorageKeys.falso) {
             await Notifications().setNotification(task).then((value) async {
