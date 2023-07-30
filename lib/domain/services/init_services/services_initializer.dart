@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:remind/domain/services/init_services/storage_service.dart';
 
 import '../../../firebase_options.dart';
+import '../../../presentation/providers/app_locale_provider.dart';
 import '../../../presentation/providers/app_theme_provider.dart';
 import '../../../presentation/routes/navigation_service.dart';
 import '../../../presentation/styles/app_colors.dart';
@@ -42,32 +43,9 @@ class ServicesInitializer {
       widgetsBinding.allowFirstFrame();
     });
 
-    //registerBackgroundTask();
-  }
 
-  _iniNoti(){
-    AwesomeNotifications().initialize(
-      'resource://drawable/res_notification_app_icon',
-      [
-        NotificationChannel(
-          channelKey: 'basic_channel',
-          channelName: 'Basic Notifications',
-          defaultColor: AppColors.blue,
-          importance: NotificationImportance.High,
-          channelShowBadge: true,
-          channelDescription: '',
-        ),
-        NotificationChannel(
-          channelKey: 'scheduled_channel',
-          channelName: 'Scheduled Notifications',
-          defaultColor: AppColors.blue,
-          locked: true,
-          importance: NotificationImportance.High,
-          soundSource: 'resource://raw/res_custom_notification',
-          channelDescription: '',
-        ),
-      ],
-    );
+
+    //registerBackgroundTask();
   }
 
   _initializeStorage(){
@@ -106,6 +84,9 @@ class ServicesInitializer {
 
   _initStorageService() async {
     await container.read(storageService).init();
+
+    final appLocaleNotifier = container.read(appLocaleProvider.notifier);
+    await appLocaleNotifier.init();
   }
   _initTheme() async {
     await container.read(appThemeProvider.notifier).init();
