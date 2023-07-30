@@ -199,5 +199,6 @@
   "choose_rep": "Elige cada cuanto repetir",
   "select_days_short": "Selecciona días repetición",
   "and": "y",
-  "choose_days": "Elige días"
+  "choose_days": "Elige días",
+  "delete_filter": "Filtros borrados, ahora se muestran todas las tareas"
 }

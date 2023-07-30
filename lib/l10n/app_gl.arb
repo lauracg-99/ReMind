@@ -200,6 +200,7 @@
   "choose_rep": "Escolle cada canto repetir",
   "select_days_short": "Selecciona días repetición",
   "and": "e",
-  "choose_days": "Elixe días"
+  "choose_days": "Elixe días",
+  "delete_filter": "Filtros borrados, agora móstranse todas as tarefas"
 
 }

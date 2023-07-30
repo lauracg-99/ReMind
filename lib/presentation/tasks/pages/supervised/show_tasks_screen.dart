@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:chips_choice/chips_choice.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cron/cron.dart';
 import 'package:flutter/cupertino.dart';
@@ -13,6 +14,7 @@ import 'package:remind/data/firebase/repo/firestore_paths.dart';
 import 'package:remind/domain/auth/repo/user_repo.dart';
 import 'package:remind/firebase_checker.dart';
 import 'package:remind/presentation/solicitudes/components/num_solicitudes_component.dart';
+import 'package:remind/presentation/tasks/providers/filter_provider.dart';
 import '../../../../common/storage_keys.dart';
 import '../../../../data/auth/providers/user_list_notifier.dart';
 import '../../../../data/firebase/repo/firebase_caller.dart';
@@ -25,12 +27,16 @@ import '../../../routes/navigation_service.dart';
 import '../../../styles/app_colors.dart';
 import '../../../styles/sizes.dart';
 import '../../../utils/dialog_message_state.dart';
+import '../../../utils/dialogs.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/buttons/custom_text_button.dart';
 import '../../../widgets/custom_text.dart';
 import '../../../widgets/dialog_widget.dart';
 import '../../../widgets/loading_indicators.dart';
 import '../../components/card_item_component.dart';
+import '../../components/filter_days_component.dart';
+import '../../components/switch_setting_section_component.dart';
+import '../../providers/multi_choice_provider.dart';
 import '../../providers/task_to_do.dart';
 import '../../utils/utilities.dart';
 
@@ -184,7 +190,79 @@ class ShowTasks extends HookConsumerWidget {
       }, []);
 
     final taskToDoStreamAll = ref.watch(getTasks);
-    return taskToDoStreamAll.when(
+    var gl = LocalizationService.instance.isGl(context);
+
+    String todosLosDias = (gl) ? 'Todos os días' : 'Todos los días';
+
+    var checkList = [
+      'Lunes',
+      'Martes',
+      'Miércoles',
+      'Jueves',
+      'Viernes',
+      'Sábado',
+      'Domingo',
+      ''
+    ];
+    var daysList = (gl)
+        ? [
+      'Luns',
+      'Martes',
+      'Mércores',
+      'Xoves',
+      'Venres',
+      'Sábado',
+      'Domingo',
+      'Todos os días'
+    ]
+        : [
+      'Lunes',
+      'Martes',
+      'Miércoles',
+      'Jueves',
+      'Viernes',
+      'Sábado',
+      'Domingo',
+      'Todos los días'
+    ];
+
+    var filtradoVacio = true;
+    if(GetStorage().read('filterDayInt') == null){
+      GetStorage().write('filterDayInt', 7);
+    }
+    return Column(
+      children: [
+        Container(
+          color: Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
+              ? AppColors.lightThemePrimary.withOpacity(0.7)
+              : AppColors.darkThemePrimary.withOpacity(0.7), // Light gray background color
+          padding: EdgeInsets.symmetric(horizontal: 16.0), // Optional padding
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextButton(
+                child: CustomText.h3(context, daysList[GetStorage().read('filterDayInt') ?? 7]),
+                onPressed: () {
+                  showAlertDias(context, ref);
+                },
+              ),
+              IconButton(
+                alignment: Alignment.centerRight,
+                onPressed: () {
+                  ref.watch(selectFilterProvider.notifier).clean();
+                  GetStorage().write('filterDayInt', 7);
+                  AppDialogs.showInfo(context, message: tr(context).delete_filter);
+                },
+                icon: Icon(
+                  Icons.delete_outline_outlined,
+                  color: Theme.of(context).textTheme.headline3?.color,
+                ),
+              )
+            ],
+          ),
+        ),
+
+      Expanded( child: taskToDoStreamAll.when(
       data: (taskToDo) {
         taskToDo = sortTasksByBegin(taskToDo);
         if(GetStorage().read('reset') == StorageKeys.verdadero){
@@ -211,35 +289,57 @@ class ShowTasks extends HookConsumerWidget {
           itemCount: taskToDo.length,
           itemBuilder: (context, index) {
             List<Widget> list = [];
-            list.add(
-                CardItemComponent(
-                taskModel: taskToDo[index],
-                ));
+            var chooseDay = GetStorage().read('filterDayInt');
+            if(chooseDay == 7){ //todos los días
+              filtradoVacio = false;
+              list.add(
+                  CardItemComponent(
+                    taskModel: taskToDo[index],
+                  ));
+            } else {
+              if(taskToDo[index].days!.contains(checkList[chooseDay])){
+                filtradoVacio = false;
+                list.add(
+                    CardItemComponent(
+                      taskModel: taskToDo[index],
+                    ));
+              }
+            }
+            if(index == taskToDo.length -1 && filtradoVacio){
+              list.add(CustomText.h4(
+                context,
+                tr(context).noTask,
+                color: AppColors.grey,
+                alignment: Alignment.center,
+              ));
+            }
 
-                return Column(children:list);
+            return Column(children:list);
             },
 
       );
     },
-    error: (err, stack) => Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CustomText.h4(
-                    context,
-                    tr(context).somethingWentWrong + '\n' + tr(context).pleaseTryAgainLater,
-                    color: AppColors.grey,
-                    alignment: Alignment.center,
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: Sizes.vMarginMedium(context),),
-                  CustomButton(
-                      text: tr(context).recharge,
-                      onPressed: (){
-                        ref.refresh(getTasks);
-                      })
-                ]),
-    loading: () => LoadingIndicators.instance.smallLoadingAnimation(context)
-    );
+      error: (err, stack) => Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CustomText.h4(
+                      context,
+                      tr(context).somethingWentWrong + '\n' + tr(context).pleaseTryAgainLater,
+                      color: AppColors.grey,
+                      alignment: Alignment.center,
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: Sizes.vMarginMedium(context),),
+                    CustomButton(
+                        text: tr(context).recharge,
+                        onPressed: (){
+                          ref.refresh(getTasks);
+                        })
+                  ]),
+      loading: () => LoadingIndicators.instance.smallLoadingAnimation(context)
+      )
+    )
+    ]);
   }
 
   static void _resetTasks(WidgetRef ref, List<TaskModel> taskToDo){
@@ -314,4 +414,60 @@ class ShowTasks extends HookConsumerWidget {
 
     GetStorage().write('firstTimeLogIn', false);
   }
+
+  showAlertDias(BuildContext context, WidgetRef ref) {
+    // set up the buttons
+    Widget okButton = CustomTextButton(
+      child: CustomText.h4(context, tr(context).oK, color: AppColors.blue),
+      onPressed: () {
+        //ref.watch(taskProvider.notifier).deleteTask(context,taskModel);
+        var day = ref.watch(selectFilterProvider);
+        log('@@@ days log $day');
+        GetStorage().write('filterDayInt', day);
+        NavigationService.goBack(context, rootNavigator: true);
+      },
+    );
+
+    Widget cancelButton = CustomTextButton(
+      child: CustomText.h4(context, tr(context).cancel, color: AppColors.red),
+      onPressed: () {
+        NavigationService.goBack(context, rootNavigator: true);
+      },
+    );
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            GestureDetector(
+                onTap: () {
+                  FocusManager.instance.primaryFocus?.unfocus();
+                },
+                child:  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+
+                      FilterDaysComponent(),
+
+                    ])
+            )
+          ]),
+      actions: [
+        cancelButton,
+        okButton,
+      ],
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(20.0))),
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+
 }
