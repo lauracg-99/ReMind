@@ -7,6 +7,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_background/flutter_background.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:get_storage/get_storage.dart';
@@ -41,6 +42,16 @@ void main() async {
   FirestoreService();
   final container = ProviderContainer();
   await ServicesInitializer.instance.init(widgetsBinding, container);
+  bool hasPermissions = await FlutterBackground.hasPermissions;
+  if(!hasPermissions){
+    const androidConfig = FlutterBackgroundAndroidConfig(
+      notificationTitle: "ReMind",
+      notificationText: "Esta app necesita permisos para trabajar en segundo plano",
+      notificationImportance: AndroidNotificationImportance.Default,
+      notificationIcon: AndroidResource(name: 'background_icon', defType: 'drawable'), // Default is ic_launcher from folder mipmap
+    );
+    bool success = await FlutterBackground.initialize(androidConfig: androidConfig);
+  }
   await GetStorage.init();
   SystemChannels.textInput.invokeMethod('TextInput.hide');
   GetStorage().write('selectUser', false);
