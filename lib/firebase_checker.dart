@@ -63,15 +63,7 @@ void callbackDispatcher() async {
     switch (task) {
       case 'resetTask':
         await FirestoreService().updateFirebaseData();
-        final now = DateTime.now();
-        final nextMidnight = DateTime(now.year, now.month, now.day + 1, 0, 0, 0, 0);
-        final initialDelay = nextMidnight.difference(now);
-
-        Workmanager().registerOneOffTask(
-          'reset_task',
-          'resetTask',
-        initialDelay: initialDelay,
-        );
+        await FirestoreService().startMonitoringChanges();
         break ;
 
       case 'checkDB':
@@ -146,8 +138,8 @@ class FirestoreService {
         if (querySnapshot.docs.isNotEmpty) {
           for (var taskDocument in querySnapshot.docs) {
             Map<String, dynamic> taskData = taskDocument.data();
-            taskData['done'] = 'false';
-            taskData['isNotiSet'] = 'false';
+            taskData['done'] = StorageKeys.falso;
+            taskData['isNotiSet'] = StorageKeys.falso;
             taskDocument.reference.update(taskData);
           }
         } else {
@@ -167,7 +159,18 @@ class FirestoreService {
         .get()
         .then((querySnapshot) {
       if (querySnapshot.docs.isNotEmpty) {
-        log('nour empty');
+        querySnapshot.docs.forEach((change) async {
+          final modifiedDocument = change;
+          final modifiedDocumentId = modifiedDocument.id;
+          final modifiedDocumentData = modifiedDocument.data();
+
+          var task = TaskModel.fromMap(modifiedDocumentData, modifiedDocumentId);
+          if (task.done == StorageKeys.falso && task.isNotiSet == StorageKeys.falso) {
+            await Notifications().setNotification(task).then((value) async {
+              await NotificationUtils.setNotiStateFB(uid.uid, task.taskId, 'true');
+            });
+          }
+        });
       }
       querySnapshot.docChanges.forEach((change) async {
         log('*** change.type ${change.type}');

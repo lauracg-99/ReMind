@@ -28,6 +28,7 @@ import '../../../styles/app_colors.dart';
 import '../../../styles/sizes.dart';
 import '../../../utils/dialog_message_state.dart';
 import '../../../utils/dialogs.dart';
+import '../../../utils/filters.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/buttons/custom_text_button.dart';
 import '../../../widgets/custom_text.dart';
@@ -246,18 +247,21 @@ class ShowTasks extends HookConsumerWidget {
                   showAlertDias(context, ref);
                 },
               ),
-              IconButton(
+              (GetStorage().read('filterDayInt') != 7)
+                  ? IconButton(
                 alignment: Alignment.centerRight,
                 onPressed: () {
                   ref.watch(selectFilterProvider.notifier).clean();
                   GetStorage().write('filterDayInt', 7);
-                  AppDialogs.showInfo(context, message: tr(context).delete_filter);
+                  AppDialogs.showInfo(context,
+                      message: tr(context).delete_filter);
                 },
                 icon: Icon(
                   Icons.delete_outline_outlined,
                   color: Theme.of(context).textTheme.headline3?.color,
                 ),
               )
+                  : const SizedBox()
             ],
           ),
         ),
@@ -415,59 +419,6 @@ class ShowTasks extends HookConsumerWidget {
     GetStorage().write('firstTimeLogIn', false);
   }
 
-  showAlertDias(BuildContext context, WidgetRef ref) {
-    // set up the buttons
-    Widget okButton = CustomTextButton(
-      child: CustomText.h4(context, tr(context).oK, color: AppColors.blue),
-      onPressed: () {
-        //ref.watch(taskProvider.notifier).deleteTask(context,taskModel);
-        var day = ref.watch(selectFilterProvider);
-        log('@@@ days log $day');
-        GetStorage().write('filterDayInt', day);
-        NavigationService.goBack(context, rootNavigator: true);
-      },
-    );
-
-    Widget cancelButton = CustomTextButton(
-      child: CustomText.h4(context, tr(context).cancel, color: AppColors.red),
-      onPressed: () {
-        NavigationService.goBack(context, rootNavigator: true);
-      },
-    );
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            GestureDetector(
-                onTap: () {
-                  FocusManager.instance.primaryFocus?.unfocus();
-                },
-                child:  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-
-                      FilterDaysComponent(),
-
-                    ])
-            )
-          ]),
-      actions: [
-        cancelButton,
-        okButton,
-      ],
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(20.0))),
-    );
-
-    // show the dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
-  }
 
 
 }

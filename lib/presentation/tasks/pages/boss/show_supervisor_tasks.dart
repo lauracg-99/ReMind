@@ -19,6 +19,7 @@ import '../../../routes/route_paths.dart';
 import '../../../styles/app_colors.dart';
 import '../../../styles/sizes.dart';
 import '../../../utils/dialogs.dart';
+import '../../../utils/filters.dart';
 import '../../../widgets/buttons/custom_button.dart';
 import '../../../widgets/buttons/custom_text_button.dart';
 import '../../../widgets/custom_text.dart';
@@ -29,13 +30,12 @@ import '../../providers/filter_provider.dart';
 import '../../providers/task_to_do.dart';
 import '../../utils/utilities.dart';
 
-
 class ShowSupervisorTasks extends HookConsumerWidget {
   const ShowSupervisorTasks({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, ref) {
-    GetStorage().write('screen','showBoss');
+    GetStorage().write('screen', 'showBoss');
     var uidUser = GetStorage().read('uidUsuario');
     final firestore = ref.watch(firebaseProvider);
     final userProvider = ref.watch(userRepoProvider);
@@ -57,36 +57,39 @@ class ShowSupervisorTasks extends HookConsumerWidget {
     ];
     var daysList = (gl)
         ? [
-      'Luns',
-      'Martes',
-      'Mércores',
-      'Xoves',
-      'Venres',
-      'Sábado',
-      'Domingo',
-      'Todos os días'
-    ]
+            'Luns',
+            'Martes',
+            'Mércores',
+            'Xoves',
+            'Venres',
+            'Sábado',
+            'Domingo',
+            'Todos os días'
+          ]
         : [
-      'Lunes',
-      'Martes',
-      'Miércoles',
-      'Jueves',
-      'Viernes',
-      'Sábado',
-      'Domingo',
-      'Todos los días'
-    ];
+            'Lunes',
+            'Martes',
+            'Miércoles',
+            'Jueves',
+            'Viernes',
+            'Sábado',
+            'Domingo',
+            'Todos los días'
+          ];
 
     var filtradoVacio = true;
-    if(GetStorage().read('filterDayInt') == null){
+    if (GetStorage().read('filterDayInt') == null) {
       GetStorage().write('filterDayInt', 7);
     }
-   List<Supervised> listaUsuarios = ref.watch(userRepoProvider).userModel?.supervisados ?? [];
+    List<Supervised> listaUsuarios =
+        ref.watch(userRepoProvider).userModel?.supervisados ?? [];
 
     useEffect(() {
       //si estado es pendiente saca la modal
-      firestore.collection(FirestorePaths.userPetitionCollection(uidUser)).snapshots().listen((querySnapshot) {
-
+      firestore
+          .collection(FirestorePaths.userPetitionCollection(uidUser))
+          .snapshots()
+          .listen((querySnapshot) {
         for (var change in querySnapshot.docChanges) {
           if (querySnapshot.docs.isNotEmpty) {
             //pasamos de pendiente a aceptada o rechazada
@@ -100,10 +103,11 @@ class ShowSupervisorTasks extends HookConsumerWidget {
 
               GetStorage().write('notificarPeticion', false);
 
-              if (solicitud.estado == 'aceptada'){
+              if (solicitud.estado == 'aceptada') {
                 log('addSupervisado');
                 GetStorage().write('notificarPeticion', true);
-                Notifications().statusPetitionNoti(context,solicitud, 'aceptado');
+                Notifications()
+                    .statusPetitionNoti(context, solicitud, 'aceptado');
                 userProvider.addNewSupervisedByUID(solicitud.uidSup);
                 userProvider.getUserData(solicitud.uidBoss);
                 managePetition(context, ref, solicitud: solicitud);
@@ -111,17 +115,15 @@ class ShowSupervisorTasks extends HookConsumerWidget {
 
               if (solicitud.estado == 'borrar') {
                 solicitud.id = documentId;
-                log('solicitud ${solicitud.id} ${solicitud
-                    .emailSup} ${solicitud.estado} ${solicitud
-                    .emailBoss} ${documentId}');
+                log('solicitud ${solicitud.id} ${solicitud.emailSup} ${solicitud.estado} ${solicitud.emailBoss} ${documentId}');
                 ref.watch(userRepoProvider).deletePetition(solicitud);
                 userProvider.getUserData(solicitud.uidBoss);
-
               }
 
-              if (solicitud.estado == 'rechazado'){
+              if (solicitud.estado == 'rechazado') {
                 GetStorage().write('notificarPeticion', true);
-                Notifications().statusPetitionNoti(context, solicitud, 'rechazado');
+                Notifications()
+                    .statusPetitionNoti(context, solicitud, 'rechazado');
                 //borramos la petición
               }
             }
@@ -129,125 +131,136 @@ class ShowSupervisorTasks extends HookConsumerWidget {
         }
       });
     }, []);
-    return Column(
-      children: [
-        Container(
-          color: Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
-              ? AppColors.lightThemePrimary.withOpacity(0.7)
-              : AppColors.darkThemePrimary.withOpacity(0.7), // Light gray background color
-          padding: EdgeInsets.symmetric(horizontal: 16.0), // Optional padding
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextButton(
-                child: CustomText.h3(context, daysList[GetStorage().read('filterDayInt') ?? 7]),
-                onPressed: () {
-                  showAlertDias(context, ref);
-                },
-              ),
-              IconButton(
-                alignment: Alignment.centerRight,
-                onPressed: () {
-                  ref.watch(selectFilterProvider.notifier).clean();
-                  GetStorage().write('filterDayInt', 7);
-                  AppDialogs.showInfo(context, message: tr(context).delete_filter);
-                },
-                icon: Icon(
-                  Icons.delete_outline_outlined,
-                  color: Theme.of(context).textTheme.headline3?.color,
-                ),
-              )
-            ],
-          ),
+    return Column(children: [
+      Container(
+        color:
+            Theme.of(context).iconTheme.color == AppColors.lightThemeIconColor
+                ? AppColors.lightThemePrimary.withOpacity(0.7)
+                : AppColors.darkThemePrimary.withOpacity(0.7),
+        // Light gray background color
+        padding: EdgeInsets.symmetric(horizontal: 16.0),
+        // Optional padding
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextButton(
+              child: CustomText.h3(
+                  context, daysList[GetStorage().read('filterDayInt') ?? 7]),
+              onPressed: () {
+                showAlertDias(context, ref);
+              },
+            ),
+            (GetStorage().read('filterDayInt') != 7)
+                ? IconButton(
+                    alignment: Alignment.centerRight,
+                    onPressed: () {
+                      ref.watch(selectFilterProvider.notifier).clean();
+                      GetStorage().write('filterDayInt', 7);
+                      AppDialogs.showInfo(context,
+                          message: tr(context).delete_filter);
+                    },
+                    icon: Icon(
+                      Icons.delete_outline_outlined,
+                      color: Theme.of(context).textTheme.headline3?.color,
+                    ),
+                  )
+                : const SizedBox()
+          ],
         ),
-
-        Expanded(child: taskToDoStreamBoss.when(
-        data: (taskToDo) {
-          taskToDo = sortTasksByBegin(taskToDo);
-          return (listaUsuarios.isEmpty)
-                ? CustomText.h4(
-                  context,
-            tr(context).warn_add_sup,
-                  color: AppColors.grey,
-                  alignment: Alignment.center,
-                  textAlign: TextAlign.center,
-                )
-                : (taskToDo.isEmpty)
+      ),
+      Expanded(
+          child: taskToDoStreamBoss.when(
+              data: (taskToDo) {
+                taskToDo = sortTasksByBegin(taskToDo);
+                return (listaUsuarios.isEmpty)
                     ? CustomText.h4(
-                      context,
-                      tr(context).noTask,
-                      color: AppColors.grey,
-                      alignment: Alignment.center,
-                    )
-                    : ListView.separated(
-                      padding: EdgeInsets.symmetric(
-                        vertical: Sizes.screenVPaddingDefault(context),
-                        horizontal: Sizes.screenHPaddingMedium(context),
-                      ),
-                      separatorBuilder: (context, index) =>
-                          SizedBox(height: Sizes.vMarginHigh(context),),
-                      itemCount: taskToDo.length,
-                      itemBuilder: (context, index) {
-                        List<Widget> list = [];
-                        //CardItemBossComponent
-                        var chooseDay = GetStorage().read('filterDayInt');
-                        if(chooseDay == 7){ //todos los días
-                          filtradoVacio = false;
-                          list.add(
-                              CardItemBossComponent(
-                                taskModel: taskToDo[index],
-                              ));
-                        } else {
-                          if(taskToDo[index].days!.contains(checkList[chooseDay])){
-                            filtradoVacio = false;
-                            list.add(
-                                CardItemBossComponent(
-                                  taskModel: taskToDo[index],
-                                ));
-                          }
-                        }
-                        if(index == taskToDo.length -1 && filtradoVacio){
-                          list.add(CustomText.h4(
+                        context,
+                        tr(context).warn_add_sup,
+                        color: AppColors.grey,
+                        alignment: Alignment.center,
+                        textAlign: TextAlign.center,
+                      )
+                    : (taskToDo.isEmpty)
+                        ? CustomText.h4(
                             context,
                             tr(context).noTask,
                             color: AppColors.grey,
                             alignment: Alignment.center,
-                          ));
-                        }
+                          )
+                        : ListView.separated(
+                            padding: EdgeInsets.symmetric(
+                              vertical: Sizes.screenVPaddingDefault(context),
+                              horizontal: Sizes.screenHPaddingMedium(context),
+                            ),
+                            separatorBuilder: (context, index) => SizedBox(
+                              height: Sizes.vMarginHigh(context),
+                            ),
+                            itemCount: taskToDo.length,
+                            itemBuilder: (context, index) {
+                              List<Widget> list = [];
+                              //CardItemBossComponent
+                              var chooseDay = GetStorage().read('filterDayInt');
+                              if (chooseDay == 7) {
+                                //todos los días
+                                filtradoVacio = false;
+                                list.add(CardItemBossComponent(
+                                  taskModel: taskToDo[index],
+                                ));
+                              } else {
+                                if (taskToDo[index]
+                                    .days!
+                                    .contains(checkList[chooseDay])) {
+                                  filtradoVacio = false;
+                                  list.add(CardItemBossComponent(
+                                    taskModel: taskToDo[index],
+                                  ));
+                                }
+                              }
+                              if (index == taskToDo.length - 1 &&
+                                  filtradoVacio) {
+                                list.add(CustomText.h4(
+                                  context,
+                                  tr(context).noTask,
+                                  color: AppColors.grey,
+                                  alignment: Alignment.center,
+                                ));
+                              }
 
-                        return Column(children:list);
-                  },
-
-                );
-        },
-        error: (err, stack) => Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children:
-            (listaUsuarios.isEmpty)
-                ? [CustomText.h4(
-                    context,
-                    tr(context).warn_add_sup,
-                    color: AppColors.grey,
-                    alignment: Alignment.center,
-                    textAlign: TextAlign.center,
-                  )]
-                : [
-              CustomText.h4(
-              context,
-              '${tr(context).somethingWentWrong}\n${tr(context).pleaseTryAgainLater}',
-              color: AppColors.grey,
-              alignment: Alignment.center,
-              textAlign: TextAlign.center,
-            ),
-          SizedBox(height: Sizes.vMarginMedium(context),),
-          CustomButton(
-              text: tr(context).recharge,
-              onPressed: (){
-                ref.refresh(getTasksSup);
-              })
-        ]),
-        loading: () => LoadingIndicators.instance.smallLoadingAnimation(context)
-    ))
+                              return Column(children: list);
+                            },
+                          );
+              },
+              error: (err, stack) => Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: (listaUsuarios.isEmpty)
+                      ? [
+                          CustomText.h4(
+                            context,
+                            tr(context).warn_add_sup,
+                            color: AppColors.grey,
+                            alignment: Alignment.center,
+                            textAlign: TextAlign.center,
+                          )
+                        ]
+                      : [
+                          CustomText.h4(
+                            context,
+                            '${tr(context).somethingWentWrong}\n${tr(context).pleaseTryAgainLater}',
+                            color: AppColors.grey,
+                            alignment: Alignment.center,
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(
+                            height: Sizes.vMarginMedium(context),
+                          ),
+                          CustomButton(
+                              text: tr(context).recharge,
+                              onPressed: () {
+                                ref.refresh(getTasksSup);
+                              })
+                        ]),
+              loading: () =>
+                  LoadingIndicators.instance.smallLoadingAnimation(context)))
     ]);
   }
 
@@ -255,14 +268,10 @@ class ShowSupervisorTasks extends HookConsumerWidget {
       {required Solicitud solicitud}) {
     // set up the buttons
     Widget okButton = CustomTextButton(
-      child: CustomText.h4(
-          context,
-          tr(context).acept,
-          color: AppColors.blue
-      ),
-      onPressed:  () {
+      child: CustomText.h4(context, tr(context).acept, color: AppColors.blue),
+      onPressed: () {
         //checkTask( context,taskModel: taskModel);
-        NavigationService.goBack(context,rootNavigator: true);
+        NavigationService.goBack(context, rootNavigator: true);
         solicitud.estado = 'borrar';
         ref.watch(userRepoProvider).updatePetition(solicitud);
       },
@@ -271,65 +280,12 @@ class ShowSupervisorTasks extends HookConsumerWidget {
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
       title: CustomText.h2(context, tr(context).adv),
-      content: CustomText.h3(context,"${tr(context).acept_pre_peti} ${solicitud.emailSup} ${tr(context).acept_peti}"),
+      content: CustomText.h3(context,
+          "${tr(context).acept_pre_peti} ${solicitud.emailSup} ${tr(context).acept_peti}"),
       actions: [
         okButton,
       ],
       shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(20.0))
-      ),
-    );
-
-    // show the dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
-  }
-
-  showAlertDias(BuildContext context, WidgetRef ref) {
-    // set up the buttons
-    Widget okButton = CustomTextButton(
-      child: CustomText.h4(context, tr(context).oK, color: AppColors.blue),
-      onPressed: () {
-        //ref.watch(taskProvider.notifier).deleteTask(context,taskModel);
-        var day = ref.watch(selectFilterProvider);
-        GetStorage().write('filterDayInt', day);
-        NavigationService.goBack(context, rootNavigator: true);
-      },
-    );
-
-    Widget cancelButton = CustomTextButton(
-      child: CustomText.h4(context, tr(context).cancel, color: AppColors.red),
-      onPressed: () {
-        NavigationService.goBack(context, rootNavigator: true);
-      },
-    );
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            GestureDetector(
-                onTap: () {
-                  FocusManager.instance.primaryFocus?.unfocus();
-                },
-                child:  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-
-                      FilterDaysComponent(),
-
-                    ])
-            )
-          ]),
-      actions: [
-        cancelButton,
-        okButton,
-      ],
-      shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(20.0))),
     );
 
@@ -341,5 +297,4 @@ class ShowSupervisorTasks extends HookConsumerWidget {
       },
     );
   }
-
 }
