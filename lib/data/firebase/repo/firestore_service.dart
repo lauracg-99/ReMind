@@ -160,21 +160,21 @@ class FirestoreService {
     log('*** resetTaskWM');
     await DataConnectionChecker().hasConnection;
     var uid = FirebaseAuth.instance.currentUser;
-    await firestoreInstance.collection(FirestorePaths.taskPath(uid!.uid)).get()
-        .then((querySnapshot) {
-      if (querySnapshot.docs.isNotEmpty) {
-        querySnapshot.docs.forEach((element) async {
-          Map<String, dynamic> taskData = element.data();
-          if(isTimestampFromPreviousDay(taskData['lastUpdate'])){
-          taskData['done'] = StorageKeys.falso;
-          taskData['isNotiSet'] = StorageKeys.falso;
-          taskData['lastUpdate'] = Timestamp.fromDate(DateTime.now());
-          log('taskdata $taskData');
-          await element.reference.update(taskData);
-          }
-        });
+    await firestoreInstance.collection(FirestorePaths.taskPath(uid!.uid))
+        .get().then((querySnapshot) {
+          if (querySnapshot.docs.isNotEmpty) {
+            querySnapshot.docs.forEach((element) async {
+              Map<String, dynamic> taskData = element.data();
+              if(isTimestampFromPreviousDay(taskData['lastUpdate'])){
+              taskData['done'] = StorageKeys.falso;
+              taskData['isNotiSet'] = StorageKeys.falso;
+              taskData['lastUpdate'] = Timestamp.fromDate(DateTime.now());
+              log('taskdata $taskData');
+              await element.reference.update(taskData);
+              }
+            });
 
-      }
+          }
     });
   }
 

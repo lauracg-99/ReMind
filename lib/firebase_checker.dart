@@ -68,7 +68,11 @@ void callbackDispatcher() async {
     await FirestoreService().startMonitoringChanges();
     var time = prefs.getBool('is_time_to_reset') ?? false;
     if(time){
-      await FirestoreService().resetTaskWM().then((value) => prefs.setBool('is_time_to_reset', true));
+      await FirestoreService().resetTaskWM().then((value)
+      async {
+        prefs.setBool('is_time_to_reset', true);
+        await FirestoreService().startMonitoringChanges();
+      });
     }
     return Future.value(true);
   });
