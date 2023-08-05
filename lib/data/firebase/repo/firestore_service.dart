@@ -165,11 +165,13 @@ class FirestoreService {
       if (querySnapshot.docs.isNotEmpty) {
         querySnapshot.docs.forEach((element) async {
           Map<String, dynamic> taskData = element.data();
+          if(isTimestampFromPreviousDay(taskData['lastUpdate'])){
           taskData['done'] = StorageKeys.falso;
           taskData['isNotiSet'] = StorageKeys.falso;
           taskData['lastUpdate'] = Timestamp.fromDate(DateTime.now());
           log('taskdata $taskData');
           await element.reference.update(taskData);
+          }
         });
 
       }
