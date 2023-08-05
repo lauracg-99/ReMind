@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 
-class NotificationManager {
+/*class NotificationManager {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   void iniciarEscuchaNotificaciones() {
@@ -61,7 +61,7 @@ class NotificationManager {
 
     _firebaseMessaging.sendMessage(to:'token',data: notificacion);
   }
-}
+}*/
 
 // Ejemplo de uso:
 //final notificationManager = NotificationManager();

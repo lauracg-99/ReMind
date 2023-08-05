@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:dartz/dartz.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:remind/data/firebase/repo/firebase_caller.dart';
 import 'package:remind/data/tasks/providers/task_state.dart';
 
 import '../../../presentation/utils/dialogs.dart';
@@ -110,6 +113,15 @@ class TaskNotifier extends StateNotifier<TaskState> {
           return Right(task);
         }
     );
+  }
+
+  Future<void> deleteSupTasks(BuildContext? context, String uidSup) async {
+    log('@@@ deleteSupTasks');
+    var tasks = await _tasksRepo.getlistSup(uidSup);
+    var result = tasks.forEach((task) async {
+      log('@@@ task ${task.taskName}');
+      await _tasksRepo.deleteTask(task);
+    });
   }
 
   Future<Either<Failure, bool>> checkTask(BuildContext context,

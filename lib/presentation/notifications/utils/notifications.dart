@@ -190,6 +190,26 @@ class Notifications {
     );
   }
 
+  Future<void> resetTaskOkNoti(String message) async {
+
+    var gatito = 'asset://${randomCat()}';
+    if (kDebugMode) {
+      print(gatito);
+    }
+    var gato = await fetchRandomCatImage() ?? gatito;
+
+    await AwesomeNotifications().createNotification(
+        content: NotificationContent(
+          id: 1,
+          channelKey: 'basic_channel',
+          autoDismissible: false,
+          title: 'Aviso',
+          body: message,
+          bigPicture: gato,
+          notificationLayout: NotificationLayout.BigPicture,
+        ),
+    );
+  }
   Future<void> cancelScheduledNotifications() async {
     //await AwesomeNotifications().cancelAllSchedules();
     await AwesomeNotifications().cancelNotificationsByChannelKey(

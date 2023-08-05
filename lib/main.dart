@@ -26,6 +26,7 @@ import 'package:workmanager/workmanager.dart';
 
 import 'data/auth/manage_supervised/send_notification.dart';
 import 'data/firebase/repo/firestore_paths.dart';
+import 'data/firebase/repo/firestore_service.dart';
 import 'domain/services/data_connection_service.dart';
 import 'domain/services/init_services/services_initializer.dart';
 import 'domain/services/localization_service.dart';
@@ -47,7 +48,7 @@ void main() async {
     const androidConfig = FlutterBackgroundAndroidConfig(
       notificationTitle: "ReMind",
       notificationText: "Esta app necesita permisos para trabajar en segundo plano",
-      notificationImportance: AndroidNotificationImportance.Default,
+      notificationImportance: AndroidNotificationImportance.High,
       notificationIcon: AndroidResource(name: 'background_icon', defType: 'drawable'), // Default is ic_launcher from folder mipmap
     );
     bool success = await FlutterBackground.initialize(androidConfig: androidConfig);
@@ -92,7 +93,6 @@ AwesomeNotifications().requestPermissionToSendNotifications();
     isInDebugMode: false, // If enabled it will post a notification whenever the task is running. Handy for debugging tasks
   );
 
-  registerBackgroundTask();
 
   runApp(
     //All Flutter applications using Riverpod

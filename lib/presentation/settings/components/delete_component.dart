@@ -138,3 +138,22 @@ class _SharedItemComponent extends StatelessWidget {
     );
   }
 }
+
+
+/*
+child: Column(
+children: [
+const _SharedItemComponent(),
+SizedBox(height: Sizes.vMarginSmall(context),),
+TextButton(
+onPressed: (){
+log('@@@ text button 2');
+ref.watch(taskProvider.notifier).deleteSupTasks(context,GetStorage().read(StorageKeys.lastUIDSup));
+AppDialogs.showErrorDialog(context, message: 'Todas las tareas del supervisado en curso han sido borradas');
+NavigationService.pushReplacement(
+context,
+isNamed: true,
+page: RoutePaths.homeBase,
+);
+}, child: Text('Borrar tareas'))
+])*/

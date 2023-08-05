@@ -74,6 +74,19 @@ class TasksRepo {
     );
   }
 
+  Future<List<TaskModel>> getlistSup(String uidSup) {
+    return _firebaseCaller.getCollectionData<List<TaskModel>>(
+      path: FirestorePaths.taskPath(uidSup),
+      queryBuilder: (query) => query
+          .where("authorUID", isEqualTo: GetStorage().read(StorageKeys.uidUsuario)),
+      builder: (snapshotData) {
+        List<TaskModel> taskModels = snapshotData!.map((snapshot) => TaskModel.fromMap(snapshot.data(), snapshot.id)).toList();
+        return Future.value(taskModels);
+      },
+    );
+  }
+
+
   Stream<List<TaskModel>> getTasksDoneStreamSup() {
     return  _firebaseCaller.collectionStream<TaskModel>(
       path: FirestorePaths.taskPath(GetStorage().read(StorageKeys.lastUIDSup)),
@@ -261,6 +274,7 @@ class TasksRepo {
       path: FirestorePaths.taskBossById(GetStorage().read(StorageKeys.lastUIDSup)!,taskId: taskModel.taskId),
       data: {
         'done': StorageKeys.falso,
+        'lastUpdate' : Timestamp.fromDate(DateTime.now())
       },
       builder: (data) {
         if (data is! ServerFailure && data == true) {
@@ -274,6 +288,7 @@ class TasksRepo {
       path: FirestorePaths.taskById(GetStorage().read(StorageKeys.uidUsuario)!,taskId: taskModel.taskId),
       data: {
         'done': StorageKeys.falso,
+        'lastUpdate' : Timestamp.fromDate(DateTime.now())
       },
       builder: (data) {
         if (data is! ServerFailure && data == true) {
@@ -291,6 +306,7 @@ class TasksRepo {
           GetStorage().read(StorageKeys.uidUsuario)!,taskId: taskModel.taskId),
       data: {
         'done': StorageKeys.verdadero,
+        'lastUpdate' : Timestamp.fromDate(DateTime.now())
       },
       builder: (data) {
         if (data is! ServerFailure && data == true) {
@@ -308,6 +324,7 @@ class TasksRepo {
           taskId: taskModel.taskId),
       data: {
         'done': StorageKeys.falso,
+        'lastUpdate' : Timestamp.fromDate(DateTime.now())
       },
       builder: (data) {
         if (data is! ServerFailure && data == true) {
@@ -324,6 +341,7 @@ class TasksRepo {
       path: FirestorePaths.taskBossById(GetStorage().read(StorageKeys.lastUIDSup)!,taskId: taskModel.taskId),
       data: {
         'done': StorageKeys.verdadero,
+        'lastUpdate' : Timestamp.fromDate(DateTime.now())
       },
       builder: (data) {
         if (data is! ServerFailure && data == true) {
@@ -340,6 +358,7 @@ class TasksRepo {
       path: FirestorePaths.taskBossById(GetStorage().read(StorageKeys.lastUIDSup)!, taskId: taskModel.taskId),
       data: {
         "done": StorageKeys.falso,
+        "lastUpdate" : Timestamp.fromDate(DateTime.now())
       },
       builder: (data) {
         if (data is! ServerFailure && data == true) {

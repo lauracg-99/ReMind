@@ -3,6 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../common/storage_keys.dart';
 import '../../domain/services/init_services/services_initializer.dart';
+import '../../firebase_checker.dart';
 import '../routes/navigation_service.dart';
 import '../routes/route_paths.dart';
 import 'main_core_provider.dart';
@@ -59,6 +60,7 @@ class SplashProvider {
     bool hasValidAuth = await _mainCoreProvider.checkValidAuth();
 
     if (hasValidAuth) {
+      registerBackgroundTask();
       secondPage = RoutePaths.homeBase;
     } else {
       //recheck notification

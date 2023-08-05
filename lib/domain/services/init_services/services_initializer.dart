@@ -5,6 +5,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:remind/domain/services/init_services/storage_service.dart';
 
+import '../../../firebase_checker.dart';
 import '../../../firebase_options.dart';
 import '../../../presentation/providers/app_locale_provider.dart';
 import '../../../presentation/providers/app_theme_provider.dart';
@@ -45,7 +46,7 @@ class ServicesInitializer {
 
 
 
-    //registerBackgroundTask();
+    registerBackgroundTask();
   }
 
   _initializeStorage(){

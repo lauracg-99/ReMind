@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:remind/presentation/widgets/custom_text.dart';
+import '../../../firebase_checker.dart';
+import '../../routes/navigation_service.dart';
+import '../../routes/route_paths.dart';
 import '../../screens/popup_page_nested.dart';
 import '../../styles/sizes.dart';
 import '../components/delete_component.dart';
@@ -42,10 +46,17 @@ class SettingsScreen extends StatelessWidget {
               ),
               //cerrar sesión
               const DeleteComponent(),
+              SizedBox(
+                height: Sizes.vMarginExtreme(context),
+              ),
+              TextButton(onPressed: (){
+                resetSharedWM();
+              }, child: CustomText.h4(context, 'Reset background', underline: true,))
             ],
           ),
         ),
       ),
     );
   }
+
 }

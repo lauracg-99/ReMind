@@ -67,13 +67,17 @@ class ShowTasks extends HookConsumerWidget {
 
           if (task.done == StorageKeys.falso && task.isNotiSet == StorageKeys.falso) {
             Notifications().setNotification(task).then((value) async {
-              await NotificationUtils.setNotiStateFB(uidUser, task.taskId, 'true');
+              Map<String, dynamic> taskData = modifiedDocument.data()!;
+              taskData['isNotiSet'] = 'true';
+              await modifiedDocument.reference.update(taskData);
             });
           }
           if (task.done == StorageKeys.verdadero && task.isNotiSet == StorageKeys.falso) {
             AwesomeNotifications().cancelNotificationsByGroupKey(task.taskId);
             NotificationUtils.removeNotificationDetailsByTaskId(task.taskId).then((value) async {
-              await NotificationUtils.setNotiStateFB(uidUser, task.taskId, 'false');
+              Map<String, dynamic> taskData = modifiedDocument.data()!;
+              taskData['isNotiSet'] = 'false';
+              await modifiedDocument.reference.update(taskData);
             });
           }
         }
@@ -93,12 +97,17 @@ class ShowTasks extends HookConsumerWidget {
             if (task.done == StorageKeys.verdadero && task.isNotiSet == StorageKeys.falso) {
               AwesomeNotifications().cancelNotificationsByGroupKey(task.taskId);
               NotificationUtils.removeNotificationDetailsByTaskId(task.taskId).then((value) async {
-                await NotificationUtils.setNotiStateFB(uidUser, task.taskId, 'false');
+                Map<String, dynamic> taskData = modifiedDocument.data()!;
+                taskData['isNotiSet'] = 'false';
+                await modifiedDocument.reference.update(taskData);
+
               });
             }
             if (task.done == StorageKeys.falso && task.isNotiSet == StorageKeys.falso) {
               Notifications().setNotification(task).then((value) async {
-                await NotificationUtils.setNotiStateFB(uidUser, task.taskId, 'true');
+                Map<String, dynamic> taskData = modifiedDocument.data()!;
+                taskData['isNotiSet'] = 'true';
+                await modifiedDocument.reference.update(taskData);
               });
             }
           }
@@ -111,7 +120,9 @@ class ShowTasks extends HookConsumerWidget {
             var task = TaskModel.fromMap(modifiedDocumentData!, modifiedDocumentId);
             AwesomeNotifications().cancelNotificationsByGroupKey(task.taskId);
             NotificationUtils.removeNotificationDetailsByTaskId(task.taskId).then((value) async {
-              await NotificationUtils.setNotiStateFB(uidUser, task.taskId, 'false');
+              Map<String, dynamic> taskData = modifiedDocument.data()!;
+              taskData['isNotiSet'] = 'false';
+              await modifiedDocument.reference.update(taskData);
             });
           }
               }

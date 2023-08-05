@@ -7,6 +7,7 @@ import 'package:remind/common/storage_keys.dart';
 
 import '../../../../data/auth/providers/user_list_notifier.dart';
 import '../../../../domain/services/localization_service.dart';
+import '../../../data/tasks/providers/task_provider.dart';
 import '../../../domain/auth/repo/user_repo.dart';
 import '../../routes/navigation_service.dart';
 import '../../routes/route_paths.dart';
@@ -100,7 +101,7 @@ class SelectSupervised extends HookConsumerWidget {
                                                         Sizes.vMarginSmallest(
                                                             context),
                                                   ),
-                                                   Column(
+                                                  Column(
                                                     children: [
                                                       Row(
                                                           crossAxisAlignment:
@@ -219,8 +220,7 @@ class SelectSupervised extends HookConsumerWidget {
                                                                               AppDialogs.showWarningPersonalice(context, message: tr(context).fail_change_user);
                                                                             }, (success) {
                                                                               ref.refresh(getTasksSup);
-                                                                              AppDialogs.showInfo(context,
-                                                                                  message: '${tr(context).see_tasks_of} ${supervisado.supervisados![index].name}');
+                                                                              AppDialogs.showInfo(context, message: '${tr(context).see_tasks_of} ${supervisado.supervisados![index].name}');
                                                                             }));
                                                                   },
                                                                 ))
@@ -259,6 +259,15 @@ class SelectSupervised extends HookConsumerWidget {
                                                             .supervisados![
                                                                 index]
                                                             .uId);
+                                                /*ref
+                                                    .watch(
+                                                        taskProvider.notifier)
+                                                    .deleteSupTasks(
+                                                        context,
+                                                        supervisado
+                                                            .supervisados![
+                                                                index]
+                                                            .uId);*/
                                                 GetStorage().write(
                                                     StorageKeys.lastUIDSup, '');
                                                 GetStorage().write(
@@ -352,7 +361,8 @@ class SelectSupervised extends HookConsumerWidget {
                   AppDialogs.showWarningPersonalice(context,
                       message: tr(context).fail_change_user);
                 }, (success) {
-                  AppDialogs.showInfo(context, message: tr(context).delete_supervised);
+                  AppDialogs.showInfo(context,
+                      message: tr(context).delete_supervised);
                 }));
         NavigationService.goBack(context, rootNavigator: true);
       },

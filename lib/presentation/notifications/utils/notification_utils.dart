@@ -1,14 +1,17 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../common/storage_keys.dart';
 import '../../../data/firebase/repo/firestore_paths.dart';
-import '../../../firebase_checker.dart';
+import '../../../data/firebase/repo/firestore_service.dart';
 
 class NotificationUtils {
   static const String _notificationKey = 'notification_ids';
-
+  static final _firebase =  FirestoreService().firestoreInstance;
   static Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   // Método para guardar los detalles de la notificación en SharedPreferences
@@ -64,10 +67,9 @@ class NotificationUtils {
   }
 
   static Future<void> setNotiStateFB(String uid, String taskId, String estado) async {
-
-    DocumentSnapshot<Map<String, dynamic>> snapshot = await FirestoreService()
-        .firestoreInstance
-        .collection(FirestorePaths.taskPath(uid))
+    log('**** setNotiStateFB $taskId');
+    DocumentSnapshot<Map<String, dynamic>> snapshot = await
+    _firebase.collection(FirestorePaths.taskPath(uid))
         .doc(taskId)
         .get();
 
@@ -79,6 +81,30 @@ class NotificationUtils {
       if (kDebugMode) {
         print('*** error set noti');
       }
+    }
+  }
+
+  static Future<void> resetTaskToFB(String uid, String taskId) async {
+    log('**** resetTaskToFB $taskId $uid');
+    try {
+      DocumentSnapshot<Map<String, dynamic>> snapshot =
+      await _firebase.collection(FirestorePaths.taskPath(uid)).doc(taskId).get();
+
+      log('tierra de nadie');
+      if (snapshot.exists) {
+        log('exists');
+        Map<String, dynamic> taskData = snapshot.data()!;
+        taskData['done'] = StorageKeys.falso;
+        taskData['isNotiSet'] = StorageKeys.falso;
+        taskData['lastUpdate'] = Timestamp.fromDate(DateTime.now());
+        log('taskdata $taskData');
+        await snapshot.reference.update(taskData);
+        log('Task actualizada');
+      } else {
+        log('*** error reset task');
+      }
+    } catch (e) {
+      log('Error updating Firestore document: $e');
     }
   }
 

@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:remind/presentation/notifications/utils/notification_utils.dart';
 import 'package:remind/presentation/notifications/utils/notifications.dart';
@@ -13,17 +14,21 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
 import 'common/storage_keys.dart';
 import 'data/firebase/repo/firestore_paths.dart';
+import 'data/firebase/repo/firestore_service.dart';
 import 'data/tasks/models/task_model.dart';
 import 'domain/services/data_connection_service.dart';
 import 'firebase_options.dart';
 
 
+const checkDBTaskKey = "es.udc.ReMind.checkDB";
+const resetTaskKey = "es.udc.ReMind.resetTasks";
 
 @pragma('vm:entry-point') // Mandatory if the App is obfuscated or using Flutter 3.1+
 void callbackDispatcher() async {
   log('*** callbackDispatcher');
   WidgetsFlutterBinding.ensureInitialized();
   await DataConnectionChecker().hasConnection;
+  final prefs = await SharedPreferences.getInstance();
   Workmanager().executeTask((task, inputData) async {
     log('*** exc task $task ${DateTime.now().toString()}');
     await Firebase.initializeApp(
@@ -60,179 +65,58 @@ void callbackDispatcher() async {
         ),
       ],
     );
-    switch (task) {
-      case 'resetTask':
-        await FirestoreService().updateFirebaseData();
-        await FirestoreService().startMonitoringChanges();
-        break ;
-
-      case 'checkDB':
-        await FirestoreService().startMonitoringChanges();
-        break;
-      default: break;
+    await FirestoreService().startMonitoringChanges();
+    var time = prefs.getBool('is_time_to_reset') ?? false;
+    if(time){
+      await FirestoreService().resetTaskWM().then((value) => prefs.setBool('is_time_to_reset', true));
     }
     return Future.value(true);
   });
+
+}
+
+Timestamp getTimestampForPreviousDay() {
+  // Get the current date and time
+  DateTime currentDateTime = DateTime.now();
+
+  // Calculate the previous day by subtracting one day from the current date
+  DateTime previousDayDateTime = currentDateTime.subtract(Duration(days: 1));
+
+  // Convert the previous day DateTime into a Timestamp
+  Timestamp previousDayTimestamp = Timestamp.fromDate(previousDayDateTime);
+  log('previousDayTimestamp $previousDayTimestamp');
+  return previousDayTimestamp;
+}
+
+void resetSharedWM() async {
+  final prefs = await SharedPreferences.getInstance();
+  prefs.setBool('check_DB_scheduled',false);
+  registerBackgroundTask();
+  log('*** reset prefs');
 }
 
 void registerBackgroundTask() async {
   final prefs = await SharedPreferences.getInstance();
-  final isDailyTaskScheduled = prefs.getBool('daily_task_scheduled') ?? false;
   final isCheckDBTaskScheduled = prefs.getBool('check_DB_scheduled') ?? false;
   final isSUPERVISOR = prefs.getBool('is_SUPERVISOR') ?? false;
 
-  if(!isSUPERVISOR) {
-    if (!isDailyTaskScheduled) {
-      // Calcular el tiempo restante hasta la medianoche
-      final now = DateTime.now();
-      final nextMidnight = DateTime(now.year, now.month, now.day + 1, 0, 0, 0, 0);
-      final initialDelay = nextMidnight.difference(now);
+  if(FirebaseAuth.instance.currentUser?.uid != null) {
 
-      // Registrar una tarea periódica con una frecuencia de 24 horas (1 día)
-      Workmanager().registerPeriodicTask(
-        'reset_task', // ID único para la tarea
-        'resetTask', // Nombre de la función de callback
-        frequency: Duration(days: 1), // Frecuencia de repetición (1 día)
-        initialDelay: initialDelay, // Retraso inicial hasta la medianoche
-      );
-      // Mark the "daily_task" as scheduled for today
-      prefs.setBool('daily_task_scheduled', true);
-    }
-
-    if (!isCheckDBTaskScheduled) {
-      Workmanager().registerPeriodicTask(
-        'check_DB',
-        'checkDB',
-        frequency: Duration(minutes: 15),
-      );
-
-      prefs.setBool('check_DB_scheduled', true);
-    }
-  }
-}
-
-class FirestoreService {
-  static final FirestoreService _singleton = FirestoreService._internal();
-
-  factory FirestoreService() {
-    return _singleton;
-  }
-
-  FirestoreService._internal() {
-    // Inicializar Firebase si aún no está inicializado
-    if (!Firebase.apps.isEmpty) {
-      Firebase.initializeApp();
-    }
-  }
-
-  FirebaseFirestore get firestoreInstance => FirebaseFirestore.instance;
-
-  Future<void> updateFirebaseData() async {
-    await DataConnectionChecker().hasConnection;
-    try {
-      var uid = await FirebaseAuth.instance.currentUser;
-
-      await FirestoreService().firestoreInstance.collection(FirestorePaths.taskPath(uid!.uid))
-          .get()
-          .then((querySnapshot) {
-        if (querySnapshot.docs.isNotEmpty) {
-          for (var taskDocument in querySnapshot.docs) {
-            Map<String, dynamic> taskData = taskDocument.data();
-            taskData['done'] = StorageKeys.falso;
-            taskData['isNotiSet'] = StorageKeys.falso;
-            taskDocument.reference.update(taskData);
-          }
-        } else {
-          log('*** oh');
-        }
-      });
-    } catch (e) {
-      print('Error al actualizar los datos de Firebase: $e');
-    }
-  }
-
-  Future<void> startMonitoringChanges() async {
-    log('*** startMonitoringChanges');
-    await DataConnectionChecker().hasConnection;
-    var uid = await FirebaseAuth.instance.currentUser;
-    await FirestoreService().firestoreInstance.collection(FirestorePaths.taskPath(uid!.uid))
-        .get()
-        .then((querySnapshot) {
-      if (querySnapshot.docs.isNotEmpty) {
-        querySnapshot.docs.forEach((change) async {
-          final modifiedDocument = change;
-          final modifiedDocumentId = modifiedDocument.id;
-          final modifiedDocumentData = modifiedDocument.data();
-
-          var task = TaskModel.fromMap(modifiedDocumentData, modifiedDocumentId);
-          if (task.done == StorageKeys.falso && task.isNotiSet == StorageKeys.falso) {
-            await Notifications().setNotification(task).then((value) async {
-              await NotificationUtils.setNotiStateFB(uid.uid, task.taskId, 'true');
-            });
-          }
-        });
+    if (!isSUPERVISOR) {
+      if (!isCheckDBTaskScheduled) {
+        Workmanager().registerPeriodicTask(
+          checkDBTaskKey,
+          checkDBTaskKey,
+          frequency: const Duration(minutes: 15),
+        );
+        log('*** set $checkDBTaskKey ${DateTime.now().toString()}');
+        prefs.setBool('check_DB_scheduled', true);
       }
-      querySnapshot.docChanges.forEach((change) async {
-        log('*** change.type ${change.type}');
-        if (change.type == DocumentChangeType.added) {
-          final modifiedDocument = change.doc;
-          final modifiedDocumentId = modifiedDocument.id;
-          final modifiedDocumentData = modifiedDocument.data();
-
-          var task = TaskModel.fromMap(modifiedDocumentData!, modifiedDocumentId);
-          if (task.done == StorageKeys.falso && task.isNotiSet == StorageKeys.falso) {
-            await Notifications().setNotification(task).then((value) async {
-              await NotificationUtils.setNotiStateFB(uid.uid, task.taskId, 'true');
-            });
-          }
-        }
-
-        if (change.type == DocumentChangeType.modified) {
-          final modifiedDocument = change.doc;
-          final modifiedDocumentId = modifiedDocument.id;
-          final modifiedDocumentData = modifiedDocument.data();
-          // Aquí puedes usar modifiedDocumentId para obtener el UID del documento que ha cambiado
-          log('UID del documento modificado: $modifiedDocumentId');
-          var task = TaskModel.fromMap(
-              modifiedDocumentData!, modifiedDocumentId);
-
-          //la tarea se ha marcado como hecha => no necesitamos las notis de ese día
-          if (task.done == StorageKeys.verdadero) {
-            AwesomeNotifications().cancelNotificationsByGroupKey(task.taskId);
-            NotificationUtils.removeNotificationDetailsByTaskId(task.taskId);
-            await NotificationUtils.setNotiStateFB(uid.uid, task.taskId, 'false');
-          }
-          //la tarea se ha modificado y aún no está hecha => establecemos las notificaciones
-          if (task.done == StorageKeys.falso && task.isNotiSet == StorageKeys.falso) {
-            //borramos notificación
-            AwesomeNotifications().cancelNotificationsByGroupKey(task.taskId);
-            NotificationUtils.removeNotificationDetailsByTaskId(task.taskId);
-            //ponemos el grupo
-            await Notifications().setNotification(task).then((value) async {
-              await NotificationUtils.setNotiStateFB(uid.uid, task.taskId, 'true');
-            });
-          }
-        }
-
-        //si se borra por lo que sea cancelamos notis
-        if (change.type == DocumentChangeType.removed) {
-          final modifiedDocument = change.doc;
-          final modifiedDocumentId = modifiedDocument.id;
-          final modifiedDocumentData = modifiedDocument.data();
-          var task = TaskModel.fromMap(
-              modifiedDocumentData!, modifiedDocumentId);
-          AwesomeNotifications().cancelNotificationsByGroupKey(task.taskId);
-          NotificationUtils.removeNotificationDetailsByTaskId(task.taskId).then((value) async {
-            await NotificationUtils.setNotiStateFB(uid.uid, task.taskId, 'false');
-          });
-        }
-      });
-    });
+    }
   }
-
-
-
 }
+
+
 
 
 
