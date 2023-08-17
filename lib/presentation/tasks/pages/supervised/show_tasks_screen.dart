@@ -63,7 +63,6 @@ class ShowTasks extends HookConsumerWidget {
           final modifiedDocumentData = modifiedDocument.data();
 
           var task = TaskModel.fromMap(modifiedDocumentData!, modifiedDocumentId);
-          log('DOC añadido: $modifiedDocumentId ${task.done} ${task.isNotiSet} ${task.taskName}');
 
           if (task.done == StorageKeys.falso && task.isNotiSet == StorageKeys.falso) {
             Notifications().setNotification(task).then((value) async {
@@ -280,9 +279,6 @@ class ShowTasks extends HookConsumerWidget {
       Expanded( child: taskToDoStreamAll.when(
       data: (taskToDo) {
         taskToDo = sortTasksByBegin(taskToDo);
-        if(GetStorage().read('reset') == StorageKeys.verdadero){
-          _resetTasks(ref, taskToDo);
-        }
         if(GetStorage().read('firstTimeLogIn') != null) {
             if (GetStorage().read('firstTimeLogIn')) {
               setNotificationsFirstTime(taskToDo);
@@ -357,18 +353,6 @@ class ShowTasks extends HookConsumerWidget {
     ]);
   }
 
-  static void _resetTasks(WidgetRef ref, List<TaskModel> taskToDo){
-    for (var tarea in taskToDo) {
-
-      if (tarea.done == StorageKeys.verdadero) {
-          ref.watch(taskProvider.notifier).resetTask(null,tarea);
-      }
-
-    }
-    ref.watch(getTasks);
-  }
-
-
   void managePetition(BuildContext context, WidgetRef ref, {required Solicitud solicitud}) {
     // set up the buttons
     Widget okButton = CustomTextButton(
@@ -419,10 +403,11 @@ class ShowTasks extends HookConsumerWidget {
     );
   }
 
-  setNotificationsFirstTime(List<TaskModel> listTasks){
+  void setNotificationsFirstTime(List<TaskModel> listTasks){
     log('*** primera vez');
     listTasks.forEach((task) {
-      if (task.done == StorageKeys.falso && task.isNotiSet == StorageKeys.falso) {
+      log('*** primera vez ${task.taskName}');
+      if (task.done == StorageKeys.falso) {
         Notifications().setNotification(task);
       }
     });

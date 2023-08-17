@@ -80,74 +80,57 @@ class FirestoreService {
       if (querySnapshot.docs.isNotEmpty) {
         querySnapshot.docChanges.forEach((change) async {
           log('*** change.type ${change.type}');
-          if (change.type == DocumentChangeType.added) {
-            final modifiedDocument = change.doc;
-            final modifiedDocumentId = modifiedDocument.id;
-            final modifiedDocumentData = modifiedDocument.data();
+          final modifiedDocument = change.doc;
+          final modifiedDocumentId = modifiedDocument.id;
+          final modifiedDocumentData = modifiedDocument.data();
+          Map<String, dynamic> taskData = modifiedDocument.data()!;
+          var task = TaskModel.fromMap(modifiedDocumentData!, modifiedDocumentId);
+          log('FIRESTORE SERVICE UID del documento: ${taskData['taskId']} ${task.taskId}');
 
-            var task = TaskModel.fromMap(modifiedDocumentData!, modifiedDocumentId);
-            // si hay uno significa que todos tienen que ser reseteados
+          if (change.type == DocumentChangeType.added) {
             if (isTimestampFromPreviousDay(task.lastUpdate) && afterMidnight()) {
-              prefs.setBool('is_time_to_reset', true);
+              //prefs.setBool('is_time_to_reset', true);
+              if(isTimestampFromPreviousDay(taskData['lastUpdate'])){
+                taskData['done'] = 'false';
+                taskData['isNotiSet'] = 'false';
+                taskData['lastUpdate'] = Timestamp.fromDate(DateTime.now());
+              }
             }
 
-            //if (isTimestampFromPreviousDay(task.lastUpdate) && afterMidnight()) {
             if (task.done == StorageKeys.falso && task.isNotiSet == StorageKeys.falso) {
-              //seteamos noti
               await Notifications().setNotification(task).then((value) async {
-                Map<String, dynamic> taskData = modifiedDocument.data()!;
                 taskData['isNotiSet'] = 'true';
-                await modifiedDocument.reference.update(taskData);
               });
             }
 
             if (change.type == DocumentChangeType.modified) {
-              final modifiedDocument = change.doc;
-              final modifiedDocumentId = modifiedDocument.id;
-              final modifiedDocumentData = modifiedDocument.data();
-              log('UID del documento modificado: $modifiedDocumentId');
-
-              var task = TaskModel.fromMap(modifiedDocumentData!, modifiedDocumentId);
-
               //la tarea se ha marcado como hecha => no necesitamos las notis de ese día
               if (task.done == StorageKeys.verdadero) {
                 AwesomeNotifications().cancelNotificationsByGroupKey(task.taskId);
                 NotificationUtils.removeNotificationDetailsByTaskId(task.taskId);
-                Map<String, dynamic> taskData = modifiedDocument.data()!;
                 taskData['isNotiSet'] = 'false';
-                await modifiedDocument.reference.update(taskData);
               }
               //la tarea se ha modificado y aún no está hecha => establecemos las notificaciones
-              if (task.done == StorageKeys.falso &&
-                  task.isNotiSet == StorageKeys.falso) {
+              if (task.done == StorageKeys.falso && task.isNotiSet == StorageKeys.falso) {
                 //borramos notificación
                 AwesomeNotifications().cancelNotificationsByGroupKey(task.taskId);
                 NotificationUtils.removeNotificationDetailsByTaskId(task.taskId);
                 //ponemos el grupo
                 await Notifications().setNotification(task).then((value) async {
-                  Map<String, dynamic> taskData = modifiedDocument.data()!;
                   taskData['isNotiSet'] = 'true';
-                  await modifiedDocument.reference.update(taskData);
                 });
               }
-
             }
 
             //si se borra por lo que sea cancelamos notis
             if (change.type == DocumentChangeType.removed) {
-              final modifiedDocument = change.doc;
-              final modifiedDocumentId = modifiedDocument.id;
-              final modifiedDocumentData = modifiedDocument.data();
-              var task = TaskModel.fromMap(
-                  modifiedDocumentData!, modifiedDocumentId);
               AwesomeNotifications().cancelNotificationsByGroupKey(task.taskId);
-              NotificationUtils.removeNotificationDetailsByTaskId(task.taskId)
-                  .then((value) async {
-                Map<String, dynamic> taskData = modifiedDocument.data()!;
+              NotificationUtils.removeNotificationDetailsByTaskId(task.taskId).then((value) async {
                 taskData['isNotiSet'] = 'false';
-                await modifiedDocument.reference.update(taskData);
               });
             }
+            log('taskdata $taskData');
+            await modifiedDocument.reference.update(taskData);
 
           }}
         );
@@ -156,7 +139,7 @@ class FirestoreService {
   }
 
 
-  Future<void> resetTaskWM() async {
+  /*Future<void> resetTaskWM() async {
     log('*** resetTaskWM');
     await DataConnectionChecker().hasConnection;
     var uid = FirebaseAuth.instance.currentUser;
@@ -176,7 +159,7 @@ class FirestoreService {
 
           }
     });
-  }
+  }*/
 
   bool afterMidnight() {
     DateTime horaActual = DateTime.now();

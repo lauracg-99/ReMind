@@ -5,17 +5,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:get_storage/get_storage.dart';
-import 'package:remind/presentation/notifications/utils/notification_utils.dart';
-import 'package:remind/presentation/notifications/utils/notifications.dart';
 import 'package:remind/presentation/styles/app_colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
-import 'common/storage_keys.dart';
-import 'data/firebase/repo/firestore_paths.dart';
 import 'data/firebase/repo/firestore_service.dart';
-import 'data/tasks/models/task_model.dart';
 import 'domain/services/data_connection_service.dart';
 import 'firebase_options.dart';
 
@@ -67,13 +60,14 @@ void callbackDispatcher() async {
     );
     await FirestoreService().startMonitoringChanges();
     var time = prefs.getBool('is_time_to_reset') ?? false;
-    if(time){
+    log('TIME $time');
+    /*if(time){
       await FirestoreService().resetTaskWM().then((value)
       async {
-        prefs.setBool('is_time_to_reset', true);
+        prefs.setBool('is_time_to_reset', false);
         await FirestoreService().startMonitoringChanges();
       });
-    }
+    }*/
     return Future.value(true);
   });
 
@@ -84,7 +78,7 @@ Timestamp getTimestampForPreviousDay() {
   DateTime currentDateTime = DateTime.now();
 
   // Calculate the previous day by subtracting one day from the current date
-  DateTime previousDayDateTime = currentDateTime.subtract(Duration(days: 1));
+  DateTime previousDayDateTime = currentDateTime.subtract(const Duration(days: 1));
 
   // Convert the previous day DateTime into a Timestamp
   Timestamp previousDayTimestamp = Timestamp.fromDate(previousDayDateTime);
@@ -104,14 +98,19 @@ void registerBackgroundTask() async {
   final isCheckDBTaskScheduled = prefs.getBool('check_DB_scheduled') ?? false;
   final isSUPERVISOR = prefs.getBool('is_SUPERVISOR') ?? false;
 
-  if(FirebaseAuth.instance.currentUser?.uid != null) {
+  var time = prefs.getBool('is_time_to_reset') ?? false;
+  log('TIME $time ${DateTime.now().toString()}');
 
+  if(FirebaseAuth.instance.currentUser?.uid != null) {
     if (!isSUPERVISOR) {
       if (!isCheckDBTaskScheduled) {
         Workmanager().registerPeriodicTask(
           checkDBTaskKey,
           checkDBTaskKey,
-          frequency: const Duration(minutes: 15),
+          frequency: const Duration(minutes: 15, seconds: 30),
+          existingWorkPolicy: ExistingWorkPolicy.replace,
+          backoffPolicy: BackoffPolicy.exponential,
+          backoffPolicyDelay: const Duration(minutes: 1)
         );
         log('*** set $checkDBTaskKey ${DateTime.now().toString()}');
         prefs.setBool('check_DB_scheduled', true);
