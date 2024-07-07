@@ -17,6 +17,7 @@ class TaskModel {
   final Timestamp? lastUpdate;
   String isNotiSet;
 
+
   TaskModel({
     required this.taskId,
     required this.taskName,
